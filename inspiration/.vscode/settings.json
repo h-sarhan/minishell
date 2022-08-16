@@ -1,0 +1,9 @@
+{
+	"files.associations": {
+		"stdio.h": "c",
+		"locale": "c",
+		"sstream": "c",
+		"string": "c",
+		"vector": "c"
+	}
+}

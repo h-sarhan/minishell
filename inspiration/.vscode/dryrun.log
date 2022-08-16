@@ -1,0 +1,5 @@
+make all --dry-run --keep-going --print-directory
+make: Entering directory '/home/hsarhan/42/cursus/pipex/sub00'
+make: Nothing to be done for 'all'.
+make: Leaving directory '/home/hsarhan/42/cursus/pipex/sub00'
+ 
