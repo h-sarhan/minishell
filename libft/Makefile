@@ -6,7 +6,7 @@
 #    By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/04/29 21:51:32 by hsarhan           #+#    #+#              #
-#    Updated: 2022/08/17 11:54:47 by hsarhan          ###   ########.fr        #
+#    Updated: 2022/08/17 18:14:39 by hsarhan          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -27,7 +27,7 @@ NAME = libft.a
 CC = cc
 CFLAGS = -Werror -Wall -Wextra
 
-all: $(NAME)
+all: $(NAME) bonus
 
 $(NAME): $(OBJS)
 	ar -rc $(NAME) $(OBJS)
