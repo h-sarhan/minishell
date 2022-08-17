@@ -6,11 +6,13 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 14:46:52 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/17 18:59:15 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/17 20:32:18 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "parsing.h"
+
+static bool	contains_env_var(const char *str);
 
 static t_list	*tokenize_single_quote(const char *line, size_t *idx)
 {
@@ -35,6 +37,9 @@ static t_list	*tokenize_single_quote(const char *line, size_t *idx)
 	}
 	else
 		token->end = i;
+	token->substr = ft_substr(line, token->start, token->end - token->start + 1);
+	if (token->substr == NULL)
+		return (NULL);
 	el = ft_lstnew(token);
 	if (el == NULL)
 		return (NULL);
@@ -54,7 +59,6 @@ static t_list	*tokenize_double_quote(const char *line, size_t *idx)
 		return (NULL);
 	token->start = i;
 	token->type = DOUBLE_QUOTED_STRING;
-	token->expanded = false;
 	i++;
 	while (line[i] != '\0' && line[i] != '\"')
 		i++;
@@ -65,12 +69,54 @@ static t_list	*tokenize_double_quote(const char *line, size_t *idx)
 	}
 	else
 		token->end = i;
+	token->substr = ft_substr(line, token->start, token->end - token->start + 1);
+	if (token->substr == NULL)
+		return (NULL);
+	token->expanded = !contains_env_var(token->substr);
 	el = ft_lstnew(token);
 	if (el == NULL)
 		return (NULL);
 	*idx = i;
 	return (el);
 }
+
+static bool	contains_env_var(const char *str)
+{
+	size_t	i;
+
+	i = 0;
+	while (str[i] != '\0')
+	{
+		if (str[i] == '$')
+		{
+			i++;
+			if (str[i] == '\0')
+				return (false);
+			else if (!ft_isalnum(str[i]) && str[i] != '_')
+				i++;
+			else
+				return (true);
+		}
+		else
+			i++;
+	}
+	return (false);
+}
+
+// static void	expand_double_quote(t_token *token)
+// {
+// 	size_t	i;
+// 	char	*substr;
+
+// 	i = 0;
+// 	substr = token->substr;
+// 	while (substr[i] != '\0')
+// 	{
+		
+// 		i++;
+// 	}
+// 	token->expanded = true;
+// }
 
 // TODO: Free in case of malloc errors
 t_list	*parse_line(const char *line, bool *success)
@@ -83,9 +129,9 @@ t_list	*parse_line(const char *line, bool *success)
 	i = 0;
 	while (line[i] != '\0')
 	{
-		if (line[i] == '\\' || line[i] == ';')
+		if (line[i] == '\\' || line[i] == ';' || line[i] == '`')
 		{
-			write_to_stderr("Parse Error: Invalid operator\n");
+			write_to_stderr("Parse Error: Invalid character\n");
 			*success = false;
 			return (NULL);
 		}
@@ -122,34 +168,22 @@ t_list	*parse_line(const char *line, bool *success)
 	return (tokens);
 }
 
-void	print_tokens(const char *line, t_list *tokens)
+void	print_tokens(t_list *tokens)
 {
 	t_token	*token;
-	char	*substr;
 
 	while (tokens != NULL)
 	{
 		token = tokens->content;
 		if (token->type == QUOTED_STRING)
 		{
-			substr = ft_substr(line, token->start, token->end - token->start + 1);
-			if (substr == NULL)
-			{
-				exit(EXIT_FAILURE);
-			}
-			printf("Quoted string: %s\nstart=(%zu)\nend=(%zu)\n", substr, token->start,
-					token->end);
+			printf("Single Quoted string: %s\nstart=(%zu)\nend=(%zu)\nExpanded=(%d)\n", token->substr, token->start,
+					token->end, token->expanded);
 		}
 		if (token->type == DOUBLE_QUOTED_STRING)
 		{
-
-			substr = ft_substr(line, token->start, token->end - token->start + 1);
-			if (substr == NULL)
-			{
-				exit(EXIT_FAILURE);
-			}
-			printf("Double quoted string: %s\nstart=(%zu)\nend=(%zu)\n", substr,
-					token->start, token->end);
+			printf("Double quoted string: %s\nstart=(%zu)\nend=(%zu)\nExpanded=(%d)\n", token->substr,
+					token->start, token->end, token->expanded);
 		}
 		tokens = tokens->next;
 	}
