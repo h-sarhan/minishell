@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 14:46:52 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/17 20:32:18 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/17 21:28:31 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,6 @@ static t_list	*tokenize_single_quote(const char *line, size_t *idx)
 		return (NULL);
 	token->start = i;
 	token->type = QUOTED_STRING;
-	token->expanded = true;
 	i++;
 	while (line[i] != '\0' && line[i] != '\'')
 		i++;
@@ -37,7 +36,7 @@ static t_list	*tokenize_single_quote(const char *line, size_t *idx)
 	}
 	else
 		token->end = i;
-	token->substr = ft_substr(line, token->start, token->end - token->start + 1);
+	token->substr = ft_substr(line, token->start + 1, token->end - token->start - 1);
 	if (token->substr == NULL)
 		return (NULL);
 	el = ft_lstnew(token);
@@ -69,14 +68,18 @@ static t_list	*tokenize_double_quote(const char *line, size_t *idx)
 	}
 	else
 		token->end = i;
-	token->substr = ft_substr(line, token->start, token->end - token->start + 1);
+	token->substr = ft_substr(line, token->start + 1, token->end - token->start - 1);
 	if (token->substr == NULL)
 		return (NULL);
-	token->expanded = !contains_env_var(token->substr);
 	el = ft_lstnew(token);
 	if (el == NULL)
 		return (NULL);
 	*idx = i;
+	while (contains_env_var(token->substr))
+	{
+		token->substr = expand_env_var(token->substr);
+	}
+	printf("%s\n", token->substr);
 	return (el);
 }
 
@@ -103,20 +106,46 @@ static bool	contains_env_var(const char *str)
 	return (false);
 }
 
-// static void	expand_double_quote(t_token *token)
-// {
-// 	size_t	i;
-// 	char	*substr;
 
-// 	i = 0;
-// 	substr = token->substr;
-// 	while (substr[i] != '\0')
-// 	{
-		
-// 		i++;
-// 	}
-// 	token->expanded = true;
-// }
+// TODO: Check for memory leaks and protect all memory allocating functions
+char	*expand_env_var(char *str)
+{
+	size_t	i;
+	size_t	start;
+	size_t	end;
+	char	*before;
+	char	*env_var;
+	char	*expansion;
+	char	*after;
+
+	i = 0;
+	while (str[i] != '\0')
+	{
+		if (str[i] == '$')
+		{
+			i++;
+			start = i;
+			while (str[i] != '\0' && (ft_isalnum(str[i]) || str[i] == '_'))
+				i++;
+			end = i - 1; // ? might just be i
+			if (start < end)
+				break ;
+		}
+		i++;
+	}
+	before = ft_substr(str, 0, start - 1);
+	env_var = ft_substr(str, start, end - start + 1);
+	expansion = getenv(env_var);
+	ft_free(&env_var);
+	after = ft_substr(str, end + 1, ft_strlen(str));
+	ft_free(&str);
+	if (expansion == NULL)
+		str = strjoin_free(before, "", 1);
+	else
+		str = strjoin_free(before, expansion, 1);
+	str = strjoin_free(str, after, 3);
+	return (str);
+}
 
 // TODO: Free in case of malloc errors
 t_list	*parse_line(const char *line, bool *success)
@@ -177,13 +206,13 @@ void	print_tokens(t_list *tokens)
 		token = tokens->content;
 		if (token->type == QUOTED_STRING)
 		{
-			printf("Single Quoted string: %s\nstart=(%zu)\nend=(%zu)\nExpanded=(%d)\n", token->substr, token->start,
-					token->end, token->expanded);
+			printf("Single Quoted string: \'%s\'\nstart=(%zu)\nend=(%zu)\n", token->substr, token->start,
+					token->end);
 		}
 		if (token->type == DOUBLE_QUOTED_STRING)
 		{
-			printf("Double quoted string: %s\nstart=(%zu)\nend=(%zu)\nExpanded=(%d)\n", token->substr,
-					token->start, token->end, token->expanded);
+			printf("Double quoted string: \"%s\"\nstart=(%zu)\nend=(%zu)\n", token->substr,
+					token->start, token->end);
 		}
 		tokens = tokens->next;
 	}

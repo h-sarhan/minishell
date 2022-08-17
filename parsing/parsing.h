@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:44:00 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/17 19:09:16 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/17 21:26:51 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,6 @@ enum	e_token_type
 struct s_token
 {
 	t_token_type	type;
-	bool			expanded;
 	size_t			start;
 	size_t			end;
 	char			*substr;
@@ -49,4 +48,8 @@ struct s_token
 t_list	*parse_line(const char *line, bool *success);
 void	write_to_stderr(const char *msg);
 void	print_tokens(t_list *tokens);
+char	*strjoin_free(char *s1, char *s2, int f);
+char	*substr_free(char *s, unsigned int start, size_t len);
+char	*expand_env_var(char *str);
+void	ft_free(void *memory);
 #endif
