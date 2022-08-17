@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:44:00 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/17 21:40:19 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/17 22:26:18 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,6 @@ enum	e_token_type
 	OUTPUT_REDIR,
 	APPEND_REDIR,
 	HEREDOC,
-	HEREDOC_DELIM,
 	PIPE,
 	LAST_EXIT,
 };
@@ -53,4 +52,5 @@ char	*substr_free(char *s, unsigned int start, size_t len);
 bool	contains_env_var(const char *str);
 char	*expand_env_var(char *str);
 void	ft_free(void *memory);
+t_list	*tokenize_operator(const char *line, size_t *idx, const t_token_type type);
 #endif

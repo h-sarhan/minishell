@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 14:46:52 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/17 21:52:50 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/17 22:32:23 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -175,9 +175,75 @@ t_list	*parse_line(const char *line, bool *success)
 			}
 			ft_lstadd_back(&tokens, el);
 		}
-		else if (line[i] == '$')
+		else if (line[i] == '$' && line[i + 1] != '?')
 		{
 			el = tokenize_env_variable(line, &i);
+			if (el == NULL)
+			{
+				// ? ft_lstclear here maybe??
+				*success = false;
+				return (NULL);
+			}
+			ft_lstadd_back(&tokens, el);
+		}
+		else if (line[i] == '>' && line[i + 1] != '>')
+		{
+			el = tokenize_operator(line, &i, OUTPUT_REDIR);
+			if (el == NULL)
+			{
+				// ? ft_lstclear here maybe??
+				*success = false;
+				return (NULL);
+			}
+			ft_lstadd_back(&tokens, el);
+		}
+		else if (line[i] == '<' && line[i + 1] != '<')
+		{
+			el = tokenize_operator(line, &i, INPUT_REDIR);
+			if (el == NULL)
+			{
+				// ? ft_lstclear here maybe??
+				*success = false;
+				return (NULL);
+			}
+			ft_lstadd_back(&tokens, el);
+		}
+		else if (line[i] == '<' && line[i + 1] == '<')
+		{
+			el = tokenize_operator(line, &i, HEREDOC);
+			if (el == NULL)
+			{
+				// ? ft_lstclear here maybe??
+				*success = false;
+				return (NULL);
+			}
+			ft_lstadd_back(&tokens, el);
+		}
+		else if (line[i] == '>' && line[i + 1] == '>')
+		{
+			el = tokenize_operator(line, &i, APPEND_REDIR);
+			if (el == NULL)
+			{
+				// ? ft_lstclear here maybe??
+				*success = false;
+				return (NULL);
+			}
+			ft_lstadd_back(&tokens, el);
+		}
+		else if (line[i] == '|')
+		{
+			el = tokenize_operator(line, &i, PIPE);
+			if (el == NULL)
+			{
+				// ? ft_lstclear here maybe??
+				*success = false;
+				return (NULL);
+			}
+			ft_lstadd_back(&tokens, el);
+		}
+		else if (line[i] == '$' && line[i + 1] == '?')
+		{
+			el = tokenize_operator(line, &i, LAST_EXIT);
 			if (el == NULL)
 			{
 				// ? ft_lstclear here maybe??
@@ -211,6 +277,36 @@ void	print_tokens(t_list *tokens)
 		if (token->type == ENV_VAR)
 		{
 			printf("Environment Variable: %s\nstart=(%zu)\nend=(%zu)\n", token->substr,
+					token->start, token->end);
+		}
+		if (token->type == INPUT_REDIR)
+		{
+			printf("Input redirection: %s\nstart=(%zu)\nend=(%zu)\n", token->substr,
+					token->start, token->end);
+		}
+		if (token->type == OUTPUT_REDIR)
+		{
+			printf("Output redirection: %s\nstart=(%zu)\nend=(%zu)\n", token->substr,
+					token->start, token->end);
+		}
+		if (token->type == APPEND_REDIR)
+		{
+			printf("Append redirection: %s\nstart=(%zu)\nend=(%zu)\n", token->substr,
+					token->start, token->end);
+		}
+		if (token->type == PIPE)
+		{
+			printf("Pipe: %s\nstart=(%zu)\nend=(%zu)\n", token->substr,
+					token->start, token->end);
+		}
+		if (token->type == LAST_EXIT)
+		{
+			printf("Last exit: %s\nstart=(%zu)\nend=(%zu)\n", token->substr,
+					token->start, token->end);
+		}
+		if (token->type == HEREDOC)
+		{
+			printf("Heredoc: %s\nstart=(%zu)\nend=(%zu)\n", token->substr,
 					token->start, token->end);
 		}
 		tokens = tokens->next;

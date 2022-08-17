@@ -6,11 +6,11 @@
 #    By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/04/29 21:51:32 by hsarhan           #+#    #+#              #
-#    Updated: 2022/08/17 21:31:22 by hsarhan          ###   ########.fr        #
+#    Updated: 2022/08/17 22:26:28 by hsarhan          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-SRCS = parsing/main.c parsing/parsing.c parsing/parsing_utils.c parsing/expansion.c
+SRCS = parsing/main.c parsing/parsing.c parsing/parsing_utils.c parsing/expansion.c parsing/tokenization.c
 
 OBJS := $(SRCS:%.c=%.o)
 
