@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 14:46:52 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/17 21:31:34 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/17 21:52:50 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,56 @@ static t_list	*tokenize_double_quote(const char *line, size_t *idx)
 	{
 		token->substr = expand_env_var(token->substr);
 	}
-	printf("%s\n", token->substr);
+	return (el);
+}
+
+static t_list	*tokenize_env_variable(const char *line, size_t *idx)
+{
+	size_t	i;
+	t_token	*token;
+	t_list	*el;
+	char	*env_var;
+
+	i = *idx;
+	token = ft_calloc(1, sizeof(t_token));
+	if (token == NULL)
+		return (NULL);
+	token->start = i;
+	token->type = ENV_VAR;
+	i++;
+	while (line[i] != '\0' && (ft_isalnum(line[i]) || line[i] == '_'))
+		i++;
+	token->end = i - 1;
+	// ? In this case the token would just be the dollar sign I think
+	if (token->start >= token->end)
+	{
+		token->type = NORMAL;
+		token->substr = ft_substr(line, token->start, 1);
+	}
+	else
+		token->substr = ft_substr(line, token->start + 1, token->end - token->start);
+	if (token->substr == NULL)
+	{
+		ft_free(&token);
+		return (NULL);
+	}
+	el = ft_lstnew(token);
+	if (el == NULL)
+	{
+		ft_free(&token->substr);
+		ft_free(&token);
+		return (NULL);
+	}
+	*idx = i;
+	if (token->type == ENV_VAR)
+	{
+		env_var = token->substr;
+		if (getenv(env_var) == NULL)
+			token->substr = ft_strdup("");
+		else
+			token->substr = ft_strdup(getenv(env_var));
+		ft_free(&env_var);
+	}
 	return (el);
 }
 
@@ -88,7 +137,7 @@ t_list	*parse_line(const char *line, bool *success)
 	t_list	*tokens;
 	t_list	*el;
 
-	// * Scanning for invalid operators
+	// * Scanning for invalid characters
 	i = 0;
 	while (line[i] != '\0')
 	{
@@ -115,9 +164,20 @@ t_list	*parse_line(const char *line, bool *success)
 			}
 			ft_lstadd_back(&tokens, el);
 		}
-		if (line[i] == '\"')
+		else if (line[i] == '\"')
 		{
 			el = tokenize_double_quote(line, &i);
+			if (el == NULL)
+			{
+				// ? ft_lstclear here maybe??
+				*success = false;
+				return (NULL);
+			}
+			ft_lstadd_back(&tokens, el);
+		}
+		else if (line[i] == '$')
+		{
+			el = tokenize_env_variable(line, &i);
 			if (el == NULL)
 			{
 				// ? ft_lstclear here maybe??
@@ -140,12 +200,17 @@ void	print_tokens(t_list *tokens)
 		token = tokens->content;
 		if (token->type == QUOTED_STRING)
 		{
-			printf("Single Quoted string: \'%s\'\nstart=(%zu)\nend=(%zu)\n", token->substr, token->start,
+			printf("Single quoted string: \'%s\'\nstart=(%zu)\nend=(%zu)\n", token->substr, token->start,
 					token->end);
 		}
 		if (token->type == DOUBLE_QUOTED_STRING)
 		{
 			printf("Double quoted string: \"%s\"\nstart=(%zu)\nend=(%zu)\n", token->substr,
+					token->start, token->end);
+		}
+		if (token->type == ENV_VAR)
+		{
+			printf("Environment Variable: %s\nstart=(%zu)\nend=(%zu)\n", token->substr,
 					token->start, token->end);
 		}
 		tokens = tokens->next;

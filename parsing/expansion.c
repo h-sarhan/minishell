@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 21:30:28 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/17 21:31:02 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/17 21:40:42 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ char	*expand_env_var(char *str)
 			start = i;
 			while (str[i] != '\0' && (ft_isalnum(str[i]) || str[i] == '_'))
 				i++;
-			end = i - 1; // ? might just be i
+			end = i - 1;
 			if (start < end)
 				break ;
 		}

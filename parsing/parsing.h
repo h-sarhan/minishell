@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:44:00 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/17 21:31:09 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/17 21:40:19 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ enum	e_token_type
 {
 	QUOTED_STRING,
 	DOUBLE_QUOTED_STRING,
-	NORMAL_TOKEN,
+	NORMAL,
 	ENV_VAR,
 	INPUT_REDIR,
 	OUTPUT_REDIR,
