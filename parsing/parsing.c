@@ -1,34 +1,30 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   parsing.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/08/17 11:43:26 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/17 14:54:44 by hsarhan          ###   ########.fr       */
+/*   Created: 2022/08/17 14:46:52 by hsarhan           #+#    #+#             */
+/*   Updated: 2022/08/17 15:01:03 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "parsing.h"
 
-int	main(void)
+bool	parse_line(const char *line)
 {
-	char	*line;
-	while (1)
+	size_t	i;
+
+	i = 0;
+	while (line[i] != '\0')
 	{
-		line = readline("minishell$ ");
-		if (parse_line(line) == false)
+		if (line[i] == '\\' || line[i] == ';')
 		{
-			free(line);
-			exit(EXIT_FAILURE);
+			write_to_stderr("Parse Error: Invalid operator\n");
+			return (false);
 		}
-		if (line == NULL)
-		{
-			printf("\n");
-			return (EXIT_SUCCESS);
-		}
-		// printf("%s\n", line);
-		free(line);
+		i++;
 	}
+	return (true);
 }

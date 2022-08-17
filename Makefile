@@ -6,11 +6,11 @@
 #    By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/04/29 21:51:32 by hsarhan           #+#    #+#              #
-#    Updated: 2022/08/17 11:58:25 by hsarhan          ###   ########.fr        #
+#    Updated: 2022/08/17 14:54:17 by hsarhan          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-SRCS = parsing/main.c
+SRCS = parsing/main.c parsing/parsing.c parsing/parsing_utils.c
 
 OBJS := $(SRCS:%.c=%.o)
 
@@ -22,7 +22,7 @@ LIBFT = libft/libft.a
 all: $(NAME)
 
 $(NAME): $(OBJS) $(LIBFT)
-	$(CC) $(CFLAGS) $(OBJS) -o $(NAME) -lreadline
+	$(CC) $(CFLAGS) $(OBJS) -o $(NAME) -L/usr/local/lib -I/usr/local/include -lreadline $(LIBFT)
 
 $(LIBFT):
 	make -C libft
