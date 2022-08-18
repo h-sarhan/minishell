@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 14:46:52 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/18 05:32:25 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/18 06:15:02 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -141,12 +141,14 @@ t_list	*parse_line(const char *line, bool *success)
 	i = 0;
 	while (line[i] != '\0')
 	{
-		if (line[i] == '\\' || line[i] == ';' || line[i] == '`')
+		if (line[i] == '\\' || line[i] == ';' || line[i] == '`' || (line[i] == '&' && line[i + 1] != '&'))
 		{
-			write_to_stderr("Parse Error: Invalid character\n");
+			write_to_stderr("Parse Error: Invalid input\n");
 			*success = false;
 			return (NULL);
 		}
+		if (line[i] == '&' && line[i + 1] != '\0')
+			i++;
 		i++;
 	}
 	tokens = NULL;
@@ -230,7 +232,7 @@ t_list	*parse_line(const char *line, bool *success)
 			}
 			ft_lstadd_back(&tokens, el);
 		}
-		else if (line[i] == '|')
+		else if (line[i] == '|' && line[i + 1] != '|')
 		{
 			el = tokenize_operator(line, &i, PIPE);
 			if (el == NULL)
@@ -244,6 +246,28 @@ t_list	*parse_line(const char *line, bool *success)
 		else if (line[i] == '$' && line[i + 1] == '?')
 		{
 			el = tokenize_operator(line, &i, LAST_EXIT);
+			if (el == NULL)
+			{
+				// ? ft_lstclear here maybe??
+				*success = false;
+				return (NULL);
+			}
+			ft_lstadd_back(&tokens, el);
+		}
+		else if (line[i] == '&' && line[i + 1] == '&')
+		{
+			el = tokenize_operator(line, &i, AND);
+			if (el == NULL)
+			{
+				// ? ft_lstclear here maybe??
+				*success = false;
+				return (NULL);
+			}
+			ft_lstadd_back(&tokens, el);
+		}
+		else if (line[i] == '|' && line[i + 1] == '|')
+		{
+			el = tokenize_operator(line, &i, OR);
 			if (el == NULL)
 			{
 				// ? ft_lstclear here maybe??
@@ -326,6 +350,21 @@ void	print_tokens(t_list *tokens)
 			printf("Normal: %s\nstart=(%zu)\nend=(%zu)\n", token->substr,
 					token->start, token->end);
 		}
+		if (token->type == AND)
+		{
+			printf("AND token: %s\nstart=(%zu)\nend=(%zu)\n", token->substr,
+					token->start, token->end);
+		}
+		if (token->type == OR)
+		{
+			printf("OR token: %s\nstart=(%zu)\nend=(%zu)\n", token->substr,
+					token->start, token->end);
+		}
+		// if (token->type == WILDCARD)
+		// {
+		// 	printf("*: %s\nstart=(%zu)\nend=(%zu)\n", token->substr,
+		// 			token->start, token->end);
+		// }
 		tokens = tokens->next;
 	}
 }
