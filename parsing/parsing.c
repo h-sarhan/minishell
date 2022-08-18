@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 14:46:52 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/17 22:32:23 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/18 05:32:25 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,7 @@ static t_list	*tokenize_double_quote(const char *line, size_t *idx)
 	*idx = i;
 	while (contains_env_var(token->substr))
 	{
-		token->substr = expand_env_var(token->substr);
+		token->substr = expand_double_quote(token->substr);
 	}
 	return (el);
 }
@@ -117,7 +117,7 @@ static t_list	*tokenize_env_variable(const char *line, size_t *idx)
 		ft_free(&token);
 		return (NULL);
 	}
-	*idx = i;
+	*idx = i - 1;
 	if (token->type == ENV_VAR)
 	{
 		env_var = token->substr;
@@ -252,6 +252,18 @@ t_list	*parse_line(const char *line, bool *success)
 			}
 			ft_lstadd_back(&tokens, el);
 		}
+		// TODO: Replace this with a is_whitespace function
+		else if (line[i] != ' ')
+		{
+			el = tokenize_normal(line, &i);
+			if (el == NULL)
+			{
+				// ? ft_lstclear here maybe??
+				*success = false;
+				return (NULL);
+			}
+			ft_lstadd_back(&tokens, el);
+		}
 		i++;
 	}
 	return (tokens);
@@ -307,6 +319,11 @@ void	print_tokens(t_list *tokens)
 		if (token->type == HEREDOC)
 		{
 			printf("Heredoc: %s\nstart=(%zu)\nend=(%zu)\n", token->substr,
+					token->start, token->end);
+		}
+		if (token->type == NORMAL)
+		{
+			printf("Normal: %s\nstart=(%zu)\nend=(%zu)\n", token->substr,
 					token->start, token->end);
 		}
 		tokens = tokens->next;

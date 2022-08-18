@@ -6,14 +6,14 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 21:30:28 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/17 21:40:42 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/18 05:33:17 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "parsing.h"
 
 // TODO: Check for memory leaks and protect all memory allocating functions
-char	*expand_env_var(char *str)
+char	*expand_double_quote(char *str)
 {
 	size_t	i;
 	size_t	start;
@@ -26,7 +26,7 @@ char	*expand_env_var(char *str)
 	i = 0;
 	while (str[i] != '\0')
 	{
-		if (str[i] == '$')
+		if (str[i] == '$' && str[i + 1] != '?')
 		{
 			i++;
 			start = i;
@@ -35,6 +35,10 @@ char	*expand_env_var(char *str)
 			end = i - 1;
 			if (start < end)
 				break ;
+		}
+		if (str[i] == '$' && str[i + 1] == '?')
+		{
+			// TODO: Expand LAST_EXIT command
 		}
 		i++;
 	}

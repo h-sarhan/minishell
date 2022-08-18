@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:44:00 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/17 22:26:18 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/18 05:56:33 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@ enum	e_token_type
 	HEREDOC,
 	PIPE,
 	LAST_EXIT,
+	SUB_EXPR
 };
 
 struct s_token
@@ -50,7 +51,8 @@ void	print_tokens(t_list *tokens);
 char	*strjoin_free(char *s1, char *s2, int f);
 char	*substr_free(char *s, unsigned int start, size_t len);
 bool	contains_env_var(const char *str);
-char	*expand_env_var(char *str);
+char	*expand_double_quote(char *str);
 void	ft_free(void *memory);
 t_list	*tokenize_operator(const char *line, size_t *idx, const t_token_type type);
+t_list	*tokenize_normal(const char *line, size_t *idx);
 #endif
