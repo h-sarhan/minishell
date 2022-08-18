@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:44:00 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/18 08:18:55 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/18 10:05:03 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,5 +63,6 @@ t_list	*tokenize_normal(const char *line, size_t *idx);
 t_list	*tokenize_subexpr(const char *line, size_t *idx);
 char	*get_dir_contents(void);
 char	*expand_wildcard(char *token);
+char**	split_wildcard(char *wildcard_token);
 
 #endif

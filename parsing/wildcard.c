@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/18 07:59:27 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/18 09:58:09 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/18 10:15:58 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,16 +47,22 @@ char	*get_dir_contents(void)
 	return (contents);
 }
 
+
+
+
 static bool	match_str_on_wildcard(char *str, char *wildcard)
 {
-	size_t	i;
-	char	*curr;
-	char	*next;
+	// size_t	i;
+	// char	*curr;
+	// char	*next;
 
-	i = 0;
-	while (str[i] != '\0')
-	{
-	}
+	// i = 0;
+	// while (str[i] != '\0')
+	// {
+	// }
+	(void)str;
+	(void)wildcard;
+	return (true);
 }
 
 // ! Do better error handling here
