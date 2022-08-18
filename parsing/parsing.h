@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:44:00 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/18 06:04:54 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/18 06:53:45 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,7 @@ struct s_token
 	size_t			start;
 	size_t			end;
 	char			*substr;
+	t_list			*sub_tokens;
 };
 
 t_list	*parse_line(const char *line, bool *success);
@@ -58,4 +59,5 @@ char	*expand_double_quote(char *str);
 void	ft_free(void *memory);
 t_list	*tokenize_operator(const char *line, size_t *idx, const t_token_type type);
 t_list	*tokenize_normal(const char *line, size_t *idx);
+t_list	*tokenize_subexpr(const char *line, size_t *idx);
 #endif

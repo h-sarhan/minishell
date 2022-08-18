@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:43:26 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/17 19:11:06 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/18 06:55:46 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,12 +28,8 @@ int	main(void)
 			return (EXIT_SUCCESS);
 		}
 		tokens = parse_line(line, &success);
-		if (success == false)
-		{
-			free(line);
-			return (EXIT_FAILURE);
-		}
-		print_tokens(tokens);
+		if (success == true)
+			print_tokens(tokens);
 		rl_on_new_line(); // I dont know what this does
 		free(line);
 	}

@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 14:46:52 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/18 06:15:02 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/18 07:00:22 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@ static t_list	*tokenize_single_quote(const char *line, size_t *idx)
 	else
 		token->end = i;
 	token->substr = ft_substr(line, token->start + 1, token->end - token->start - 1);
+	token->sub_tokens = NULL;
 	if (token->substr == NULL)
 		return (NULL);
 	el = ft_lstnew(token);
@@ -67,6 +68,7 @@ static t_list	*tokenize_double_quote(const char *line, size_t *idx)
 	else
 		token->end = i;
 	token->substr = ft_substr(line, token->start + 1, token->end - token->start - 1);
+	token->sub_tokens = NULL;
 	if (token->substr == NULL)
 		return (NULL);
 	el = ft_lstnew(token);
@@ -110,6 +112,7 @@ static t_list	*tokenize_env_variable(const char *line, size_t *idx)
 		ft_free(&token);
 		return (NULL);
 	}
+	token->sub_tokens = NULL;
 	el = ft_lstnew(token);
 	if (el == NULL)
 	{
@@ -139,9 +142,12 @@ t_list	*parse_line(const char *line, bool *success)
 
 	// * Scanning for invalid characters
 	i = 0;
+	*success = true;
 	while (line[i] != '\0')
 	{
-		if (line[i] == '\\' || line[i] == ';' || line[i] == '`' || (line[i] == '&' && line[i + 1] != '&'))
+		if (line[i] == '\\' || line[i] == ';' || line[i] == '`'
+			|| (line[i] == '&' && line[i + 1] != '&')
+			|| (line[i] == '(' && line[i + 1] == ')'))
 		{
 			write_to_stderr("Parse Error: Invalid input\n");
 			*success = false;
@@ -276,6 +282,23 @@ t_list	*parse_line(const char *line, bool *success)
 			}
 			ft_lstadd_back(&tokens, el);
 		}
+		else if (line[i] == '(')
+		{
+			el = tokenize_subexpr(line, &i);
+			if (el == NULL)
+			{
+				// ? ft_lstclear here maybe??
+				*success = false;
+				return (NULL);
+			}
+			ft_lstadd_back(&tokens, el);
+		}
+		else if (line[i] == ')')
+		{
+			write_to_stderr("Parse Error: Invalid input\n");
+			*success = false;
+			return (NULL);
+		}
 		// TODO: Replace this with a is_whitespace function
 		else if (line[i] != ' ')
 		{
@@ -359,6 +382,14 @@ void	print_tokens(t_list *tokens)
 		{
 			printf("OR token: %s\nstart=(%zu)\nend=(%zu)\n", token->substr,
 					token->start, token->end);
+		}
+		if (token->type == SUB_EXPR)
+		{
+			printf("Sub expression: %s\nstart=(%zu)\nend=(%zu)\n", token->substr,
+					token->start, token->end);
+			printf("Sub expression tokens start:\n");
+			print_tokens(token->sub_tokens);
+			printf("Sub expression tokens end\n");
 		}
 		// if (token->type == WILDCARD)
 		// {
