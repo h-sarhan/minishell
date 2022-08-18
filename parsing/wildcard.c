@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/18 07:59:27 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/18 08:27:04 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/18 09:58:09 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@
 // opendir/readdir/closedir:
 // Use these to scan through files in a directory. Might be needed for wildcard bonus.
 
+// ! Do better error handling here
 char	*get_dir_contents(void)
 {
 	char			*contents;
@@ -46,11 +47,39 @@ char	*get_dir_contents(void)
 	return (contents);
 }
 
+static bool	match_str_on_wildcard(char *str, char *wildcard)
+{
+	size_t	i;
+	char	*curr;
+	char	*next;
+
+	i = 0;
+	while (str[i] != '\0')
+	{
+	}
+}
+
+// ! Do better error handling here
 char	*expand_wildcard(char *token)
 {
-	if (ft_strncmp(token, "*", ft_strlen("*")) == 0)
-	{
+	char	**contents;
+	char	*contents_str;
+	size_t	i;
+
+	if (ft_strncmp(token, "*", ft_strlen(token)) == 0)
 		return (get_dir_contents());
+	else
+	{
+		contents_str = get_dir_contents();
+		contents = ft_split(contents_str, ' ');
+		ft_free(&contents_str);
+		i = 0;
+		while (contents[i] != NULL)
+		{
+			if (match_str_on_wildcard(contents[i], token))
+				printf("matched on %s\n", contents[i]);
+			i++;
+		}
 	}
 	return (NULL);
 }
