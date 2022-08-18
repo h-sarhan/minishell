@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 14:46:52 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/18 07:38:53 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/18 07:54:18 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -392,11 +392,11 @@ void	print_tokens(t_list *tokens)
 			print_tokens(token->sub_tokens);
 			printf("Sub expression END\n");
 		}
-		// if (token->type == WILDCARD)
-		// {
-		// 	printf("*: %s\nstart=(%zu)\nend=(%zu)\n", token->substr,
-		// 			token->start, token->end);
-		// }
+		if (token->type == WILDCARD)
+		{
+			printf("Wildcard token: %s\nstart=(%zu)\nend=(%zu)\n", token->substr,
+					token->start, token->end);
+		}
 		tokens = tokens->next;
 	}
 }
