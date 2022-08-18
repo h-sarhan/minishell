@@ -6,12 +6,12 @@
 #    By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/04/29 21:51:32 by hsarhan           #+#    #+#              #
-#    Updated: 2022/08/18 10:04:02 by hsarhan          ###   ########.fr        #
+#    Updated: 2022/08/18 13:23:53 by hsarhan          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-SRCS = parsing/main.c parsing/parsing.c parsing/parsing_utils.c parsing/expansion.c \
-		parsing/tokenization.c parsing/wildcard.c parsing/split_wildcard.c
+SRCS = parsing/main.c parsing/tokenization.c parsing/parsing_utils.c parsing/expansion.c \
+		parsing/tokenization2.c parsing/wildcard.c parsing/split_wildcard.c
 
 OBJS := $(SRCS:%.c=%.o)
 

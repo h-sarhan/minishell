@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/18 07:59:27 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/18 12:52:04 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/18 13:34:16 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -123,7 +123,9 @@ char	*expand_wildcard(char *token)
 	char	*contents_str;
 	char	**split_wc;
 	size_t	i;
+	char	*res;
 
+	res = ft_strdup("");
 	if (ft_strncmp(token, "*", ft_strlen(token)) == 0)
 		return (get_dir_contents());
 	else
@@ -137,9 +139,14 @@ char	*expand_wildcard(char *token)
 		while (contents[i] != NULL)
 		{
 			if (match_str_on_wildcard(contents[i], split_wc))
-				printf("matched on %s\n", contents[i]);
+			{
+				// printf("matched on %s\n", contents[i]);
+				if (res[0] != '\0')
+					res = strjoin_free(res, " ", 1);
+				res = strjoin_free(res, contents[i], 1);
+			}
 			i++;
 		}
 	}
-	return (NULL);
+	return (res);
 }
