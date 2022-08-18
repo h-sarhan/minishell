@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 21:30:28 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/18 05:33:17 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/18 05:59:24 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,11 +36,12 @@ char	*expand_double_quote(char *str)
 			if (start < end)
 				break ;
 		}
-		if (str[i] == '$' && str[i + 1] == '?')
+		else if (str[i] == '$' && str[i + 1] == '?')
 		{
 			// TODO: Expand LAST_EXIT command
 		}
-		i++;
+		else
+			i++;
 	}
 	before = ft_substr(str, 0, start - 1);
 	env_var = ft_substr(str, start, end - start + 1);
