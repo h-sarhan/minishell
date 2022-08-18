@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/18 07:59:27 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/18 08:18:26 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/18 08:27:04 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,8 @@ char	*get_dir_contents(void)
 	{
 		if (dirp->d_name[0] != '.')
 		{
-			contents = strjoin_free(contents, " ", 1);
+			if (contents[0] != '\0')
+				contents = strjoin_free(contents, " ", 1);
 			contents = strjoin_free(contents, dirp->d_name, 1);
 		}
 	}
