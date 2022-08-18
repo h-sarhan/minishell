@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 14:46:52 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/18 07:00:22 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/18 07:38:53 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -311,7 +311,8 @@ t_list	*parse_line(const char *line, bool *success)
 			}
 			ft_lstadd_back(&tokens, el);
 		}
-		i++;
+		if (line[i] != '\0')
+			i++;
 	}
 	return (tokens);
 }
@@ -385,11 +386,11 @@ void	print_tokens(t_list *tokens)
 		}
 		if (token->type == SUB_EXPR)
 		{
-			printf("Sub expression: %s\nstart=(%zu)\nend=(%zu)\n", token->substr,
+			printf("Sub expression: (%s)\nstart=(%zu)\nend=(%zu)\n", token->substr,
 					token->start, token->end);
-			printf("Sub expression tokens start:\n");
+			printf("Sub expression START\n");
 			print_tokens(token->sub_tokens);
-			printf("Sub expression tokens end\n");
+			printf("Sub expression END\n");
 		}
 		// if (token->type == WILDCARD)
 		// {
