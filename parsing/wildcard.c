@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/18 07:59:27 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/19 13:26:00 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/19 14:11:39 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,6 @@ static bool	match_str_on_wildcard(char *str, char **wc_segs)
 				i += ft_strlen(wc_segs[wc_i]);
 				if (str[i] == '\0')
 					return (true);
-				i++;
 				wc_i--;
 			}
 			else
