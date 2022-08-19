@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/18 10:03:29 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/19 13:47:09 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/19 16:06:22 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,14 +38,14 @@ static char	*create_word(char const *str, int word_start, int word_end)
 {
 	char	*word;
 
-	word = malloc(sizeof(char) * (word_end - word_start + 2));
+	word = ft_calloc((word_end - word_start + 2), sizeof(char));
 	if (word == NULL)
 		return (NULL);
 	ft_strlcpy(word, &str[word_start], word_end - word_start + 2);
 	return (word);
 }
 
-char**	split_wildcard(char *wc)
+char	**split_wildcard(char *wc)
 {
 	char	**split_wildcard;
 	size_t	i;
@@ -69,8 +69,6 @@ char**	split_wildcard(char *wc)
 		while (wc[i] != '*' && wc[i] != '\0')
 			i++;
 		split_wildcard[word_count] = create_word(wc, word_start, i - 1);
-		if (split_wildcard[word_count++] == NULL)
-			return (NULL);
 	}
 	split_wildcard[word_count] = NULL;
 	return (split_wildcard);

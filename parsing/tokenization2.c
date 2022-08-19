@@ -6,74 +6,62 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 22:19:29 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/19 13:33:54 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/19 16:26:54 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "parsing.h"
 
-t_list	*tokenize_operator(const char *line, size_t *idx, const t_token_type type)
+static void	*parse_error(const char *msg)
 {
-	size_t	i;
-	t_token	*token;
-	t_list	*el;
-
-	i = *idx;
-	token = ft_calloc(1, sizeof(t_token));
-	if (token == NULL)
-		return (NULL);
-	token->start = i;
-	token->type = type;
-	token->end = i;
-	if (type == HEREDOC || type == APPEND_REDIR || type == LAST_EXIT || type == AND || type == OR)
-	{
-		token->end++;
-		token->substr = ft_substr(line, token->start, 2);
-	}
-	else
-		token->substr = ft_substr(line, token->start, 1);
-	if (token->substr == NULL)
-		return (NULL);
-	token->sub_tokens = NULL;
-	el = ft_lstnew(token);
-	if (el == NULL)
-		return (NULL);
-	*idx = i;
-	if (type == HEREDOC || type == APPEND_REDIR || type == LAST_EXIT || type == AND || type == OR)
-		*idx = i + 1;
-	return (el);
+	write_to_stderr(msg);
+	return (NULL);
 }
 
 t_list	*tokenize_normal(const char *line, size_t *idx)
 {
 	size_t	i;
-	t_token	*token;
+	t_token	*tkn;
 	t_list	*el;
 
 	i = *idx;
-	token = ft_calloc(1, sizeof(t_token));
-	if (token == NULL)
+	tkn = ft_calloc(1, sizeof(t_token));
+	if (tkn == NULL)
 		return (NULL);
-	token->start = i;
-	token->type = NORMAL;
-	// TODO: Replace with a is_whitespace function
+	tkn->start = i;
+	tkn->type = NORMAL;
 	while (line[i] != '\0' && ft_strchr(" \'\"$<>|(", line[i]) == NULL)
 		i++;
-	token->end = i - 1;	
-	token->substr = ft_substr(line, token->start, token->end - token->start + 1);
-	if (token->substr == NULL)
+	tkn->end = i - 1;
+	tkn->substr = ft_substr(line, tkn->start, tkn->end - tkn->start + 1);
+	if (tkn->substr == NULL)
 		return (NULL);
-	token->sub_tokens = NULL;
-	if (ft_strchr(token->substr, '*') != NULL)
+	if (ft_strchr(tkn->substr, '*') != NULL)
 	{
-		token->type = WILDCARD;
-		// ft_free(&token->substr);
-		token->substr = expand_wildcard(token->substr);
+		tkn->type = WILDCARD;
+		tkn->substr = expand_wildcard(tkn->substr);
 	}
-	el = ft_lstnew(token);
-	if (el == NULL)
+	el = ft_lstnew(tkn);
+	*idx = tkn->end;
+	return (el);
+}
+
+static t_list	*tokenize_subexpr_helper(t_token *tkn, const size_t i,
+					const char *line, size_t *idx)
+{
+	bool	success;
+	t_list	*el;
+
+	tkn->end = i - 1;
+	tkn->substr = ft_substr(line, tkn->start + 1, tkn->end - tkn->start - 1);
+	if (tkn->substr == NULL)
 		return (NULL);
-	*idx = token->end;
+	success = true;
+	tkn->sub_tokens = tokenize_line(tkn->substr, &success);
+	if (success == false)
+		return (NULL);
+	el = ft_lstnew(tkn);
+	*idx = tkn->end;
 	return (el);
 }
 
@@ -81,20 +69,15 @@ t_list	*tokenize_subexpr(const char *line, size_t *idx)
 {
 	size_t	i;
 	t_token	*token;
-	t_list	*el;
-	bool	success;
 	int		paren_counter;
 
-	i = *idx;
+	i = *idx + 1;
 	token = ft_calloc(1, sizeof(t_token));
 	if (token == NULL)
 		return (NULL);
-	token->start = i;
+	token->start = i - 1;
 	token->type = SUB_EXPR;
-	// TODO: Replace with a is_whitespace function
 	paren_counter = 1;
-	// printf("Before parsing subexpr: %s\n", line);
-	i++;
 	while (line[i] != '\0' && paren_counter != 0)
 	{
 		if (line[i] == '(')
@@ -104,21 +87,6 @@ t_list	*tokenize_subexpr(const char *line, size_t *idx)
 		i++;
 	}
 	if (paren_counter != 0)
-	{
-		write_to_stderr("Parse Error: Invalid input\n");
-		return (NULL);
-	}
-	token->end = i - 1;	
-	token->substr = ft_substr(line, token->start + 1, token->end - token->start - 1);
-	if (token->substr == NULL)
-		return (NULL);
-	success = true;
-	token->sub_tokens = tokenize_line(token->substr, &success);
-	if (success == false)
-		return (NULL);
-	el = ft_lstnew(token);
-	if (el == NULL)
-		return (NULL);
-	*idx = token->end;
-	return (el);
+		return (parse_error("Parse Error: Invalid input\n"));
+	return (tokenize_subexpr_helper(token, i, line, idx));
 }

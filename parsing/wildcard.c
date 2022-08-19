@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/18 07:59:27 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/19 14:11:39 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/19 16:45:42 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,12 +19,13 @@ char	*get_dir_contents(void)
 	DIR				*dp;
 	struct dirent	*dirp;
 	char			*cwd;
-	
+
 	cwd = getcwd(NULL, 0);
 	dp = opendir(cwd);
 	free(cwd);
 	contents = ft_strdup("");
-	while ((dirp = readdir(dp)) != NULL)
+	dirp = readdir(dp);
+	while (dirp != NULL)
 	{
 		if (dirp->d_name[0] != '.')
 		{
@@ -32,6 +33,7 @@ char	*get_dir_contents(void)
 				contents = strjoin_free(contents, " ", 1);
 			contents = strjoin_free(contents, dirp->d_name, 1);
 		}
+		dirp = readdir(dp);
 	}
 	closedir(dp);
 	return (contents);
@@ -102,6 +104,7 @@ char	*expand_wildcard(char *token)
 	}
 	else
 	{
+		printf("I go herew\n");
 		res = ft_strdup("");
 		contents_str = get_dir_contents();
 		contents = ft_split(contents_str, ' ');
@@ -111,7 +114,7 @@ char	*expand_wildcard(char *token)
 		ft_free(&token);
 		while (contents[i] != NULL)
 		{
-			if (match_str_on_wildcard(contents[i], split_wc))
+			if (match_str_on_wildcard(contents[i], split_wc) == true)
 			{
 				if (res[0] != '\0')
 					res = strjoin_free(res, " ", 1);
