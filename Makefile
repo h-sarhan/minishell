@@ -6,7 +6,7 @@
 #    By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/04/29 21:51:32 by hsarhan           #+#    #+#              #
-#    Updated: 2022/08/18 13:23:53 by hsarhan          ###   ########.fr        #
+#    Updated: 2022/08/19 09:16:22 by hsarhan          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -17,7 +17,7 @@ OBJS := $(SRCS:%.c=%.o)
 
 NAME = minishell
 CC = cc
-CFLAGS = -Werror -Wall -Wextra -fsanitize=address -g
+CFLAGS = -Werror -Wall -Wextra -g
 LIBFT = libft/libft.a
 
 all: $(NAME)

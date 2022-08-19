@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/18 07:59:27 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/19 09:02:37 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/19 09:38:12 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -137,17 +137,21 @@ char	*expand_wildcard(char *token)
 	size_t	i;
 	char	*res;
 
-	res = ft_strdup("");
 	if (ft_strncmp(token, "*", ft_strlen(token)) == 0)
+	{
+		ft_free(&token);
 		return (get_dir_contents());
+	}
 	else
 	{
+		res = ft_strdup("");
 		contents_str = get_dir_contents();
 		contents = ft_split(contents_str, ' ');
 		ft_free(&contents_str);
 		i = 0;
-		printf("wildcard token is %s\n", token);
+		// printf("wildcard token is %s\n", token);
 		split_wc = split_wildcard(token);
+		ft_free(&token);
 		while (contents[i] != NULL)
 		{
 			if (match_str_on_wildcard(contents[i], split_wc))
@@ -159,6 +163,8 @@ char	*expand_wildcard(char *token)
 			}
 			i++;
 		}
+		free_split_array(split_wc);
+		free_split_array(contents);
 	}
 	return (res);
 }

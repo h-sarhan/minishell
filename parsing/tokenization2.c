@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 22:19:29 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/18 13:34:49 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/19 09:35:48 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,7 @@ t_list	*tokenize_normal(const char *line, size_t *idx)
 	if (ft_strchr(token->substr, '*') != NULL)
 	{
 		token->type = WILDCARD;
+		// ft_free(&token->substr);
 		token->substr = expand_wildcard(token->substr);
 	}
 	el = ft_lstnew(token);

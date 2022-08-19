@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 14:46:52 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/18 13:32:28 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/19 09:41:18 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -168,6 +168,7 @@ t_list	*tokenize_line(const char *line, bool *success)
 			{
 				// ? ft_lstclear here maybe??
 				*success = false;
+				ft_lstclear(&tokens, free_token);
 				return (NULL);
 			}
 			ft_lstadd_back(&tokens, el);
@@ -179,6 +180,7 @@ t_list	*tokenize_line(const char *line, bool *success)
 			{
 				// ? ft_lstclear here maybe??
 				*success = false;
+				ft_lstclear(&tokens, free_token);
 				return (NULL);
 			}
 			ft_lstadd_back(&tokens, el);
@@ -190,6 +192,7 @@ t_list	*tokenize_line(const char *line, bool *success)
 			{
 				// ? ft_lstclear here maybe??
 				*success = false;
+				ft_lstclear(&tokens, free_token);
 				return (NULL);
 			}
 			ft_lstadd_back(&tokens, el);
@@ -201,6 +204,7 @@ t_list	*tokenize_line(const char *line, bool *success)
 			{
 				// ? ft_lstclear here maybe??
 				*success = false;
+				ft_lstclear(&tokens, free_token);
 				return (NULL);
 			}
 			ft_lstadd_back(&tokens, el);
@@ -223,6 +227,7 @@ t_list	*tokenize_line(const char *line, bool *success)
 			{
 				// ? ft_lstclear here maybe??
 				*success = false;
+				ft_lstclear(&tokens, free_token);
 				return (NULL);
 			}
 			ft_lstadd_back(&tokens, el);
@@ -234,6 +239,7 @@ t_list	*tokenize_line(const char *line, bool *success)
 			{
 				// ? ft_lstclear here maybe??
 				*success = false;
+				ft_lstclear(&tokens, free_token);
 				return (NULL);
 			}
 			ft_lstadd_back(&tokens, el);
@@ -245,6 +251,7 @@ t_list	*tokenize_line(const char *line, bool *success)
 			{
 				// ? ft_lstclear here maybe??
 				*success = false;
+				ft_lstclear(&tokens, free_token);
 				return (NULL);
 			}
 			ft_lstadd_back(&tokens, el);
@@ -256,6 +263,7 @@ t_list	*tokenize_line(const char *line, bool *success)
 			{
 				// ? ft_lstclear here maybe??
 				*success = false;
+				ft_lstclear(&tokens, free_token);
 				return (NULL);
 			}
 			ft_lstadd_back(&tokens, el);
@@ -267,6 +275,7 @@ t_list	*tokenize_line(const char *line, bool *success)
 			{
 				// ? ft_lstclear here maybe??
 				*success = false;
+				ft_lstclear(&tokens, free_token);
 				return (NULL);
 			}
 			ft_lstadd_back(&tokens, el);
@@ -278,6 +287,7 @@ t_list	*tokenize_line(const char *line, bool *success)
 			{
 				// ? ft_lstclear here maybe??
 				*success = false;
+				ft_lstclear(&tokens, free_token);
 				return (NULL);
 			}
 			ft_lstadd_back(&tokens, el);
@@ -289,6 +299,7 @@ t_list	*tokenize_line(const char *line, bool *success)
 			{
 				// ? ft_lstclear here maybe??
 				*success = false;
+				ft_lstclear(&tokens, free_token);
 				return (NULL);
 			}
 			ft_lstadd_back(&tokens, el);
@@ -297,6 +308,7 @@ t_list	*tokenize_line(const char *line, bool *success)
 		{
 			write_to_stderr("Parse Error: Invalid input\n");
 			*success = false;
+			ft_lstclear(&tokens, free_token);
 			return (NULL);
 		}
 		// TODO: Replace this with a is_whitespace function
@@ -307,6 +319,7 @@ t_list	*tokenize_line(const char *line, bool *success)
 			{
 				// ? ft_lstclear here maybe??
 				*success = false;
+				ft_lstclear(&tokens, free_token);
 				return (NULL);
 			}
 			ft_lstadd_back(&tokens, el);
