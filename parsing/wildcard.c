@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/18 07:59:27 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/18 13:34:16 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/19 09:02:37 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,13 +63,20 @@ static bool	match_str_on_wildcard(char *str, char **wc_segs)
 			{
 				i += ft_strlen(wc_segs[wc_i]);
 				wc_i++;
+				if (str[i] == '\0' && wc_segs[wc_i] == NULL)
+				{
+					// printf("%s DONE WITH CHAR SEQ THEN *\n", str);
+					// printf("Returning true\n");
+					return (true);
+				}
 			}
 			else
 			{
-				// printf("%s DONE WITH NON NULL THEN *\n", str);
+				// printf("%s DONE WITH CHAR SEQ THEN *\n", str);
+				// printf("Returning false\n");
 				return (false);
 			}
-			// printf("%s DONE WITH NON NULL THEN *\n", str);
+			// printf("%s DONE WITH CHAR SEQ THEN *\n", str);
 		}
 		// example ne*ne
 		else if (wc_segs[wc_i][0] == '*' && wc_segs[wc_i + 1] != NULL)
@@ -78,11 +85,12 @@ static bool	match_str_on_wildcard(char *str, char **wc_segs)
 				i++;
 			if (str[i] == '\0')
 			{
-				// printf("%s DONE WITH * THEN NON NULL\n", str);
+				// printf("%s DONE WITH * THEN CHAR SEQ\n", str);
+				// printf("Returning false\n");
 				return (false);
 			}
 			wc_i++;
-			// printf("%s DONE WITH * THEN NON NULL\n", str);
+			// printf("%s DONE WITH * THEN CHAR SEQ\n", str);
 		}
 		// example ne*
 		else if (wc_segs[wc_i][0] == '*' && wc_segs[wc_i + 1] == NULL)
@@ -90,30 +98,34 @@ static bool	match_str_on_wildcard(char *str, char **wc_segs)
 		// example ne*n
 		else if (wc_segs[wc_i][0] != '*' && wc_segs[wc_i + 1] == NULL)
 		{
-			// printf("%s\n", &str[i]);
+			// printf("%s %s\n", str, &str[i]);
 			if (ft_strncmp(&str[i], wc_segs[wc_i], ft_strlen(wc_segs[wc_i])) == 0)
 			{
 				i += ft_strlen(wc_segs[wc_i]);
 				if (str[i] == '\0')
 				{
-					// printf("%s DONE WITH NON NULL THEN NULL\n", str);
+					// printf("%s DONE WITH CHAR SEQ THEN NULL\n", str);
+					// printf("Returning true\n");
 					return (true);
 				}
-				// i++;
-				wc_i++;
+				i++;
+				wc_i--;
 			}
 			else
 			{
 				// printf("%s failed to match %s with %s\n", str, ft_substr(str, i, ft_strlen(wc_segs[wc_i])), wc_segs[wc_i]);
-				// printf("%s DONE WITH NON NULL THEN NULL\n", str);
-				return (false);
+				// printf("%s DONE WITH CHAR SEQ THEN NULL\n", str);
+				// return (false);
+				i++;
 			}
-			// printf("%s DONE WITH NON NULL THEN NULL\n", str);
+			// printf("%s DONE WITH CHAR SEQ THEN NULL\n", str);
 		}
 		// else
 		// 	i++;
 	}
-	return (true);
+	if (str[i] == '\0' && wc_segs[wc_i][0] == '*' && wc_segs[wc_i + 1] == NULL)
+		return (true);
+	return (false);
 }
 
 // ! Do better error handling here
