@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/18 10:03:29 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/18 10:13:30 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/19 13:47:09 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ char**	split_wildcard(char *wc)
 	size_t	word_start;
 	size_t	word_count;
 
-	split_wildcard = malloc(sizeof(char *) * (count_segments(wc) + 1));
+	split_wildcard = ft_calloc((count_segments(wc) + 1), sizeof(char *));
 	if (split_wildcard == NULL)
 		return (NULL);
 	i = 0;

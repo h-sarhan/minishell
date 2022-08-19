@@ -6,22 +6,39 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 21:30:28 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/18 05:59:24 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/19 13:43:25 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "parsing.h"
 
-// TODO: Check for memory leaks and protect all memory allocating functions
+// TODO: Protect substr and strjoin
+static char	*create_env_var_str(char *str, const size_t start, const size_t end)
+{
+	char	*before;
+	char	*env_var;
+	char	*expansion;
+	char	*after;
+
+	before = ft_substr(str, 0, start - 1);
+	env_var = ft_substr(str, start, end - start + 1);
+	expansion = getenv(env_var);
+	ft_free(&env_var);
+	after = ft_substr(str, end + 1, ft_strlen(str));
+	ft_free(&str);
+	if (expansion == NULL)
+		str = strjoin_free(before, "", 1);
+	else
+		str = strjoin_free(before, expansion, 1);
+	str = strjoin_free(str, after, 3);
+	return (str);
+}
+
 char	*expand_double_quote(char *str)
 {
 	size_t	i;
 	size_t	start;
 	size_t	end;
-	char	*before;
-	char	*env_var;
-	char	*expansion;
-	char	*after;
 
 	i = 0;
 	while (str[i] != '\0')
@@ -43,18 +60,7 @@ char	*expand_double_quote(char *str)
 		else
 			i++;
 	}
-	before = ft_substr(str, 0, start - 1);
-	env_var = ft_substr(str, start, end - start + 1);
-	expansion = getenv(env_var);
-	ft_free(&env_var);
-	after = ft_substr(str, end + 1, ft_strlen(str));
-	ft_free(&str);
-	if (expansion == NULL)
-		str = strjoin_free(before, "", 1);
-	else
-		str = strjoin_free(before, expansion, 1);
-	str = strjoin_free(str, after, 3);
-	return (str);
+	return (create_env_var_str(str, start, end));
 }
 
 bool	contains_env_var(const char *str)

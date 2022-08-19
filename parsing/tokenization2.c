@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 22:19:29 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/19 09:35:48 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/19 13:33:54 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,10 +114,6 @@ t_list	*tokenize_subexpr(const char *line, size_t *idx)
 		return (NULL);
 	success = true;
 	token->sub_tokens = tokenize_line(token->substr, &success);
-	// printf("(%s) sub tokens:\n", token->substr);
-	// print_tokens(token->sub_tokens);
-	// token->sub_tokens = NULL;
-	
 	if (success == false)
 		return (NULL);
 	el = ft_lstnew(token);

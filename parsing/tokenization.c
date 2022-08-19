@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 14:46:52 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/19 09:41:18 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/19 13:45:53 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -330,7 +330,7 @@ t_list	*tokenize_line(const char *line, bool *success)
 	return (tokens);
 }
 
-void	print_tokens(t_list *tokens)
+void	print_tokens_detailed(t_list *tokens)
 {
 	t_token	*token;
 
@@ -402,7 +402,7 @@ void	print_tokens(t_list *tokens)
 			printf("Sub expression: (%s)\nstart=(%zu)\nend=(%zu)\n", token->substr,
 					token->start, token->end);
 			printf("Sub expression START\n");
-			print_tokens(token->sub_tokens);
+			print_tokens_detailed(token->sub_tokens);
 			printf("Sub expression END\n");
 		}
 		if (token->type == WILDCARD)
