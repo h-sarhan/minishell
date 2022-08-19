@@ -6,13 +6,12 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/18 07:59:27 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/19 16:54:02 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/19 17:21:32 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "parsing.h"
 
-// ! Do better error handling here
 char	*get_dir_contents(void)
 {
 	char			*contents;
@@ -22,7 +21,7 @@ char	*get_dir_contents(void)
 
 	cwd = getcwd(NULL, 0);
 	dp = opendir(cwd);
-	free(cwd);
+	ft_free(&cwd);
 	contents = ft_strdup("");
 	dirp = readdir(dp);
 	while (dirp != NULL)
@@ -39,56 +38,91 @@ char	*get_dir_contents(void)
 	return (contents);
 }
 
+static int	non_terminating_charseq(const char *str, size_t *wc_i, size_t *i,
+								char **wc_segs)
+{
+	size_t	seg_length;
+
+	seg_length = ft_strlen(wc_segs[*wc_i]);
+	if (wc_segs[*wc_i][0] != '*' && wc_segs[*wc_i + 1] != NULL)
+	{
+		if (ft_strncmp(&str[*i], wc_segs[*wc_i], seg_length) == 0)
+		{
+			*i += seg_length;
+			*wc_i += 1;
+			if (str[*i] == '\0' && wc_segs[*wc_i] == NULL)
+				return (TRUE);
+			return (CONTINUE);
+		}
+		else
+			return (FALSE);
+	}
+	return (CONTINUE);
+}
+
+static int	non_terminating_wildcard(const char *str, size_t *wc_i, size_t *i,
+								char **wc_segs)
+{
+	size_t	seg_length;
+
+	seg_length = ft_strlen(wc_segs[*wc_i + 1]);
+	if (wc_segs[*wc_i][0] == '*' && wc_segs[*wc_i + 1] != NULL)
+	{
+		while (str[*i] != '\0'
+			&& ft_strncmp(&str[*i], wc_segs[*wc_i + 1], seg_length) != 0)
+			*i += 1;
+		if (str[*i] == '\0')
+			return (FALSE);
+		*wc_i += 1;
+	}
+	return (CONTINUE);
+}
+
+static int	terminating_charseq(const char *str, size_t *wc_i, size_t *i,
+								char **wc_segs)
+{
+	if (wc_segs[*wc_i][0] != '*' && wc_segs[*wc_i + 1] == NULL)
+	{
+		if (ft_strncmp(&str[*i], wc_segs[*wc_i],
+			ft_strlen(wc_segs[*wc_i])) == 0)
+		{
+			*i += ft_strlen(wc_segs[*wc_i]);
+			if (str[*i] == '\0')
+				return (TRUE);
+			*wc_i -= 1;
+		}
+		else
+			i++;
+	}
+	return (CONTINUE);
+}
+
 static bool	match_str_on_wildcard(char *str, char **wc_segs)
 {
 	size_t	i;
 	size_t	wc_i;
+	int		res;
 
 	i = 0;
 	wc_i = 0;
 	while (str[i] != '\0' && wc_segs[wc_i] != NULL)
 	{
 		if (wc_segs[wc_i][0] != '*' && wc_segs[wc_i + 1] != NULL)
-		{
-			if (ft_strncmp(&str[i], wc_segs[wc_i], ft_strlen(wc_segs[wc_i])) == 0)
-			{
-				i += ft_strlen(wc_segs[wc_i]);
-				wc_i++;
-				if (str[i] == '\0' && wc_segs[wc_i] == NULL)
-					return (true);
-			}
-			else
-				return (false);
-		}
+			res = non_terminating_charseq(str, &wc_i, &i, wc_segs);
 		else if (wc_segs[wc_i][0] == '*' && wc_segs[wc_i + 1] != NULL)
-		{
-			while (str[i] != '\0' && ft_strncmp(&str[i], wc_segs[wc_i + 1], ft_strlen(wc_segs[wc_i + 1])) != 0)
-				i++;
-			if (str[i] == '\0')
-				return (false);
-			wc_i++;
-		}
+			res = non_terminating_wildcard(str, &wc_i, &i, wc_segs);
 		else if (wc_segs[wc_i][0] == '*' && wc_segs[wc_i + 1] == NULL)
 			return (true);
 		else if (wc_segs[wc_i][0] != '*' && wc_segs[wc_i + 1] == NULL)
-		{
-			if (ft_strncmp(&str[i], wc_segs[wc_i], ft_strlen(wc_segs[wc_i])) == 0)
-			{
-				i += ft_strlen(wc_segs[wc_i]);
-				if (str[i] == '\0')
-					return (true);
-				wc_i--;
-			}
-			else
-				i++;
-		}
+			res = terminating_charseq(str, &wc_i, &i, wc_segs);
+		if (res != CONTINUE)
+			return (res);
 	}
 	if (str[i] == '\0' && wc_segs[wc_i][0] == '*' && wc_segs[wc_i + 1] == NULL)
 		return (true);
 	return (false);
 }
 
-// ! Do better error handling here
 char	*expand_wildcard(char *token)
 {
 	char	**contents;

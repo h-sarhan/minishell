@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:44:00 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/19 16:12:39 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/19 17:06:31 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,10 @@
 # include <readline/history.h>
 # include <stdbool.h>
 # include <dirent.h>
+
+# define TRUE 1
+# define FALSE 0
+# define CONTINUE 2 
 
 typedef enum e_token_type	t_token_type;
 typedef struct s_token		t_token;
