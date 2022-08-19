@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/18 07:59:27 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/19 17:21:32 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/19 17:23:01 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,7 +84,7 @@ static int	terminating_charseq(const char *str, size_t *wc_i, size_t *i,
 	if (wc_segs[*wc_i][0] != '*' && wc_segs[*wc_i + 1] == NULL)
 	{
 		if (ft_strncmp(&str[*i], wc_segs[*wc_i],
-			ft_strlen(wc_segs[*wc_i])) == 0)
+				ft_strlen(wc_segs[*wc_i])) == 0)
 		{
 			*i += ft_strlen(wc_segs[*wc_i]);
 			if (str[*i] == '\0')
