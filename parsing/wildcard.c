@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/18 07:59:27 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/19 16:45:42 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/19 16:54:02 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,7 +104,6 @@ char	*expand_wildcard(char *token)
 	}
 	else
 	{
-		printf("I go herew\n");
 		res = ft_strdup("");
 		contents_str = get_dir_contents();
 		contents = ft_split(contents_str, ' ');

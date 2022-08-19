@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/18 10:03:29 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/19 16:06:22 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/19 16:53:45 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,7 @@ char	**split_wildcard(char *wc)
 		word_start = i;
 		while (wc[i] != '*' && wc[i] != '\0')
 			i++;
-		split_wildcard[word_count] = create_word(wc, word_start, i - 1);
+		split_wildcard[word_count++] = create_word(wc, word_start, i - 1);
 	}
 	split_wildcard[word_count] = NULL;
 	return (split_wildcard);
