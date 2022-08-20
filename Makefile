@@ -6,19 +6,19 @@
 #    By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/04/29 21:51:32 by hsarhan           #+#    #+#              #
-#    Updated: 2022/08/19 16:26:39 by hsarhan          ###   ########.fr        #
+#    Updated: 2022/08/20 11:29:49 by hsarhan          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 SRCS = parsing/main.c parsing/tokenization.c parsing/parsing_utils.c parsing/expansion.c \
 		parsing/tokenization2.c parsing/wildcard.c parsing/split_wildcard.c \
-		parsing/print_tokens.c parsing/free_funcs.c parsing/tokenization3.c
+		parsing/print_tokens.c parsing/free_funcs.c parsing/tokenization3.c parsing/join_tokens.c
 
 OBJS := $(SRCS:%.c=%.o)
 
 NAME = minishell
 CC = cc
-CFLAGS = -Werror -Wall -Wextra -g -fsanitize=address
+CFLAGS = -Werror -Wall -Wextra -g
 LIBFT = libft/libft.a
 
 all: $(NAME)

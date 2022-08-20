@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:44:00 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/19 17:06:31 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/20 11:25:15 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,4 +76,5 @@ t_list	*tokenize_double_quote(const char *line, size_t *idx);
 t_list	*tokenize_env_variable(const char *line, size_t *idx);
 void	print_tokens_detailed(t_list *tokens);
 void	print_tokens(t_list *tokens);
+char	*join_tokens(t_list *tokens);
 #endif

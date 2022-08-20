@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:43:26 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/19 16:02:46 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/20 11:38:29 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,12 @@ int	main(void)
 		tokens = tokenize_line(line, &success);
 		if (success == true)
 		{
-			print_tokens(tokens);
+			char *expanded_line = join_tokens(tokens);
+			ft_lstclear(&tokens, free_token);
+			tokens = tokenize_line(expanded_line, &success);
+			if (success == true)
+				print_tokens(tokens);
+			ft_free(&expanded_line);
 		}
 		ft_lstclear(&tokens, free_token);
 		rl_on_new_line();
