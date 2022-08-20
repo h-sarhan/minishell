@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 14:46:52 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/19 16:24:28 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/20 12:13:16 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,7 @@ static t_list	*tokenize_env_var_helper(t_token *token)
 {
 	t_list	*el;
 	char	*env_var;
+	char	*expanded;
 
 	el = ft_lstnew(token);
 	if (el == NULL)
@@ -55,7 +56,11 @@ static t_list	*tokenize_env_var_helper(t_token *token)
 		if (getenv(env_var) == NULL)
 			token->substr = ft_strdup("");
 		else
-			token->substr = ft_strdup(getenv(env_var));
+		{
+			expanded = strjoin_free("\"", getenv(env_var), 0);
+			expanded = strjoin_free(expanded, "\"", 1);
+			token->substr = expanded;
+		}
 		ft_free(&env_var);
 	}
 	return (el);
