@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/20 11:25:46 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/21 09:36:26 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/21 10:18:01 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@ char	*join_tokens(t_list *tokens)
 {
 	t_token	*token;
 	char	*res;
+	char	*subtoken_str;
 
 	res = ft_strdup("");
 	while (tokens != NULL)
@@ -23,11 +24,11 @@ char	*join_tokens(t_list *tokens)
 		token = tokens->content;
 		if (res[0] != '\0')
 			res = strjoin_free(res, " ", 1);
-		if (token->sub_tokens != NULL)
+		if (token->type == SUB_EXPR)
 		{
-			res = strjoin_free("(", res, 2);
-			res = strjoin_free(res, join_tokens(token->sub_tokens), 3);
-			res = strjoin_free(res, ")", 1);
+			subtoken_str = strjoin_free("(", join_tokens(token->sub_tokens), 2);
+			subtoken_str = strjoin_free(subtoken_str, ")", 1);
+			res = strjoin_free(res, subtoken_str, 3);
 		}
 		else
 			res = strjoin_free(res, token->substr, 1);
