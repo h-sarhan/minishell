@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:43:26 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/21 17:43:34 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/21 17:56:38 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,7 @@ int	main(void)
 				args = args->next;
 				i++;
 			}
+			printf("Pipe into next command == %d\n", step->pipe_next);
 			while (redirs != NULL)
 			{
 				redir = redirs->content;
