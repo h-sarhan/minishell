@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:43:26 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/21 22:15:57 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/21 22:25:02 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,11 +33,14 @@ int	main(void)
 		tokens = tokenize_line(line, &success);
 		if (success == true)
 		{
+			// print_tokens(tokens);
 			char *expanded_line = join_tokens(tokens);
 			ft_lstclear(&tokens, free_token);
 			tokens = tokenize_line(expanded_line, &success);
 			ft_free(&expanded_line);
 		}
+		else
+			continue;
 		t_list *exec_steps = parse_tokens(tokens, &success);
 		t_list *exec_steps_start = exec_steps;
 		if (success == false)
@@ -63,6 +66,8 @@ int	main(void)
 				i++;
 			}
 			printf("Pipe into next command == %d\n", step->pipe_next);
+			printf("AND into next command == %d\n", step->and_next);
+			printf("OR into next command == %d\n", step->or_next);
 			while (redirs != NULL)
 			{
 				redir = redirs->content;

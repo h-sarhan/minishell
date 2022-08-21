@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/21 12:03:03 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/21 22:15:12 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/21 22:36:10 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -131,8 +131,19 @@ t_list	*parse_tokens(t_list *tokens, bool *success)
 				token = cmd_end->next->content;
 				if (token->type == PIPE)
 					step->pipe_next = true;
+				if (token->type == AND)
+					step->and_next = true;
+				if (token->type == OR)
+					step->or_next = true;
+				tokens = tokens->next;
+				token = tokens->content;
 			}
 			ft_lstadd_back(&steps, ft_lstnew(step));
+		}
+		else if (token->type == AND || token->type == OR || token->type == PIPE)
+		{
+			*success = false;
+			return (steps);
 		}
 		tokens = tokens->next;
 	}

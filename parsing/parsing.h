@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/21 11:55:31 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/21 22:13:16 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/21 22:20:23 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,10 @@ struct	s_exec_step
 {
 	t_cmd	*cmd;
 	bool	pipe_next;
+	bool	and_next;
+	bool	or_next;
 };
+
 t_list	*parse_tokens(t_list *tokens, bool *success);
 void	free_exec_step(void *exec_step_ptr);
 void	free_redir(void *redir_ptr);
