@@ -6,24 +6,47 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/21 12:03:03 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/21 13:19:12 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/21 17:03:12 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-static bool	is_operator(const t_token *token)
+static bool	is_terminator(const t_token *token)
 {
 	if (token->type == PIPE
-		|| token->type == INPUT_REDIR
-		|| token->type == OUTPUT_REDIR
-		|| token->type == APPEND
-		|| token->type == HEREDOC
-		|| token->type == PIPE
 		|| token->type == AND
 		|| token->type == OR)
 		return (true);
 	return (false);
+}
+
+void	fill_exec_step(t_exec_step *step, t_list *start,
+								const t_list *end)
+{
+	t_token	*token;
+	t_redir	*redir;
+	char	*cmd_arg;
+
+	while (start != end->next)
+	{
+		token = start->content;
+		if (token->type == INPUT_REDIR || token->type == OUTPUT_REDIR || token->type == APPEND)
+		{
+			redir = ft_calloc(1, sizeof(t_redir));
+			redir->type = token->type;
+			start = start->next;
+			token = start->content;
+			redir->file = ft_strdup(token->substr);
+			ft_lstadd_back(&step->cmd->redirs, ft_lstnew(redir));
+		}
+		else if (token->type == DOUBLE_QUOTED_STRING || token->type == QUOTED_STRING || token->type == NORMAL)
+		{
+			cmd_arg = ft_strdup(token->substr);
+			ft_lstadd_back(&step->cmd->args, ft_lstnew(cmd_arg));
+		}
+		start = start->next;
+	}
 }
 
 t_list	*parse_tokens(t_list *tokens)
@@ -33,43 +56,22 @@ t_list	*parse_tokens(t_list *tokens)
 	t_exec_step	*step;
 	t_list		*cmd_start;
 	t_list		*cmd_end;
-	char		*cmds;
 
 	steps = NULL;
 	while (tokens != NULL)
 	{
 		token = tokens->content;
-		if (token->type == DOUBLE_QUOTED_STRING || token->type == QUOTED_STRING || token->type == NORMAL)
+		if (is_terminator(token) == false)
 		{
 			cmd_start = tokens;
-			while (tokens->next != NULL && is_operator(tokens->next->content) == false)
+			while (tokens->next != NULL
+				&& is_terminator(tokens->next->content) == false)
 				tokens = tokens->next;
 			cmd_end = tokens;
 			step = ft_calloc(1, sizeof(t_exec_step));
-			cmds = ft_strdup("");
-			while (cmd_start != cmd_end->next)
-			{
-				token = cmd_start->content;
-				cmds = strjoin_free(cmds, token->substr, 1);
-				cmds = strjoin_free(cmds, " ", 1);
-				cmd_start = cmd_start->next;
-			}
 			step->cmd = ft_calloc(1, sizeof(t_cmd));
-			step->cmd->args = ft_split(cmds, ' ');
-			ft_free(&cmds);
+			fill_exec_step(step, cmd_start, cmd_end);
 			ft_lstadd_back(&steps, ft_lstnew(step));
-			if (cmd_end->next != NULL)
-			{
-				token = cmd_end->next->content;
-				if (token->type == PIPE)
-					step->cmd->pipe = true;
-				if (token->type == INPUT_REDIR)
-				{
-					step->cmd->in_redir = true;
-					token = cmd_end->next->next->content;
-					step->cmd->in_redir_file = token->substr;
-				}
-			}
 		}
 		tokens = tokens->next;
 	}

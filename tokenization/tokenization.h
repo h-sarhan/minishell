@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:44:00 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/21 12:27:17 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/21 15:08:14 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,10 +37,10 @@ enum	e_token_type
 	APPEND,
 	HEREDOC,
 	PIPE,
-	LAST_EXIT,
 	AND,
 	OR,
 	SUB_EXPR,
+	LAST_EXIT,
 	ENV_VAR,
 	WILDCARD
 };

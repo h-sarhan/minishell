@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:43:26 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/21 13:09:41 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/21 17:00:59 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,14 +42,27 @@ int	main(void)
 		while (exec_steps != NULL)
 		{
 			t_exec_step	*step = exec_steps->content;
-			char	**args = step->cmd->args;
-			size_t	i = 0;
-			while (args[i] != NULL)
+			t_list	*redirs = step->cmd->redirs;
+			t_redir	*redir;
+			while (redirs != NULL)
 			{
-				printf("arg %lu: %s\n", i + 1, args[i]);
+				redir = redirs->content;
+				if (redir->type == INPUT_REDIR)
+					printf("Input redirection from %s\n", redir->file);
+				if (redir->type == OUTPUT_REDIR)
+					printf("Output redirection to %s\n", redir->file);
+				if (redir->type == APPEND)
+					printf("Append redirection to %s\n", redir->file);
+				redirs = redirs->next;
+			}
+			t_list	*args = step->cmd->args;
+			size_t	i = 0;
+			while (args != NULL)
+			{
+				printf("Arg #%lu == %s\n", i + 1, args->content);
+				args = args->next;
 				i++;
 			}
-			printf("to be piped == %d\n", step->cmd->pipe);
 			exec_steps = exec_steps->next;
 		}
 		ft_lstclear(&tokens, free_token);
