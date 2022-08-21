@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/21 11:55:31 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/21 22:04:56 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/21 22:13:16 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@ struct	s_redir
 {
 	t_token_type	type;
 	char			*file;
+	char			*limiter;
 };
 
 struct	s_exec_step

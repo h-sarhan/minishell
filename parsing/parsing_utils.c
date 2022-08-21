@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/21 21:38:27 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/21 22:04:38 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/21 22:13:30 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@ void	free_redir(void *redir_ptr)
 
 	redir = redir_ptr;
 	ft_free(&redir->file);
+	ft_free(&redir->limiter);
 	ft_free(&redir);
 }
 

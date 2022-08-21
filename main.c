@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:43:26 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/21 21:53:45 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/21 22:15:57 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,6 +72,8 @@ int	main(void)
 					printf("Output redirection to %s\n", redir->file);
 				if (redir->type == APPEND)
 					printf("Append redirection to %s\n", redir->file);
+				if (redir->type == HEREDOC)
+					printf("Limiter is %s\n", redir->limiter);
 				redirs = redirs->next;
 			}
 			exec_steps = exec_steps->next;
