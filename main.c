@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:43:26 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/21 10:17:35 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/21 13:09:41 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,9 +36,21 @@ int	main(void)
 			char *expanded_line = join_tokens(tokens);
 			ft_lstclear(&tokens, free_token);
 			tokens = tokenize_line(expanded_line, &success);
-			if (success == true)
-				print_tokens(tokens);
 			ft_free(&expanded_line);
+		}
+		t_list *exec_steps = parse_tokens(tokens);
+		while (exec_steps != NULL)
+		{
+			t_exec_step	*step = exec_steps->content;
+			char	**args = step->cmd->args;
+			size_t	i = 0;
+			while (args[i] != NULL)
+			{
+				printf("arg %lu: %s\n", i + 1, args[i]);
+				i++;
+			}
+			printf("to be piped == %d\n", step->cmd->pipe);
+			exec_steps = exec_steps->next;
 		}
 		ft_lstclear(&tokens, free_token);
 		rl_on_new_line();
