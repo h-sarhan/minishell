@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/21 12:03:03 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/21 17:03:12 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/21 17:39:59 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,29 @@ static bool	is_terminator(const t_token *token)
 	return (false);
 }
 
-void	fill_exec_step(t_exec_step *step, t_list *start,
+static bool	is_redirection(const t_token *token)
+{
+	if (token->type == INPUT_REDIR || token->type == OUTPUT_REDIR || token->type == APPEND)
+		return (true);
+	return (false);
+}
+
+bool	check_for_errors(t_list *tokens)
+{
+	t_token	*token;
+
+	token = tokens->content;
+	if (is_terminator(token) == true)
+		return (false);
+	if (ft_lstsize(tokens) == 1 && is_redirection(token) == true)
+		return (false);
+	token = ft_lstlast(tokens)->content;
+	if (is_terminator(token) == true)
+		return (false);
+	return (true);
+}
+
+bool	fill_exec_step(t_exec_step *step, t_list *start,
 								const t_list *end)
 {
 	t_token	*token;
@@ -31,25 +53,37 @@ void	fill_exec_step(t_exec_step *step, t_list *start,
 	while (start != end->next)
 	{
 		token = start->content;
-		if (token->type == INPUT_REDIR || token->type == OUTPUT_REDIR || token->type == APPEND)
+		if (is_redirection(token) == true)
 		{
 			redir = ft_calloc(1, sizeof(t_redir));
 			redir->type = token->type;
 			start = start->next;
+			if (start == NULL)
+			{
+				// ??????
+				return (false);
+			}
 			token = start->content;
+			if (is_redirection(token) == true)
+			{
+				// ??????
+				return (false);
+			}
 			redir->file = ft_strdup(token->substr);
 			ft_lstadd_back(&step->cmd->redirs, ft_lstnew(redir));
 		}
-		else if (token->type == DOUBLE_QUOTED_STRING || token->type == QUOTED_STRING || token->type == NORMAL)
+		else if (token->type == DOUBLE_QUOTED_STRING
+				|| token->type == QUOTED_STRING || token->type == NORMAL)
 		{
 			cmd_arg = ft_strdup(token->substr);
 			ft_lstadd_back(&step->cmd->args, ft_lstnew(cmd_arg));
 		}
 		start = start->next;
 	}
+	return (true);
 }
 
-t_list	*parse_tokens(t_list *tokens)
+t_list	*parse_tokens(t_list *tokens, bool *success)
 {
 	t_token		*token;
 	t_list		*steps;
@@ -58,6 +92,11 @@ t_list	*parse_tokens(t_list *tokens)
 	t_list		*cmd_end;
 
 	steps = NULL;
+	if (check_for_errors(tokens) == false)
+	{
+		*success = false;
+		return (steps);
+	}
 	while (tokens != NULL)
 	{
 		token = tokens->content;
@@ -70,10 +109,15 @@ t_list	*parse_tokens(t_list *tokens)
 			cmd_end = tokens;
 			step = ft_calloc(1, sizeof(t_exec_step));
 			step->cmd = ft_calloc(1, sizeof(t_cmd));
-			fill_exec_step(step, cmd_start, cmd_end);
+			if (fill_exec_step(step, cmd_start, cmd_end) == false)
+			{
+				*success = false;
+				return (steps);
+			}
 			ft_lstadd_back(&steps, ft_lstnew(step));
 		}
 		tokens = tokens->next;
 	}
+	*success = true;
 	return (steps);
 }

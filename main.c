@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:43:26 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/21 17:00:59 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/21 17:43:34 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,12 +38,28 @@ int	main(void)
 			tokens = tokenize_line(expanded_line, &success);
 			ft_free(&expanded_line);
 		}
-		t_list *exec_steps = parse_tokens(tokens);
+		t_list *exec_steps = parse_tokens(tokens, &success);
+		if (success == false)
+		{
+			write_to_stderr("Parse error\n");
+			ft_lstclear(&tokens, free_token);
+			rl_on_new_line();
+			free(line);
+			continue;
+		}
 		while (exec_steps != NULL)
 		{
 			t_exec_step	*step = exec_steps->content;
 			t_list	*redirs = step->cmd->redirs;
 			t_redir	*redir;
+			t_list	*args = step->cmd->args;
+			size_t	i = 0;
+			while (args != NULL)
+			{
+				printf("Arg #%lu == %s\n", i + 1, args->content);
+				args = args->next;
+				i++;
+			}
 			while (redirs != NULL)
 			{
 				redir = redirs->content;
@@ -54,14 +70,6 @@ int	main(void)
 				if (redir->type == APPEND)
 					printf("Append redirection to %s\n", redir->file);
 				redirs = redirs->next;
-			}
-			t_list	*args = step->cmd->args;
-			size_t	i = 0;
-			while (args != NULL)
-			{
-				printf("Arg #%lu == %s\n", i + 1, args->content);
-				args = args->next;
-				i++;
 			}
 			exec_steps = exec_steps->next;
 		}
