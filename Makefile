@@ -6,7 +6,7 @@
 #    By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/04/29 21:51:32 by hsarhan           #+#    #+#              #
-#    Updated: 2022/08/21 09:41:57 by hsarhan          ###   ########.fr        #
+#    Updated: 2022/08/21 12:05:43 by hsarhan          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,14 +16,19 @@ TOKENIZATION_SRCS = tokenization.c expansion.c \
 
 TOKENIZATION_SRCS := $(addprefix tokenization/, $(TOKENIZATION_SRCS))
 
-SRCS += $(TOKENIZATION_SRCS)
+
+PARSING_SRCS = parsing.c
+PARSING_SRCS := $(addprefix parsing/, $(PARSING_SRCS))
+
+SRCS = $(TOKENIZATION_SRCS) $(PARSING_SRCS)
+
 SRCS += utils.c main.c
 
 OBJS := $(SRCS:%.c=%.o)
 
 NAME = minishell
 CC = cc
-CFLAGS = -Werror -Wall -Wextra -g
+CFLAGS = -Werror -Wall -Wextra -g -fsanitize=address,undefined
 LIBFT = libft/libft.a
 
 all: $(NAME)

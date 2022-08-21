@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:44:00 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/21 10:07:11 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/21 12:15:46 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,16 +32,16 @@ enum	e_token_type
 	QUOTED_STRING,
 	DOUBLE_QUOTED_STRING,
 	NORMAL,
-	ENV_VAR,
 	INPUT_REDIR,
 	OUTPUT_REDIR,
 	APPEND,
 	HEREDOC,
 	PIPE,
 	LAST_EXIT,
-	SUB_EXPR, // 10
 	AND,
 	OR,
+	SUB_EXPR,
+	ENV_VAR,
 	WILDCARD
 };
 
@@ -68,7 +68,7 @@ t_list	*tokenize_normal(const char *line, size_t *idx);
 t_list	*tokenize_subexpr(const char *line, size_t *idx);
 char	*get_dir_contents(void);
 char	*expand_wildcard(char *token);
-char	**split_wildcard(char *wildcard_token);
+char	**split_wildcard(const char *wildcard_token);
 void	free_token(void *mem);
 void	free_split_array(char **split);
 t_list	*tokenize_single_quote(const char *line, size_t *idx);

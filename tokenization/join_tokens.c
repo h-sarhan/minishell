@@ -6,11 +6,11 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/20 11:25:46 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/21 10:18:01 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/21 12:03:55 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "tokenization.h"
+#include "../minishell.h"
 
 char	*join_tokens(t_list *tokens)
 {

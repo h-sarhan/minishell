@@ -6,11 +6,11 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/18 10:03:29 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/21 09:36:26 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/21 12:09:20 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "tokenization.h"
+#include "../minishell.h"
 
 static int	count_segments(char const *str)
 {
@@ -34,7 +34,8 @@ static int	count_segments(char const *str)
 	return (num_words);
 }
 
-static char	*create_word(char const *str, int word_start, int word_end)
+static char	*create_word(char const *str, const size_t word_start,
+							const size_t word_end)
 {
 	char	*word;
 
@@ -45,7 +46,7 @@ static char	*create_word(char const *str, int word_start, int word_end)
 	return (word);
 }
 
-char	**split_wildcard(char *wc)
+char	**split_wildcard(const char *wc)
 {
 	char	**split_wildcard;
 	size_t	i;

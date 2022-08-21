@@ -6,11 +6,11 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/18 07:59:27 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/21 09:36:26 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/21 12:15:35 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "tokenization.h"
+#include "../minishell.h"
 
 char	*get_dir_contents(void)
 {
@@ -97,7 +97,7 @@ static int	terminating_charseq(const char *str, size_t *wc_i, size_t *i,
 	return (CONTINUE);
 }
 
-static bool	match_str_on_wildcard(char *str, char **wc_segs)
+static bool	match_str_on_wildcard(const char *str, char **wc_segs)
 {
 	size_t	i;
 	size_t	wc_i;

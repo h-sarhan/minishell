@@ -6,11 +6,11 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 14:46:52 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/21 09:36:26 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/21 12:03:55 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "tokenization.h"
+#include "../minishell.h"
 
 t_list	*tokenize_operator(const char *line, size_t *idx,
 							const t_token_type type)

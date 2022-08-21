@@ -1,19 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   minishell.h                                        :+:      :+:    :+:   */
+/*   parsing.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/08/21 09:39:31 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/21 12:03:16 by hsarhan          ###   ########.fr       */
+/*   Created: 2022/08/21 12:03:03 by hsarhan           #+#    #+#             */
+/*   Updated: 2022/08/21 12:09:28 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MINISHELL_H
-# define MINISHELL_H
+#include "../minishell.h"
 
-# include "tokenization/tokenization.h" 
-# include "parsing/parsing.h"
-
-#endif
+void	parse_tokens(const t_list *tokens)
+{
+	(void)tokens;
+}
