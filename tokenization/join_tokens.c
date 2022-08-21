@@ -6,11 +6,11 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/20 11:25:46 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/20 11:39:54 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/21 09:36:26 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "parsing.h"
+#include "tokenization.h"
 
 char	*join_tokens(t_list *tokens)
 {

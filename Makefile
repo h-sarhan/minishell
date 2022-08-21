@@ -6,13 +6,18 @@
 #    By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/04/29 21:51:32 by hsarhan           #+#    #+#              #
-#    Updated: 2022/08/20 11:29:49 by hsarhan          ###   ########.fr        #
+#    Updated: 2022/08/21 09:41:57 by hsarhan          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-SRCS = parsing/main.c parsing/tokenization.c parsing/parsing_utils.c parsing/expansion.c \
-		parsing/tokenization2.c parsing/wildcard.c parsing/split_wildcard.c \
-		parsing/print_tokens.c parsing/free_funcs.c parsing/tokenization3.c parsing/join_tokens.c
+TOKENIZATION_SRCS = tokenization.c expansion.c \
+					tokenization2.c wildcard.c split_wildcard.c \
+					print_tokens.c free_funcs.c tokenization3.c join_tokens.c
+
+TOKENIZATION_SRCS := $(addprefix tokenization/, $(TOKENIZATION_SRCS))
+
+SRCS += $(TOKENIZATION_SRCS)
+SRCS += utils.c main.c
 
 OBJS := $(SRCS:%.c=%.o)
 

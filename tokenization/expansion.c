@@ -6,11 +6,11 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 21:30:28 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/19 16:02:22 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/21 09:36:26 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "parsing.h"
+#include "tokenization.h"
 
 // TODO: Protect substr and strjoin
 static char	*create_env_var_str(char *str, const size_t start, const size_t end)
