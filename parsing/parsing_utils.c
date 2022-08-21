@@ -1,19 +1,33 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   minishell.h                                        :+:      :+:    :+:   */
+/*   parsing_utils.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/08/21 09:39:31 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/21 21:35:37 by hsarhan          ###   ########.fr       */
+/*   Created: 2022/08/21 21:38:27 by hsarhan           #+#    #+#             */
+/*   Updated: 2022/08/21 22:04:38 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MINISHELL_H
-# define MINISHELL_H
+#include "../minishell.h"
 
-# include "tokenization/tokenization.h" 
-# include "parsing/parsing.h"
+void	free_redir(void *redir_ptr)
+{
+	t_redir	*redir;
 
-#endif
+	redir = redir_ptr;
+	ft_free(&redir->file);
+	ft_free(&redir);
+}
+
+void	free_exec_step(void *exec_step_ptr)
+{
+	t_exec_step	*exec_step;
+
+	exec_step = exec_step_ptr;
+	ft_lstclear(&exec_step->cmd->args, free);
+	ft_lstclear(&exec_step->cmd->redirs, free_redir);
+	ft_free(&exec_step->cmd);
+	ft_free(&exec_step);
+}

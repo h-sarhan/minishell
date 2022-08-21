@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:43:26 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/21 17:56:38 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/21 21:53:45 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,10 +39,12 @@ int	main(void)
 			ft_free(&expanded_line);
 		}
 		t_list *exec_steps = parse_tokens(tokens, &success);
+		t_list *exec_steps_start = exec_steps;
 		if (success == false)
 		{
 			write_to_stderr("Parse error\n");
 			ft_lstclear(&tokens, free_token);
+			ft_lstclear(&exec_steps_start, free_exec_step);
 			rl_on_new_line();
 			free(line);
 			continue;
@@ -56,7 +58,7 @@ int	main(void)
 			size_t	i = 0;
 			while (args != NULL)
 			{
-				printf("Arg #%lu == %s\n", i + 1, args->content);
+				printf("Arg #%lu == %s\n", i + 1, (char *)args->content);
 				args = args->next;
 				i++;
 			}
@@ -75,6 +77,7 @@ int	main(void)
 			exec_steps = exec_steps->next;
 		}
 		ft_lstclear(&tokens, free_token);
+		ft_lstclear(&exec_steps_start, free_exec_step);
 		rl_on_new_line();
 		free(line);
 	}
