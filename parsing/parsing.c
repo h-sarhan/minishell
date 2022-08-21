@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/21 12:03:03 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/21 13:13:35 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/21 13:19:12 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,12 @@ t_list	*parse_tokens(t_list *tokens)
 				token = cmd_end->next->content;
 				if (token->type == PIPE)
 					step->cmd->pipe = true;
-				// if (token->type == PIPE)
+				if (token->type == INPUT_REDIR)
+				{
+					step->cmd->in_redir = true;
+					token = cmd_end->next->next->content;
+					step->cmd->in_redir_file = token->substr;
+				}
 			}
 		}
 		tokens = tokens->next;
