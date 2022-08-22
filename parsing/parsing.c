@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/21 12:03:03 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/22 08:50:19 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/22 12:21:49 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,11 +46,11 @@ bool	check_for_errors(t_list *tokens)
 	{
 		token = tokens->content;
 		next_token = tokens->next->content;
-		if (((is_terminator(token) || is_redirection(token)))
-			&& (is_terminator(next_token) || is_redirection(next_token)))
+		if (((is_terminator(token) && is_terminator(next_token)))
+			|| (is_redirection(token) && is_redirection(next_token))
+			|| (is_redirection(token) && is_terminator(next_token)))
 		{
-			if (!(is_terminator(token) && is_redirection(next_token)))
-				return (false);
+			return (false);
 		}
 		tokens = tokens->next;
 	}
@@ -66,7 +66,7 @@ bool	fill_exec_step(t_exec_step *step, t_list *start,
 
 	redir = NULL;
 	cmd_arg = NULL;
-	while (start != end->next)
+	while (start != NULL && start != end->next)
 	{
 		token = start->content;
 		if (is_redirection(token) == true)
@@ -138,6 +138,8 @@ t_list	*parse_tokens(t_list *tokens, bool *success)
 			step->subexpr_steps = parse_tokens(token->sub_tokens, success);
 			if (*success == false)
 			{
+				ft_lstclear(&step->subexpr_steps, free_exec_step);
+				ft_free(&step);
 				return (steps);
 			}
 			ft_lstadd_back(&steps, ft_lstnew(step));
