@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/21 12:03:03 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/22 07:20:27 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/22 07:32:27 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,8 @@ static bool	is_terminator(const t_token *token)
 
 static bool	is_redirection(const t_token *token)
 {
-	if (token->type == INPUT_REDIR || token->type == OUTPUT_REDIR || token->type == APPEND
-		|| token->type == HEREDOC)
+	if (token->type == INPUT_REDIR || token->type == OUTPUT_REDIR
+		|| token->type == APPEND || token->type == HEREDOC)
 		return (true);
 	return (false);
 }
@@ -93,7 +93,6 @@ bool	fill_exec_step(t_exec_step *step, t_list *start,
 	return (true);
 }
 
-
 t_list	*parse_tokens(t_list *tokens, bool *success)
 {
 	t_token		*token;
@@ -129,6 +128,13 @@ t_list	*parse_tokens(t_list *tokens, bool *success)
 					step->and_next = true;
 				if (token->type == OR)
 					step->or_next = true;
+				if (token->type == SUB_EXPR
+					|| token->type == DOUBLE_QUOTED_STRING
+					|| token->type == QUOTED_STRING || token->type == NORMAL)
+				{
+					*success = false;
+					return (steps);
+				}
 			}
 		}
 		else if (is_terminator(token) == false)
