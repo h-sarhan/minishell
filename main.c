@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:43:26 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/22 08:20:01 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/22 08:37:21 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,28 +28,35 @@ void	print_exec_step(t_list *exec_steps)
 	if (step->subexpr_steps != NULL)
 	{
 		exec_steps = step->subexpr_steps;
-		printf("Pipe subexpr  into next command == %d\n", step->pipe_next);
-		printf("AND  subexpr into next command == %d\n", step->and_next);
-		printf("OR   subexpr into next command == %d\n", step->or_next);
-		printf("\n");
+		if (step->pipe_next == true)
+			printf("Pipe subexpr  into next command\n");
+		if (step->and_next == true)
+			printf("AND  subexpr into next command\n");
+		if (step->or_next == true)
+			printf("OR   subexpr into next command\n");
+		// printf("\n");
 		while (exec_steps != NULL)
 		{
 			print_exec_step(exec_steps);
 			exec_steps = exec_steps->next;
 		}
-		printf("\n");
+		// printf("\n");
 		return ;
 	}
-	printf("Pipe expr into next command == %d\n", step->pipe_next);
-	printf("AND  expr into next command == %d\n", step->and_next);
-	printf("OR   expr into next command == %d\n", step->or_next);
-	printf("\n");
+	// printf("\n");
 	while (args != NULL)
 	{
 		printf("Arg #%lu == %s\n", i + 1, (char *)args->content);
 		args = args->next;
 		i++;
 	}
+	if (step->pipe_next == true)
+		printf("Pipe expr  into next command\n");
+	if (step->and_next == true)
+		printf("AND  expr into next command\n");
+	if (step->or_next == true)
+		printf("OR   expr into next command\n");
+	printf("\n");
 	
 	while (redirs != NULL)
 	{

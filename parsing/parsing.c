@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/21 12:03:03 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/22 07:53:50 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/22 08:50:19 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@ static bool	is_redirection(const t_token *token)
 bool	check_for_errors(t_list *tokens)
 {
 	t_token	*token;
+	t_token	*next_token;
 
 	token = tokens->content;
 	if (is_terminator(token) == true)
@@ -41,6 +42,18 @@ bool	check_for_errors(t_list *tokens)
 	token = ft_lstlast(tokens)->content;
 	if (is_terminator(token) == true)
 		return (false);
+	while (tokens->next != NULL)
+	{
+		token = tokens->content;
+		next_token = tokens->next->content;
+		if (((is_terminator(token) || is_redirection(token)))
+			&& (is_terminator(next_token) || is_redirection(next_token)))
+		{
+			if (!(is_terminator(token) && is_redirection(next_token)))
+				return (false);
+		}
+		tokens = tokens->next;
+	}
 	return (true);
 }
 
