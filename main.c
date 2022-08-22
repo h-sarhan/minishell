@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:43:26 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/22 07:36:01 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/22 08:20:01 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,6 +83,11 @@ int	main(void)
 		}
 		if (line[0] != '\0')
 			add_history(line);
+		else
+		{
+			ft_free(&line);
+			continue;
+		}
 		tokens = tokenize_line(line, &success);
 		if (success == true)
 		{
@@ -90,6 +95,13 @@ int	main(void)
 			ft_lstclear(&tokens, free_token);
 			tokens = tokenize_line(expanded_line, &success);
 			ft_free(&expanded_line);
+			if (success == false)
+			{
+				ft_lstclear(&tokens, free_token);
+				rl_on_new_line();
+				free(line);
+				continue;
+			}
 		}
 		else
 			continue;
@@ -112,7 +124,7 @@ int	main(void)
 		ft_lstclear(&tokens, free_token);
 		ft_lstclear(&exec_steps_start, free_exec_step);
 		rl_on_new_line();
-		free(line);
+		ft_free(&line);
 	}
 	clear_history();
 }
