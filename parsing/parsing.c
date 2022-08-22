@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/21 12:03:03 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/21 22:36:10 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/22 07:19:45 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,6 +93,7 @@ bool	fill_exec_step(t_exec_step *step, t_list *start,
 	return (true);
 }
 
+
 t_list	*parse_tokens(t_list *tokens, bool *success)
 {
 	t_token		*token;
@@ -110,7 +111,27 @@ t_list	*parse_tokens(t_list *tokens, bool *success)
 	while (tokens != NULL)
 	{
 		token = tokens->content;
-		if (is_terminator(token) == false)
+		if (token->type == SUB_EXPR)
+		{
+			step = ft_calloc(1, sizeof(t_exec_step));
+			step->subexpr_cmds = parse_tokens(token->sub_tokens, success);
+			if (*success == false)
+			{
+				return (steps);
+			}
+			ft_lstadd_back(&steps, ft_lstnew(step));
+			if (tokens->next != NULL)
+			{
+				token = tokens->next->content;
+				if (token->type == PIPE)
+					step->pipe_next = true;
+				if (token->type == AND)
+					step->and_next = true;
+				if (token->type == OR)
+					step->or_next = true;
+			}
+		}
+		else if (is_terminator(token) == false)
 		{
 			cmd_start = tokens;
 			while (tokens->next != NULL
@@ -135,15 +156,14 @@ t_list	*parse_tokens(t_list *tokens, bool *success)
 					step->and_next = true;
 				if (token->type == OR)
 					step->or_next = true;
-				tokens = tokens->next;
-				token = tokens->content;
+				token = tokens->next->next->content;
+				if (token->type == AND || token->type == OR || token->type == PIPE)
+				{
+					*success = false;
+					return (steps);
+				}
 			}
 			ft_lstadd_back(&steps, ft_lstnew(step));
-		}
-		else if (token->type == AND || token->type == OR || token->type == PIPE)
-		{
-			*success = false;
-			return (steps);
 		}
 		tokens = tokens->next;
 	}

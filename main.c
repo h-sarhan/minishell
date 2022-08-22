@@ -6,12 +6,62 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:43:26 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/21 22:25:02 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/22 07:15:52 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
+void	print_exec_step(t_list *exec_steps)
+{
+	t_exec_step	*step = exec_steps->content;
+	t_redir	*redir;
+	size_t	i = 0;
+	t_list	*args = NULL;
+	t_list	*redirs = NULL;
+	
+	if (step->cmd != NULL)
+	{
+		args = step->cmd->args;
+		redirs = step->cmd->redirs;
+	}
+	if (step->subexpr_cmds != NULL)
+	{
+		exec_steps = step->subexpr_cmds;
+		while (exec_steps != NULL)
+		{
+			print_exec_step(exec_steps);
+			exec_steps = exec_steps->next;
+		}
+		printf("Pipe subexpr  into next command == %d\n", step->pipe_next);
+		printf("AND  subexpr into next command == %d\n", step->and_next);
+		printf("OR   subexpr into next command == %d\n", step->or_next);
+		return ;
+	}
+	while (args != NULL)
+	{
+		printf("Arg #%lu == %s\n", i + 1, (char *)args->content);
+		args = args->next;
+		i++;
+	}
+	
+	printf("Pipe into next command == %d\n", step->pipe_next);
+	printf("AND into next command == %d\n", step->and_next);
+	printf("OR into next command == %d\n", step->or_next);
+	while (redirs != NULL)
+	{
+		redir = redirs->content;
+		if (redir->type == INPUT_REDIR)
+			printf("Input redirection from %s\n", redir->file);
+		if (redir->type == OUTPUT_REDIR)
+			printf("Output redirection to %s\n", redir->file);
+		if (redir->type == APPEND)
+			printf("Append redirection to %s\n", redir->file);
+		if (redir->type == HEREDOC)
+			printf("Limiter is %s\n", redir->limiter);
+		redirs = redirs->next;
+	}
+}
 // ? I dont know what rl_on_new_line() this does
 int	main(void)
 {
@@ -33,7 +83,6 @@ int	main(void)
 		tokens = tokenize_line(line, &success);
 		if (success == true)
 		{
-			// print_tokens(tokens);
 			char *expanded_line = join_tokens(tokens);
 			ft_lstclear(&tokens, free_token);
 			tokens = tokenize_line(expanded_line, &success);
@@ -54,33 +103,7 @@ int	main(void)
 		}
 		while (exec_steps != NULL)
 		{
-			t_exec_step	*step = exec_steps->content;
-			t_list	*redirs = step->cmd->redirs;
-			t_redir	*redir;
-			t_list	*args = step->cmd->args;
-			size_t	i = 0;
-			while (args != NULL)
-			{
-				printf("Arg #%lu == %s\n", i + 1, (char *)args->content);
-				args = args->next;
-				i++;
-			}
-			printf("Pipe into next command == %d\n", step->pipe_next);
-			printf("AND into next command == %d\n", step->and_next);
-			printf("OR into next command == %d\n", step->or_next);
-			while (redirs != NULL)
-			{
-				redir = redirs->content;
-				if (redir->type == INPUT_REDIR)
-					printf("Input redirection from %s\n", redir->file);
-				if (redir->type == OUTPUT_REDIR)
-					printf("Output redirection to %s\n", redir->file);
-				if (redir->type == APPEND)
-					printf("Append redirection to %s\n", redir->file);
-				if (redir->type == HEREDOC)
-					printf("Limiter is %s\n", redir->limiter);
-				redirs = redirs->next;
-			}
+			print_exec_step(exec_steps);
 			exec_steps = exec_steps->next;
 		}
 		ft_lstclear(&tokens, free_token);
