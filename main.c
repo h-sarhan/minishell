@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:43:26 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/22 12:16:32 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/22 12:28:56 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,8 @@ void	print_exec_step(t_list *exec_steps)
 	}
 	printf("===================EXPR END===================\n\n");
 }
-// ? I dont know what rl_on_new_line() this does
+
+// ? I dont know what rl_on_new_line() does
 int	main(void)
 {
 	char	*line;
