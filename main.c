@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:43:26 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/22 07:15:52 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/22 07:20:27 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,9 +25,9 @@ void	print_exec_step(t_list *exec_steps)
 		args = step->cmd->args;
 		redirs = step->cmd->redirs;
 	}
-	if (step->subexpr_cmds != NULL)
+	if (step->subexpr_steps != NULL)
 	{
-		exec_steps = step->subexpr_cmds;
+		exec_steps = step->subexpr_steps;
 		while (exec_steps != NULL)
 		{
 			print_exec_step(exec_steps);
