@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/21 12:03:03 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/22 07:32:27 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/22 07:53:50 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,8 @@ bool	fill_exec_step(t_exec_step *step, t_list *start,
 	t_redir	*redir;
 	char	*cmd_arg;
 
+	redir = NULL;
+	cmd_arg = NULL;
 	while (start != end->next)
 	{
 		token = start->content;
@@ -87,6 +89,13 @@ bool	fill_exec_step(t_exec_step *step, t_list *start,
 		{
 			cmd_arg = ft_strdup(token->substr);
 			ft_lstadd_back(&step->cmd->args, ft_lstnew(cmd_arg));
+		}
+		else if (token->type == SUB_EXPR)
+		{
+			ft_free(&redir);
+			ft_lstclear(&step->cmd->args, free);
+			ft_lstclear(&step->cmd->redirs, free_redir);
+			return (false);
 		}
 		start = start->next;
 	}
@@ -142,7 +151,15 @@ t_list	*parse_tokens(t_list *tokens, bool *success)
 			cmd_start = tokens;
 			while (tokens->next != NULL
 				&& is_terminator(tokens->next->content) == false)
+			{
+				token = tokens->content;
+				if (token->type == SUB_EXPR)
+				{
+					*success = false;
+					return (steps);
+				}
 				tokens = tokens->next;
+			}
 			cmd_end = tokens;
 			step = ft_calloc(1, sizeof(t_exec_step));
 			step->cmd = ft_calloc(1, sizeof(t_cmd));
@@ -162,6 +179,11 @@ t_list	*parse_tokens(t_list *tokens, bool *success)
 					step->and_next = true;
 				if (token->type == OR)
 					step->or_next = true;
+				if (token->type == SUB_EXPR)
+				{
+					*success = false;
+					return (steps);
+				}
 				token = tokens->next->next->content;
 				if (token->type == AND || token->type == OR || token->type == PIPE)
 				{
