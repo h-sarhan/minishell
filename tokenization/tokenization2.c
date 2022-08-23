@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 22:19:29 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/21 12:03:55 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/23 12:35:05 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,41 @@ static void	*parse_error(const char *msg)
 {
 	write_to_stderr(msg);
 	return (NULL);
+}
+
+char	*eat_quotes(char *str)
+{
+	size_t	num_quotes;
+	size_t	i;
+	size_t	j;
+	char	*trimmed_str;
+
+	num_quotes = 0;
+	i = 0;
+	while (str[i] != '\0')
+	{
+		if (str[i] == '\'' || str[i] == '\"')
+			num_quotes++;
+		i++;
+	}
+	trimmed_str = ft_calloc(ft_strlen(str) - num_quotes + 1, sizeof(char));
+	if (trimmed_str == NULL)
+		return (NULL);
+	i = 0;
+	j = 0;
+	while (str[i] != '\0')
+	{
+		if (str[i] != '\'' && str[i] != '\"')
+		{
+			trimmed_str[j] = str[i];
+			i++;
+			j++;
+		}
+		else
+			i++;
+	}
+	ft_free(&str);
+	return (trimmed_str);
 }
 
 t_list	*tokenize_normal(const char *line, size_t *idx)
