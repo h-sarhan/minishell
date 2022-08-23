@@ -5,398 +5,211 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/08/17 14:46:52 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/18 07:54:18 by hsarhan          ###   ########.fr       */
+/*   Created: 2022/08/21 12:03:03 by hsarhan           #+#    #+#             */
+/*   Updated: 2022/08/22 12:21:49 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "parsing.h"
+#include "../minishell.h"
 
-static t_list	*tokenize_single_quote(const char *line, size_t *idx)
+static bool	is_terminator(const t_token *token)
 {
-	size_t	i;
-	t_token	*token;
-	t_list	*el;
-
-	i = *idx;
-	token = ft_calloc(1, sizeof(t_token));
-	if (token == NULL)
-		return (NULL);
-	token->start = i;
-	token->type = QUOTED_STRING;
-	i++;
-	while (line[i] != '\0' && line[i] != '\'')
-		i++;
-	if (line[i] == '\0')
-	{
-		write_to_stderr("Parse Error: Unterminated string\n");
-		return (NULL);
-	}
-	else
-		token->end = i;
-	token->substr = ft_substr(line, token->start + 1, token->end - token->start - 1);
-	token->sub_tokens = NULL;
-	if (token->substr == NULL)
-		return (NULL);
-	el = ft_lstnew(token);
-	if (el == NULL)
-		return (NULL);
-	*idx = i;
-	return (el);
+	if (token->type == PIPE
+		|| token->type == AND
+		|| token->type == OR)
+		return (true);
+	return (false);
 }
 
-static t_list	*tokenize_double_quote(const char *line, size_t *idx)
+static bool	is_redirection(const t_token *token)
 {
-	size_t	i;
-	t_token	*token;
-	t_list	*el;
-
-	i = *idx;
-	token = ft_calloc(1, sizeof(t_token));
-	if (token == NULL)
-		return (NULL);
-	token->start = i;
-	token->type = DOUBLE_QUOTED_STRING;
-	i++;
-	while (line[i] != '\0' && line[i] != '\"')
-		i++;
-	if (line[i] == '\0')
-	{
-		write_to_stderr("Parse Error: Unterminated string\n");
-		return (NULL);
-	}
-	else
-		token->end = i;
-	token->substr = ft_substr(line, token->start + 1, token->end - token->start - 1);
-	token->sub_tokens = NULL;
-	if (token->substr == NULL)
-		return (NULL);
-	el = ft_lstnew(token);
-	if (el == NULL)
-		return (NULL);
-	*idx = i;
-	while (contains_env_var(token->substr))
-	{
-		token->substr = expand_double_quote(token->substr);
-	}
-	return (el);
+	if (token->type == INPUT_REDIR || token->type == OUTPUT_REDIR
+		|| token->type == APPEND || token->type == HEREDOC)
+		return (true);
+	return (false);
 }
 
-static t_list	*tokenize_env_variable(const char *line, size_t *idx)
-{
-	size_t	i;
-	t_token	*token;
-	t_list	*el;
-	char	*env_var;
-
-	i = *idx;
-	token = ft_calloc(1, sizeof(t_token));
-	if (token == NULL)
-		return (NULL);
-	token->start = i;
-	token->type = ENV_VAR;
-	i++;
-	while (line[i] != '\0' && (ft_isalnum(line[i]) || line[i] == '_'))
-		i++;
-	token->end = i - 1;
-	// ? In this case the token would just be the dollar sign I think
-	if (token->start >= token->end)
-	{
-		token->type = NORMAL;
-		token->substr = ft_substr(line, token->start, 1);
-	}
-	else
-		token->substr = ft_substr(line, token->start + 1, token->end - token->start);
-	if (token->substr == NULL)
-	{
-		ft_free(&token);
-		return (NULL);
-	}
-	token->sub_tokens = NULL;
-	el = ft_lstnew(token);
-	if (el == NULL)
-	{
-		ft_free(&token->substr);
-		ft_free(&token);
-		return (NULL);
-	}
-	*idx = i - 1;
-	if (token->type == ENV_VAR)
-	{
-		env_var = token->substr;
-		if (getenv(env_var) == NULL)
-			token->substr = ft_strdup("");
-		else
-			token->substr = ft_strdup(getenv(env_var));
-		ft_free(&env_var);
-	}
-	return (el);
-}
-
-// TODO: Free in case of malloc errors
-t_list	*parse_line(const char *line, bool *success)
-{
-	size_t	i;
-	t_list	*tokens;
-	t_list	*el;
-
-	// * Scanning for invalid characters
-	i = 0;
-	*success = true;
-	while (line[i] != '\0')
-	{
-		if (line[i] == '\\' || line[i] == ';' || line[i] == '`'
-			|| (line[i] == '&' && line[i + 1] != '&')
-			|| (line[i] == '(' && line[i + 1] == ')'))
-		{
-			write_to_stderr("Parse Error: Invalid input\n");
-			*success = false;
-			return (NULL);
-		}
-		if (line[i] == '&' && line[i + 1] != '\0')
-			i++;
-		i++;
-	}
-	tokens = NULL;
-	i = 0;
-	while (line[i] != '\0')
-	{
-		if (line[i] == '\'')
-		{
-			el = tokenize_single_quote(line, &i);
-			if (el == NULL)
-			{
-				// ? ft_lstclear here maybe??
-				*success = false;
-				return (NULL);
-			}
-			ft_lstadd_back(&tokens, el);
-		}
-		else if (line[i] == '\"')
-		{
-			el = tokenize_double_quote(line, &i);
-			if (el == NULL)
-			{
-				// ? ft_lstclear here maybe??
-				*success = false;
-				return (NULL);
-			}
-			ft_lstadd_back(&tokens, el);
-		}
-		else if (line[i] == '$' && line[i + 1] != '?')
-		{
-			el = tokenize_env_variable(line, &i);
-			if (el == NULL)
-			{
-				// ? ft_lstclear here maybe??
-				*success = false;
-				return (NULL);
-			}
-			ft_lstadd_back(&tokens, el);
-		}
-		else if (line[i] == '>' && line[i + 1] != '>')
-		{
-			el = tokenize_operator(line, &i, OUTPUT_REDIR);
-			if (el == NULL)
-			{
-				// ? ft_lstclear here maybe??
-				*success = false;
-				return (NULL);
-			}
-			ft_lstadd_back(&tokens, el);
-		}
-		else if (line[i] == '<' && line[i + 1] != '<')
-		{
-			el = tokenize_operator(line, &i, INPUT_REDIR);
-			if (el == NULL)
-			{
-				// ? ft_lstclear here maybe??
-				*success = false;
-				return (NULL);
-			}
-			ft_lstadd_back(&tokens, el);
-		}
-		else if (line[i] == '<' && line[i + 1] == '<')
-		{
-			el = tokenize_operator(line, &i, HEREDOC);
-			if (el == NULL)
-			{
-				// ? ft_lstclear here maybe??
-				*success = false;
-				return (NULL);
-			}
-			ft_lstadd_back(&tokens, el);
-		}
-		else if (line[i] == '>' && line[i + 1] == '>')
-		{
-			el = tokenize_operator(line, &i, APPEND_REDIR);
-			if (el == NULL)
-			{
-				// ? ft_lstclear here maybe??
-				*success = false;
-				return (NULL);
-			}
-			ft_lstadd_back(&tokens, el);
-		}
-		else if (line[i] == '|' && line[i + 1] != '|')
-		{
-			el = tokenize_operator(line, &i, PIPE);
-			if (el == NULL)
-			{
-				// ? ft_lstclear here maybe??
-				*success = false;
-				return (NULL);
-			}
-			ft_lstadd_back(&tokens, el);
-		}
-		else if (line[i] == '$' && line[i + 1] == '?')
-		{
-			el = tokenize_operator(line, &i, LAST_EXIT);
-			if (el == NULL)
-			{
-				// ? ft_lstclear here maybe??
-				*success = false;
-				return (NULL);
-			}
-			ft_lstadd_back(&tokens, el);
-		}
-		else if (line[i] == '&' && line[i + 1] == '&')
-		{
-			el = tokenize_operator(line, &i, AND);
-			if (el == NULL)
-			{
-				// ? ft_lstclear here maybe??
-				*success = false;
-				return (NULL);
-			}
-			ft_lstadd_back(&tokens, el);
-		}
-		else if (line[i] == '|' && line[i + 1] == '|')
-		{
-			el = tokenize_operator(line, &i, OR);
-			if (el == NULL)
-			{
-				// ? ft_lstclear here maybe??
-				*success = false;
-				return (NULL);
-			}
-			ft_lstadd_back(&tokens, el);
-		}
-		else if (line[i] == '(')
-		{
-			el = tokenize_subexpr(line, &i);
-			if (el == NULL)
-			{
-				// ? ft_lstclear here maybe??
-				*success = false;
-				return (NULL);
-			}
-			ft_lstadd_back(&tokens, el);
-		}
-		else if (line[i] == ')')
-		{
-			write_to_stderr("Parse Error: Invalid input\n");
-			*success = false;
-			return (NULL);
-		}
-		// TODO: Replace this with a is_whitespace function
-		else if (line[i] != ' ')
-		{
-			el = tokenize_normal(line, &i);
-			if (el == NULL)
-			{
-				// ? ft_lstclear here maybe??
-				*success = false;
-				return (NULL);
-			}
-			ft_lstadd_back(&tokens, el);
-		}
-		if (line[i] != '\0')
-			i++;
-	}
-	return (tokens);
-}
-
-void	print_tokens(t_list *tokens)
+bool	check_for_errors(t_list *tokens)
 {
 	t_token	*token;
+	t_token	*next_token;
 
-	while (tokens != NULL)
+	token = tokens->content;
+	if (is_terminator(token) == true)
+		return (false);
+	if (ft_lstsize(tokens) == 1 && is_redirection(token) == true)
+		return (false);
+	token = ft_lstlast(tokens)->content;
+	if (is_terminator(token) == true)
+		return (false);
+	while (tokens->next != NULL)
 	{
 		token = tokens->content;
-		if (token->type == QUOTED_STRING)
+		next_token = tokens->next->content;
+		if (((is_terminator(token) && is_terminator(next_token)))
+			|| (is_redirection(token) && is_redirection(next_token))
+			|| (is_redirection(token) && is_terminator(next_token)))
 		{
-			printf("Single quoted string: \'%s\'\nstart=(%zu)\nend=(%zu)\n", token->substr, token->start,
-					token->end);
-		}
-		if (token->type == DOUBLE_QUOTED_STRING)
-		{
-			printf("Double quoted string: \"%s\"\nstart=(%zu)\nend=(%zu)\n", token->substr,
-					token->start, token->end);
-		}
-		if (token->type == ENV_VAR)
-		{
-			printf("Environment Variable: %s\nstart=(%zu)\nend=(%zu)\n", token->substr,
-					token->start, token->end);
-		}
-		if (token->type == INPUT_REDIR)
-		{
-			printf("Input redirection: %s\nstart=(%zu)\nend=(%zu)\n", token->substr,
-					token->start, token->end);
-		}
-		if (token->type == OUTPUT_REDIR)
-		{
-			printf("Output redirection: %s\nstart=(%zu)\nend=(%zu)\n", token->substr,
-					token->start, token->end);
-		}
-		if (token->type == APPEND_REDIR)
-		{
-			printf("Append redirection: %s\nstart=(%zu)\nend=(%zu)\n", token->substr,
-					token->start, token->end);
-		}
-		if (token->type == PIPE)
-		{
-			printf("Pipe: %s\nstart=(%zu)\nend=(%zu)\n", token->substr,
-					token->start, token->end);
-		}
-		if (token->type == LAST_EXIT)
-		{
-			printf("Last exit: %s\nstart=(%zu)\nend=(%zu)\n", token->substr,
-					token->start, token->end);
-		}
-		if (token->type == HEREDOC)
-		{
-			printf("Heredoc: %s\nstart=(%zu)\nend=(%zu)\n", token->substr,
-					token->start, token->end);
-		}
-		if (token->type == NORMAL)
-		{
-			printf("Normal: %s\nstart=(%zu)\nend=(%zu)\n", token->substr,
-					token->start, token->end);
-		}
-		if (token->type == AND)
-		{
-			printf("AND token: %s\nstart=(%zu)\nend=(%zu)\n", token->substr,
-					token->start, token->end);
-		}
-		if (token->type == OR)
-		{
-			printf("OR token: %s\nstart=(%zu)\nend=(%zu)\n", token->substr,
-					token->start, token->end);
-		}
-		if (token->type == SUB_EXPR)
-		{
-			printf("Sub expression: (%s)\nstart=(%zu)\nend=(%zu)\n", token->substr,
-					token->start, token->end);
-			printf("Sub expression START\n");
-			print_tokens(token->sub_tokens);
-			printf("Sub expression END\n");
-		}
-		if (token->type == WILDCARD)
-		{
-			printf("Wildcard token: %s\nstart=(%zu)\nend=(%zu)\n", token->substr,
-					token->start, token->end);
+			return (false);
 		}
 		tokens = tokens->next;
 	}
+	return (true);
+}
+
+bool	fill_exec_step(t_exec_step *step, t_list *start,
+								const t_list *end)
+{
+	t_token	*token;
+	t_redir	*redir;
+	char	*cmd_arg;
+
+	redir = NULL;
+	cmd_arg = NULL;
+	while (start != NULL && start != end->next)
+	{
+		token = start->content;
+		if (is_redirection(token) == true)
+		{
+			redir = ft_calloc(1, sizeof(t_redir));
+			redir->type = token->type;
+			start = start->next;
+			if (start == NULL)
+			{
+				// ??????
+				ft_free(&redir);
+				ft_lstclear(&step->cmd->args, free);
+				ft_lstclear(&step->cmd->redirs, free_redir);
+				return (false);
+			}
+			token = start->content;
+			if (is_redirection(token) == true)
+			{
+				// ??????
+				ft_free(&redir);
+				ft_lstclear(&step->cmd->args, free);
+				ft_lstclear(&step->cmd->redirs, free_redir);
+				return (false);
+			}
+			if (redir->type != HEREDOC)
+				redir->file = ft_strdup(token->substr);
+			else
+				redir->limiter = ft_strdup(token->substr);
+			ft_lstadd_back(&step->cmd->redirs, ft_lstnew(redir));
+		}
+		else if (token->type == DOUBLE_QUOTED_STRING
+				|| token->type == QUOTED_STRING || token->type == NORMAL)
+		{
+			cmd_arg = ft_strdup(token->substr);
+			ft_lstadd_back(&step->cmd->args, ft_lstnew(cmd_arg));
+		}
+		else if (token->type == SUB_EXPR)
+		{
+			ft_free(&redir);
+			ft_lstclear(&step->cmd->args, free);
+			ft_lstclear(&step->cmd->redirs, free_redir);
+			return (false);
+		}
+		start = start->next;
+	}
+	return (true);
+}
+
+t_list	*parse_tokens(t_list *tokens, bool *success)
+{
+	t_token		*token;
+	t_list		*steps;
+	t_exec_step	*step;
+	t_list		*cmd_start;
+	t_list		*cmd_end;
+
+	steps = NULL;
+	if (check_for_errors(tokens) == false)
+	{
+		*success = false;
+		return (steps);
+	}
+	while (tokens != NULL)
+	{
+		token = tokens->content;
+		if (token->type == SUB_EXPR)
+		{
+			step = ft_calloc(1, sizeof(t_exec_step));
+			step->subexpr_steps = parse_tokens(token->sub_tokens, success);
+			if (*success == false)
+			{
+				ft_lstclear(&step->subexpr_steps, free_exec_step);
+				ft_free(&step);
+				return (steps);
+			}
+			ft_lstadd_back(&steps, ft_lstnew(step));
+			if (tokens->next != NULL)
+			{
+				token = tokens->next->content;
+				if (token->type == PIPE)
+					step->pipe_next = true;
+				if (token->type == AND)
+					step->and_next = true;
+				if (token->type == OR)
+					step->or_next = true;
+				if (token->type == SUB_EXPR
+					|| token->type == DOUBLE_QUOTED_STRING
+					|| token->type == QUOTED_STRING || token->type == NORMAL)
+				{
+					*success = false;
+					return (steps);
+				}
+			}
+		}
+		else if (is_terminator(token) == false)
+		{
+			cmd_start = tokens;
+			while (tokens->next != NULL
+				&& is_terminator(tokens->next->content) == false)
+			{
+				token = tokens->content;
+				if (token->type == SUB_EXPR)
+				{
+					*success = false;
+					return (steps);
+				}
+				tokens = tokens->next;
+			}
+			cmd_end = tokens;
+			step = ft_calloc(1, sizeof(t_exec_step));
+			step->cmd = ft_calloc(1, sizeof(t_cmd));
+			if (fill_exec_step(step, cmd_start, cmd_end) == false)
+			{
+				ft_free(&step->cmd);
+				ft_free(&step);
+				*success = false;
+				return (steps);
+			}
+			if (cmd_end->next != NULL)
+			{
+				token = cmd_end->next->content;
+				if (token->type == PIPE)
+					step->pipe_next = true;
+				if (token->type == AND)
+					step->and_next = true;
+				if (token->type == OR)
+					step->or_next = true;
+				if (token->type == SUB_EXPR)
+				{
+					*success = false;
+					return (steps);
+				}
+				token = tokens->next->next->content;
+				if (token->type == AND || token->type == OR || token->type == PIPE)
+				{
+					*success = false;
+					return (steps);
+				}
+			}
+			ft_lstadd_back(&steps, ft_lstnew(step));
+		}
+		tokens = tokens->next;
+	}
+	*success = true;
+	return (steps);
 }

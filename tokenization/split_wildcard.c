@@ -6,11 +6,11 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/18 10:03:29 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/18 10:13:30 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/21 12:09:20 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "parsing.h"
+#include "../minishell.h"
 
 static int	count_segments(char const *str)
 {
@@ -34,25 +34,26 @@ static int	count_segments(char const *str)
 	return (num_words);
 }
 
-static char	*create_word(char const *str, int word_start, int word_end)
+static char	*create_word(char const *str, const size_t word_start,
+							const size_t word_end)
 {
 	char	*word;
 
-	word = malloc(sizeof(char) * (word_end - word_start + 2));
+	word = ft_calloc((word_end - word_start + 2), sizeof(char));
 	if (word == NULL)
 		return (NULL);
 	ft_strlcpy(word, &str[word_start], word_end - word_start + 2);
 	return (word);
 }
 
-char**	split_wildcard(char *wc)
+char	**split_wildcard(const char *wc)
 {
 	char	**split_wildcard;
 	size_t	i;
 	size_t	word_start;
 	size_t	word_count;
 
-	split_wildcard = malloc(sizeof(char *) * (count_segments(wc) + 1));
+	split_wildcard = ft_calloc((count_segments(wc) + 1), sizeof(char *));
 	if (split_wildcard == NULL)
 		return (NULL);
 	i = 0;
@@ -68,9 +69,7 @@ char**	split_wildcard(char *wc)
 		word_start = i;
 		while (wc[i] != '*' && wc[i] != '\0')
 			i++;
-		split_wildcard[word_count] = create_word(wc, word_start, i - 1);
-		if (split_wildcard[word_count++] == NULL)
-			return (NULL);
+		split_wildcard[word_count++] = create_word(wc, word_start, i - 1);
 	}
 	split_wildcard[word_count] = NULL;
 	return (split_wildcard);

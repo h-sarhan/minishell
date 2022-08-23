@@ -5,69 +5,34 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/08/17 14:49:04 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/17 20:50:24 by hsarhan          ###   ########.fr       */
+/*   Created: 2022/08/21 21:38:27 by hsarhan           #+#    #+#             */
+/*   Updated: 2022/08/22 07:20:27 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "parsing.h"
+#include "../minishell.h"
 
-void	write_to_stderr(const char *msg)
+void	free_redir(void *redir_ptr)
 {
-	write(STDERR_FILENO, msg, ft_strlen(msg));
+	t_redir	*redir;
+
+	redir = redir_ptr;
+	ft_free(&redir->file);
+	ft_free(&redir->limiter);
+	ft_free(&redir);
 }
 
-// This is ft_strjoin but with an additional argument
-// to specify which input strings to free
-char	*strjoin_free(char *s1, char *s2, int f)
+void	free_exec_step(void *exec_step_ptr)
 {
-	char	*joined;
+	t_exec_step	*exec_step;
 
-	joined = ft_strjoin(s1, s2);
-	if (f == 1)
-		ft_free(&s1);
-	if (f == 2)
-		ft_free(&s2);
-	if (f == 3)
-	{
-		ft_free(&s1);
-		ft_free(&s2);
-	}
-	return (joined);
+	exec_step = exec_step_ptr;
+	if (exec_step->cmd != NULL)
+		ft_lstclear(&exec_step->cmd->args, free);
+	if (exec_step->cmd != NULL)
+		ft_lstclear(&exec_step->cmd->redirs, free_redir);
+	if (exec_step->subexpr_steps != NULL)
+		ft_lstclear(&exec_step->subexpr_steps, free_exec_step);
+	ft_free(&exec_step->cmd);
+	ft_free(&exec_step);
 }
-
-char	*substr_free(char *s, unsigned int start, size_t len)
-{
-	char	*substr;
-	size_t	substr_length;
-	size_t	i;
-
-	if (start > ft_strlen(s))
-		len = 0;
-	else
-	{
-		substr_length = ft_strlen(&s[start]);
-		if (len > substr_length)
-			len = substr_length;
-	}
-	substr = malloc(sizeof(char) * (len + 1));
-	if (substr == NULL)
-		return (NULL);
-	i = 0;
-	while (i < len)
-	{
-		substr[i] = s[i + start];
-		i++;
-	}
-	substr[i] = '\0';
-	ft_free(&s);
-	return (substr);
-}
-
-void	ft_free(void *memory)
-{
-	if (*(void **)memory != NULL)
-		free(*(void **)memory);
-	*(void **)memory = NULL;
-}
-
