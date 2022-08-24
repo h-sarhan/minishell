@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 22:19:29 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/24 12:47:56 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/24 13:57:40 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,6 @@ t_list	*tokenize_normal(const char *line, size_t *idx)
 		if (line[i] == '\0')
 		{
 			free_token(tkn);
-			printf("Reached end of line\n");
 			return (NULL);
 		}
 		i++;

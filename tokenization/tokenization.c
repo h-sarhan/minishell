@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 14:46:52 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/24 11:27:34 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/24 14:57:00 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -169,9 +169,7 @@ t_list	*tokenize_line(const char *line, bool *success)
 			if (*envvar_token->substr != '\0')
 				ft_lstadd_back(&tokens, el);
 			else
-			{
 				ft_lstclear(&el, free_token);
-			}
 		}
 		else if (line[i] == '>' && line[i + 1] != '>')
 		{
@@ -299,6 +297,8 @@ t_list	*tokenize_line(const char *line, bool *success)
 					ft_lstclear(&wildcard_tokens, free_token);
 					return (NULL);
 				}
+				tok = wildcard_tokens->content;
+				tok->expanded = true;
 				ft_lstclear(&el, free_token);
 				ft_lstadd_back(&tokens, wildcard_tokens);
 			}

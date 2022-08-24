@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/21 12:03:03 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/22 12:21:49 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/24 14:54:59 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,8 @@ bool	check_for_errors(t_list *tokens)
 		{
 			return (false);
 		}
+		if (is_redirection(token) && next_token->expanded == true)
+			return (false);
 		tokens = tokens->next;
 	}
 	return (true);

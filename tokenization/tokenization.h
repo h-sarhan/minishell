@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:44:00 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/24 10:36:53 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/24 14:11:55 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,7 @@ struct s_token
 	size_t			end;
 	char			*substr;
 	t_list			*sub_tokens;
+	bool			expanded;
 };
 
 t_list	*tokenize_line(const char *line, bool *success);
