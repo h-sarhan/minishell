@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:43:26 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/22 12:28:56 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/23 18:09:22 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,11 +128,12 @@ int	main(void)
 			free(line);
 			continue;
 		}
-		while (exec_steps != NULL)
-		{
-			print_exec_step(exec_steps);
-			exec_steps = exec_steps->next;
-		}
+		ft_echo(exec_steps->content);
+		// while (exec_steps != NULL)
+		// {
+		// 	print_exec_step(exec_steps);
+		// 	exec_steps = exec_steps->next;
+		// }
 		ft_lstclear(&tokens, free_token);
 		ft_lstclear(&exec_steps_start, free_exec_step);
 		rl_on_new_line();

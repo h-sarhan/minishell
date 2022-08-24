@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+         #
+#    By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/04/29 21:51:32 by hsarhan           #+#    #+#              #
-#    Updated: 2022/08/23 12:26:06 by hsarhan          ###   ########.fr        #
+#    Updated: 2022/08/23 17:57:40 by mkhan            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -22,7 +22,7 @@ PARSING_SRCS := $(addprefix parsing/, $(PARSING_SRCS))
 
 SRCS = $(TOKENIZATION_SRCS) $(PARSING_SRCS)
 
-SRCS += utils.c main.c
+SRCS += utils.c main.c exec/ft_echo.c
 
 OBJS := $(SRCS:%.c=%.o)
 

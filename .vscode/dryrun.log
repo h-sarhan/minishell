@@ -13,7 +13,8 @@ cc -Werror -Wall -Wextra -g -fsanitize=address   -c -o parsing/parsing.o parsing
 cc -Werror -Wall -Wextra -g -fsanitize=address   -c -o parsing/parsing_utils.o parsing/parsing_utils.c
 cc -Werror -Wall -Wextra -g -fsanitize=address   -c -o utils.o utils.c
 cc -Werror -Wall -Wextra -g -fsanitize=address   -c -o main.o main.c
+cc -Werror -Wall -Wextra -g -fsanitize=address   -c -o exec/ft_echo.o exec/ft_echo.c
 make -C libft
-cc -Werror -Wall -Wextra -g -fsanitize=address tokenization/tokenization.o tokenization/expansion.o tokenization/tokenization2.o tokenization/wildcard.o tokenization/split_wildcard.o tokenization/print_tokens.o tokenization/free_funcs.o tokenization/tokenization3.o tokenization/join_tokens.o parsing/parsing.o parsing/parsing_utils.o utils.o main.o -o minishell -L/usr/local/lib -I/usr/local/include -lreadline libft/libft.a
+cc -Werror -Wall -Wextra -g -fsanitize=address tokenization/tokenization.o tokenization/expansion.o tokenization/tokenization2.o tokenization/wildcard.o tokenization/split_wildcard.o tokenization/print_tokens.o tokenization/free_funcs.o tokenization/tokenization3.o tokenization/join_tokens.o parsing/parsing.o parsing/parsing_utils.o utils.o main.o exec/ft_echo.o -o minishell -L/usr/local/lib -I/usr/local/include -lreadline libft/libft.a
 make: Leaving directory `/Users/mkhan/Desktop/minishell'
  
