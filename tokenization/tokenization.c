@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 14:46:52 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/21 12:03:55 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/24 11:27:34 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,27 +43,42 @@ t_list	*tokenize_operator(const char *line, size_t *idx,
 
 static t_list	*tokenize_env_var_helper(t_token *token)
 {
-	t_list	*el;
 	char	*env_var;
 	char	*expanded;
+	bool	success;
+	t_list	*expanded_tokens;
+	t_list	*el;
 
-	el = ft_lstnew(token);
-	if (el == NULL)
-		return (NULL);
+	expanded_tokens = NULL;
 	if (token->type == ENV_VAR)
 	{
 		env_var = token->substr;
 		if (getenv(env_var) == NULL)
+		{
+			token->type = NORMAL;
+			ft_free(&env_var);
 			token->substr = ft_strdup("");
+			expanded_tokens = ft_lstnew(token);
+		}
 		else
 		{
-			expanded = strjoin_free("\"", getenv(env_var), 0);
-			expanded = strjoin_free(expanded, "\"", 1);
-			token->substr = expanded;
+			expanded = ft_strdup(getenv(env_var));
+			expanded_tokens = tokenize_line(expanded, &success);
+			ft_free(&expanded);
+			if (success == false)
+			{
+				free_token(token);
+				return (NULL);
+			}
+			free_token(token);
 		}
-		ft_free(&env_var);
+		return (expanded_tokens);
 	}
-	return (el);
+	else
+	{
+		el = ft_lstnew(token);
+		return (el);
+	}
 }
 
 t_list	*tokenize_env_variable(const char *line, size_t *idx)
@@ -150,7 +165,13 @@ t_list	*tokenize_line(const char *line, bool *success)
 				ft_lstclear(&tokens, free_token);
 				return (NULL);
 			}
-			ft_lstadd_back(&tokens, el);
+			t_token	*envvar_token = el->content;
+			if (*envvar_token->substr != '\0')
+				ft_lstadd_back(&tokens, el);
+			else
+			{
+				ft_lstclear(&el, free_token);
+			}
 		}
 		else if (line[i] == '>' && line[i + 1] != '>')
 		{
@@ -264,9 +285,25 @@ t_list	*tokenize_line(const char *line, bool *success)
 			{
 				*success = false;
 				ft_lstclear(&tokens, free_token);
+				ft_lstclear(&el, free_token);
 				return (NULL);
 			}
-			ft_lstadd_back(&tokens, el);
+			t_token	*tok = el->content;
+			if (ft_strchr(tok->substr, '*') != NULL)
+			{
+				tok->substr = expand_wildcard(tok->substr);
+				t_list	*wildcard_tokens = tokenize_line(tok->substr, success);
+				if (success == false)
+				{
+					ft_lstclear(&tokens, free_token);
+					ft_lstclear(&wildcard_tokens, free_token);
+					return (NULL);
+				}
+				ft_lstclear(&el, free_token);
+				ft_lstadd_back(&tokens, wildcard_tokens);
+			}
+			else
+				ft_lstadd_back(&tokens, el);
 		}
 		if (line[i] != '\0')
 			i++;

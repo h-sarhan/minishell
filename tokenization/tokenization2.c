@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 22:19:29 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/23 12:35:05 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/24 10:43:25 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,11 +71,11 @@ t_list	*tokenize_normal(const char *line, size_t *idx)
 	tkn->substr = ft_substr(line, tkn->start, tkn->end - tkn->start + 1);
 	if (tkn->substr == NULL)
 		return (NULL);
-	if (ft_strchr(tkn->substr, '*') != NULL)
-	{
-		tkn->type = WILDCARD;
-		tkn->substr = expand_wildcard(tkn->substr);
-	}
+	// if (ft_strchr(tkn->substr, '*') != NULL)
+	// {
+	// 	tkn->type = WILDCARD;
+	// 	tkn->substr = expand_wildcard(tkn->substr);
+	// }
 	el = ft_lstnew(tkn);
 	*idx = tkn->end;
 	return (el);
