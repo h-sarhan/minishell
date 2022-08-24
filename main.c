@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:43:26 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/24 11:31:02 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/24 12:34:32 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,26 +101,27 @@ int	main(void)
 			continue;
 		}
 		tokens = tokenize_line(line, &success);
-		if (success == false)
-			continue;
-		t_list *exec_steps = parse_tokens(tokens, &success);
-		t_list *exec_steps_start = exec_steps;
-		if (success == false)
-		{
-			write_to_stderr("Parse error\n");
-			ft_lstclear(&tokens, free_token);
-			ft_lstclear(&exec_steps_start, free_exec_step);
-			rl_on_new_line();
-			free(line);
-			continue;
-		}
-		while (exec_steps != NULL)
-		{
-			print_exec_step(exec_steps);
-			exec_steps = exec_steps->next;
-		}
+		print_tokens(tokens);
+		// if (success == false)
+		// 	continue;
+		// t_list *exec_steps = parse_tokens(tokens, &success);
+		// t_list *exec_steps_start = exec_steps;
+		// if (success == false)
+		// {
+		// 	write_to_stderr("Parse error\n");
+		// 	ft_lstclear(&tokens, free_token);
+		// 	ft_lstclear(&exec_steps_start, free_exec_step);
+		// 	rl_on_new_line();
+		// 	free(line);
+		// 	continue;
+		// }
+		// while (exec_steps != NULL)
+		// {
+		// 	print_exec_step(exec_steps);
+		// 	exec_steps = exec_steps->next;
+		// }
 		ft_lstclear(&tokens, free_token);
-		ft_lstclear(&exec_steps_start, free_exec_step);
+		// ft_lstclear(&exec_steps_start, free_exec_step);
 		rl_on_new_line();
 		ft_free(&line);
 	}

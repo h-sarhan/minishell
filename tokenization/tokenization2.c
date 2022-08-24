@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 22:19:29 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/24 10:43:25 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/24 12:46:48 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,9 @@ t_list	*tokenize_normal(const char *line, size_t *idx)
 	size_t	i;
 	t_token	*tkn;
 	t_list	*el;
-
+	char	quote;
+	
+	quote = '\0';
 	i = *idx;
 	tkn = ft_calloc(1, sizeof(t_token));
 	if (tkn == NULL)
@@ -67,15 +69,28 @@ t_list	*tokenize_normal(const char *line, size_t *idx)
 	tkn->type = NORMAL;
 	while (line[i] != '\0' && ft_strchr(" \'\"$<>|(", line[i]) == NULL)
 		i++;
+	while (line[i] == '\'' || line[i] == '\"')
+	{
+		quote = line[i];
+		i++;
+		while (line[i] != '\0' && line[i] != quote)
+			i++;
+		if (line[i] == '\0')
+		{
+			free_token(tkn);
+			printf("Reached end of line\n");
+			return (NULL);
+		}
+		i++;
+		while (line[i] != '\0' && ft_strchr(" \'\"$<>|(", line[i]) == NULL)
+			i++;
+	}
 	tkn->end = i - 1;
 	tkn->substr = ft_substr(line, tkn->start, tkn->end - tkn->start + 1);
+	if (quote != '\0')
+		tkn->substr = eat_quotes(tkn->substr);
 	if (tkn->substr == NULL)
 		return (NULL);
-	// if (ft_strchr(tkn->substr, '*') != NULL)
-	// {
-	// 	tkn->type = WILDCARD;
-	// 	tkn->substr = expand_wildcard(tkn->substr);
-	// }
 	el = ft_lstnew(tkn);
 	*idx = tkn->end;
 	return (el);
