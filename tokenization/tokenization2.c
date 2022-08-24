@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 22:19:29 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/24 12:46:48 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/24 12:47:56 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,7 @@ t_list	*tokenize_normal(const char *line, size_t *idx)
 		return (NULL);
 	tkn->start = i;
 	tkn->type = NORMAL;
-	while (line[i] != '\0' && ft_strchr(" \'\"$<>|(", line[i]) == NULL)
+	while (line[i] != '\0' && ft_strchr(" \'\"$<>|(&", line[i]) == NULL)
 		i++;
 	while (line[i] == '\'' || line[i] == '\"')
 	{
@@ -82,7 +82,7 @@ t_list	*tokenize_normal(const char *line, size_t *idx)
 			return (NULL);
 		}
 		i++;
-		while (line[i] != '\0' && ft_strchr(" \'\"$<>|(", line[i]) == NULL)
+		while (line[i] != '\0' && ft_strchr(" \'\"$<>|(&", line[i]) == NULL)
 			i++;
 	}
 	tkn->end = i - 1;
