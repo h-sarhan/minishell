@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 14:46:52 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/24 14:57:00 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/25 12:48:12 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -287,18 +287,20 @@ t_list	*tokenize_line(const char *line, bool *success)
 				return (NULL);
 			}
 			t_token	*tok = el->content;
-			if (ft_strchr(tok->substr, '*') != NULL)
+			if (ft_strchr(tok->substr, '*') != NULL && tok->expanded == false)
 			{
+				printf("Expanding wildcard\n");
 				tok->substr = expand_wildcard(tok->substr);
+				tok->expanded = true;
 				t_list	*wildcard_tokens = tokenize_line(tok->substr, success);
-				if (success == false)
+				if (*success == false || wildcard_tokens == NULL)
 				{
+					ft_lstclear(&el, free_token);
 					ft_lstclear(&tokens, free_token);
 					ft_lstclear(&wildcard_tokens, free_token);
 					return (NULL);
 				}
 				tok = wildcard_tokens->content;
-				tok->expanded = true;
 				ft_lstclear(&el, free_token);
 				ft_lstadd_back(&tokens, wildcard_tokens);
 			}

@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/21 12:03:03 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/24 14:54:59 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/25 12:31:42 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,8 @@ bool	check_for_errors(t_list *tokens)
 	t_token	*token;
 	t_token	*next_token;
 
+	if (tokens == NULL)
+		return (true);
 	token = tokens->content;
 	if (is_terminator(token) == true)
 		return (false);
