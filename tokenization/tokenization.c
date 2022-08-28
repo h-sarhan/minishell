@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 14:46:52 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/28 18:24:05 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/28 18:48:14 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,8 +92,26 @@ t_list	*tokenize_env_variable(const char *line, size_t *idx)
 		return (NULL);
 	tkn->start = i - 1;
 	tkn->type = ENV_VAR;
-	while (line[i] != '\0' && (ft_isalnum(line[i]) || line[i] == '_'))
+	while (line[i] != '\0' && line[i] != '\"'
+		&& (ft_isalnum(line[i]) || line[i] == '_'))
 		i++;
+	if (line[i] == '\"')
+	{
+		i++;
+		tkn->start = i;
+		while (line[i] != '\"' && line[i] != '\0')
+			i++;
+		if (line[i] == '\0')
+		{
+			free_token(tkn);
+			return (NULL);
+		}
+		tkn->end = i - 1;
+		tkn->substr = ft_substr(line, tkn->start, tkn->end - tkn->start + 1);
+		tkn->type = NORMAL;
+		*idx = i;
+		return (ft_lstnew(tkn));
+	}
 	tkn->end = i - 1;
 	if (tkn->start >= tkn->end)
 	{
