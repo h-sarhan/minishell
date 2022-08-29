@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 14:46:52 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/28 18:48:14 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/29 12:05:35 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,6 +85,7 @@ t_list	*tokenize_env_variable(const char *line, size_t *idx)
 {
 	size_t	i;
 	t_token	*tkn;
+	t_list	*el;
 
 	i = *idx + 1;
 	tkn = ft_calloc(1, sizeof(t_token));
@@ -92,26 +93,9 @@ t_list	*tokenize_env_variable(const char *line, size_t *idx)
 		return (NULL);
 	tkn->start = i - 1;
 	tkn->type = ENV_VAR;
-	while (line[i] != '\0' && line[i] != '\"'
+	while (line[i] != '\0' && line[i] != '\"' && line[i] != '*' && line[i] != '\''
 		&& (ft_isalnum(line[i]) || line[i] == '_'))
 		i++;
-	if (line[i] == '\"')
-	{
-		i++;
-		tkn->start = i;
-		while (line[i] != '\"' && line[i] != '\0')
-			i++;
-		if (line[i] == '\0')
-		{
-			free_token(tkn);
-			return (NULL);
-		}
-		tkn->end = i - 1;
-		tkn->substr = ft_substr(line, tkn->start, tkn->end - tkn->start + 1);
-		tkn->type = NORMAL;
-		*idx = i;
-		return (ft_lstnew(tkn));
-	}
 	tkn->end = i - 1;
 	if (tkn->start >= tkn->end)
 	{
@@ -123,7 +107,21 @@ t_list	*tokenize_env_variable(const char *line, size_t *idx)
 	if (tkn->substr == NULL)
 		return (NULL);
 	*idx = i - 1;
-	return (tokenize_env_var_helper(tkn));
+	el = tokenize_env_var_helper(tkn);
+	if (line[i] != '\0')
+	{
+		tkn = ft_lstlast(el)->content;
+		size_t	start;
+		start = i;
+		while (line[i] != ' ' && line[i] != '\0')
+			i++;
+		tkn->substr = strjoin_free(tkn->substr, eat_quotes(ft_substr(line, start, i - start + 1)), 3);
+		// ! SHIT CODE
+		if (tkn->substr[0] == '$')
+			tkn->substr = substr_free(tkn->substr, 1, ft_strlen(tkn->substr) - 1);
+		*idx = i - 1;
+	}
+	return (el);
 }
 
 t_list	*tokenize_line(const char *line, bool *success)

@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 22:19:29 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/25 12:45:50 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/29 12:06:04 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,8 @@ static void	*parse_error(const char *msg)
 	return (NULL);
 }
 
-char	*eat_quotes(char *str)
+// ! Does not work with nested quotation marks
+char	*eat_quotes(const char *str)
 {
 	size_t	num_quotes;
 	size_t	i;
