@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/29 17:43:57 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/29 17:47:38 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/29 17:54:12 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,3 +23,9 @@ void	env_builtin(char **env)
 		i++;
 	}
 }
+
+// void	env_builtin_stupid(char **env)
+// {
+// 	while (*env)
+// 		printf("%s\n", *(env++));
+// }
