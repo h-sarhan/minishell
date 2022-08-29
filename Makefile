@@ -6,7 +6,7 @@
 #    By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/04/29 21:51:32 by hsarhan           #+#    #+#              #
-#    Updated: 2022/08/24 11:02:44 by hsarhan          ###   ########.fr        #
+#    Updated: 2022/08/29 17:47:21 by hsarhan          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -20,7 +20,10 @@ TOKENIZATION_SRCS := $(addprefix tokenization/, $(TOKENIZATION_SRCS))
 PARSING_SRCS = parsing.c parsing_utils.c
 PARSING_SRCS := $(addprefix parsing/, $(PARSING_SRCS))
 
-SRCS = $(TOKENIZATION_SRCS) $(PARSING_SRCS)
+BUILT_INS_SRCS = env.c
+BUILT_INS_SRCS := $(addprefix built_ins/, $(BUILT_INS_SRCS))
+
+SRCS = $(TOKENIZATION_SRCS) $(PARSING_SRCS) $(BUILT_INS_SRCS)
 
 SRCS += utils.c main.c
 
