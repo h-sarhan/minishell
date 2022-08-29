@@ -6,7 +6,7 @@
 /*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/23 17:45:38 by mkhan             #+#    #+#             */
-/*   Updated: 2022/08/23 21:15:33 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/08/29 15:49:46 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,27 +23,29 @@ int	ft_strcmp(char *s1, char *s2)
 	return (s1[i] - s2[i]);
 }
 
-void ft_echo(t_exec_step *command)
-{
-	int	i;
-	int n;
+// void ft_echo(t_exec_step *command)
+// {
+// 	t_list *start;
+// 	int	i;
+// 	int n;
 	
-	i = 1;
-	n = 0;
-	printf("where do I seg fault \n");
-	printf("%s\n", command->cmd->args);
-	while (command->cmd->args->content && ft_strcmp(command->cmd->args->content, "-n") == 0)
-	{
-		printf("is it here? \n");
-		// n = 1;
-		command->cmd->args = command->cmd->args->next;
-	 printf("%s", command->cmd->args->content);
-	}
-	// while (command->cmd->args->content)
-	// {
-	// 	printf("%s", command->cmd->args->content);
-	// 	command->cmd->args = command->cmd->args->next;
-	// }
-	// if (n == 0)
-	// 	write(1, "\n", 1);
-}
+// 	i = 1;
+// 	n = 0;
+// 	start = command->cmd->args->next;
+// 	// printf("where do I seg fault \n");
+// 	while (command->cmd->args->next && ft_strcmp(command->cmd->args->next->content, "-n") == 0)
+// 	{
+// 		printf("is it here? \n");
+// 		n = 1;
+// 	 	// printf("%s", command->cmd->args->content);
+// 		command->cmd->args = command->cmd->args->next;
+// 	}
+// 	command->cmd->args = start;
+// 	while (command->cmd->args)
+// 	{
+// 		printf("%s", command->cmd->args->content);
+// 		command->cmd->args = command->cmd->args->next;
+// 	}
+// 	// if (n == 0)
+// 	// 	write(1, "\n", 1);
+// }

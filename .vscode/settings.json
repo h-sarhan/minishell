@@ -1,9 +1,0 @@
-{
-	"files.associations": {
-		"exec.h": "c",
-		"stdio.h": "c",
-		"tokenization.h": "c",
-		"libft.h": "c",
-		"minishell.h": "c"
-	}
-}
