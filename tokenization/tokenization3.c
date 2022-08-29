@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/19 16:25:19 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/23 12:35:17 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/29 13:00:11 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,8 @@ t_list	*tokenize_single_quote(const char *line, size_t *idx)
 	if (line[i] == '\0')
 		return (parse_error(("Parse Error: Unterminated string\n")));
 	tkn->end = i;
-	tkn->substr = ft_substr(line, tkn->start, tkn->end - tkn->start + 1);
+	tkn->substr = ft_substr(line, tkn->start + 1, tkn->end - tkn->start - 1);
+	// tkn->substr = ft_strtrim();
 	tkn->sub_tokens = NULL;
 	if (tkn->substr == NULL)
 		return (NULL);
@@ -64,7 +65,7 @@ t_list	*tokenize_double_quote(const char *line, size_t *idx)
 	if (line[i] == '\0')
 		return (parse_error(("Parse Error: Unterminated string\n")));
 	tkn->end = i;
-	tkn->substr = ft_substr(line, tkn->start, tkn->end - tkn->start + 1);
+	tkn->substr = ft_substr(line, tkn->start + 1, tkn->end - tkn->start - 1);
 	if (tkn->substr == NULL)
 		return (NULL);
 	el = ft_lstnew(tkn);

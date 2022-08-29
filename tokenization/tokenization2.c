@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 22:19:29 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/29 12:54:54 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/29 13:24:13 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,10 @@ char	*eat_quotes(const char *str)
 			while (str[i] != quote && str[i] != '\0')
 				i++;
 			if (str[i] == '\0')
+			{
+				ft_free(&str);
 				return (NULL);
+			}
 			i++;
 		}
 		else

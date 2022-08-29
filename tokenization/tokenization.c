@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 14:46:52 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/29 12:51:39 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/29 13:23:12 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -105,7 +105,10 @@ t_list	*tokenize_env_variable(const char *line, size_t *idx)
 	else
 		tkn->substr = ft_substr(line, tkn->start + 1, tkn->end - tkn->start);
 	if (tkn->substr == NULL)
+	{
+		free_token(tkn);
 		return (NULL);
+	}
 	*idx = i - 1;
 	el = tokenize_env_var_helper(tkn);
 	if (line[i] != '\0')
@@ -117,9 +120,12 @@ t_list	*tokenize_env_variable(const char *line, size_t *idx)
 			i++;
 		tkn->substr = strjoin_free(tkn->substr, eat_quotes(ft_substr(line, start, i - start + 1)), 3);
 		if (tkn->substr == NULL)
+		{
+			ft_lstclear(&el, free_token);
 			return (NULL);
+		}
 		// ! SHIT CODE
-		if (tkn->substr[0] == '$')
+		if (tkn->substr[0] == '$' && (ft_isalnum(tkn->substr[1]) || tkn->substr[1] == '_'))
 			tkn->substr = substr_free(tkn->substr, 1, ft_strlen(tkn->substr) - 1);
 		*idx = i - 1;
 	}
@@ -181,6 +187,7 @@ t_list	*tokenize_line(const char *line, bool *success)
 			{
 				*success = false;
 				ft_lstclear(&tokens, free_token);
+				write_to_stderr("Parse Error: Invalid input\n");
 				return (NULL);
 			}
 			t_token	*envvar_token = el->content;
