@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/21 12:03:03 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/25 12:31:42 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/29 15:32:22 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -214,6 +214,7 @@ t_list	*parse_tokens(t_list *tokens, bool *success)
 		}
 		tokens = tokens->next;
 	}
+	ft_lstiter(steps, list_to_str_arr);
 	*success = true;
 	return (steps);
 }

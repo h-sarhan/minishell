@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/21 11:55:31 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/22 08:27:34 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/29 15:31:59 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@ struct	s_redir
 struct	s_cmd
 {
 	t_list	*args;
+	char	**arg_arr;
 	int		pid;
 	t_list	*redirs;
 };
@@ -45,5 +46,6 @@ t_list	*parse_tokens(t_list *tokens, bool *success);
 void	free_exec_step(void *exec_step_ptr);
 void	free_redir(void *redir_ptr);
 void	print_exec_step(t_list *exec_steps);
+void	list_to_str_arr(void *step_ptr);
 
 #endif

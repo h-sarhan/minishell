@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:43:26 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/24 14:55:46 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/29 15:34:11 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,10 +115,17 @@ int	main(void)
 			free(line);
 			continue;
 		}
-		while (exec_steps != NULL)
+		// while (exec_steps != NULL)
+		// {
+		// 	print_exec_step(exec_steps);
+		// 	exec_steps = exec_steps->next;
+		// }
+		size_t	i;
+		i = 0;
+		while (((t_exec_step *)exec_steps->content)->cmd->arg_arr[i] != NULL)
 		{
-			print_exec_step(exec_steps);
-			exec_steps = exec_steps->next;
+			printf("%s\n", ((t_exec_step *)exec_steps->content)->cmd->arg_arr[i]);
+			i++;
 		}
 		ft_lstclear(&tokens, free_token);
 		ft_lstclear(&exec_steps_start, free_exec_step);
