@@ -6,7 +6,7 @@
 /*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/21 12:03:03 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/23 18:08:23 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/08/29 15:56:17 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,8 @@ bool	check_for_errors(t_list *tokens)
 	t_token	*token;
 	t_token	*next_token;
 
+	if (tokens == NULL)
+		return (true);
 	token = tokens->content;
 	if (is_terminator(token) == true)
 		return (false);
@@ -52,6 +54,8 @@ bool	check_for_errors(t_list *tokens)
 		{
 			return (false);
 		}
+		if (is_redirection(token) && next_token->expanded == true)
+			return (false);
 		tokens = tokens->next;
 	}
 	return (true);
@@ -210,6 +214,7 @@ t_list	*parse_tokens(t_list *tokens, bool *success)
 		}
 		tokens = tokens->next;
 	}
+	ft_lstiter(steps, list_to_str_arr);
 	*success = true;
 	return (steps);
 }

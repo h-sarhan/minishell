@@ -6,9 +6,10 @@
 /*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:43:26 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/23 18:09:22 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/08/29 15:55:25 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 
 #include "minishell.h"
 
@@ -101,21 +102,8 @@ int	main(void)
 			continue;
 		}
 		tokens = tokenize_line(line, &success);
-		if (success == true)
-		{
-			char *expanded_line = join_tokens(tokens);
-			ft_lstclear(&tokens, free_token);
-			tokens = tokenize_line(expanded_line, &success);
-			ft_free(&expanded_line);
-			if (success == false)
-			{
-				ft_lstclear(&tokens, free_token);
-				rl_on_new_line();
-				free(line);
-				continue;
-			}
-		}
-		else
+		print_tokens(tokens);
+		if (success == false)
 			continue;
 		t_list *exec_steps = parse_tokens(tokens, &success);
 		t_list *exec_steps_start = exec_steps;

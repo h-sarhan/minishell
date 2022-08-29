@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 22:19:29 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/23 12:35:05 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/29 13:35:25 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,20 +18,34 @@ static void	*parse_error(const char *msg)
 	return (NULL);
 }
 
-char	*eat_quotes(char *str)
+char	*eat_quotes(const char *str)
 {
 	size_t	num_quotes;
 	size_t	i;
 	size_t	j;
 	char	*trimmed_str;
+	char	quote;
 
 	num_quotes = 0;
 	i = 0;
 	while (str[i] != '\0')
 	{
 		if (str[i] == '\'' || str[i] == '\"')
-			num_quotes++;
-		i++;
+		{
+			quote = str[i];
+			num_quotes += 2;
+			i++;
+			while (str[i] != quote && str[i] != '\0')
+				i++;
+			if (str[i] == '\0')
+			{
+				ft_free(&str);
+				return (NULL);
+			}
+			i++;
+		}
+		else
+			i++;
 	}
 	trimmed_str = ft_calloc(ft_strlen(str) - num_quotes + 1, sizeof(char));
 	if (trimmed_str == NULL)
@@ -40,14 +54,24 @@ char	*eat_quotes(char *str)
 	j = 0;
 	while (str[i] != '\0')
 	{
-		if (str[i] != '\'' && str[i] != '\"')
+		if (str[i] == '\'' || str[i] == '\"')
 		{
-			trimmed_str[j] = str[i];
+			quote = str[i];
 			i++;
-			j++;
+			while (str[i] != quote)
+			{
+				trimmed_str[j] = str[i];
+				j++;
+				i++;
+			}
+			i++;
 		}
 		else
+		{
+			trimmed_str[j] = str[i];
+			j++;
 			i++;
+		}
 	}
 	ft_free(&str);
 	return (trimmed_str);
@@ -58,24 +82,41 @@ t_list	*tokenize_normal(const char *line, size_t *idx)
 	size_t	i;
 	t_token	*tkn;
 	t_list	*el;
-
+	char	quote;
+	
+	quote = '\0';
 	i = *idx;
 	tkn = ft_calloc(1, sizeof(t_token));
 	if (tkn == NULL)
 		return (NULL);
 	tkn->start = i;
 	tkn->type = NORMAL;
-	while (line[i] != '\0' && ft_strchr(" \'\"$<>|(", line[i]) == NULL)
+	while (line[i] != '\0' && ft_strchr(" \'\"$<>|(&", line[i]) == NULL)
 		i++;
+	while ((line[i] == '\'' || line[i] == '\"') && line[i] != '\0')
+	{
+		quote = line[i];
+		i++;
+		while (line[i] != '\0' && line[i] != quote)
+			i++;
+		if (line[i] == '\0')
+		{
+			free_token(tkn);
+			return (parse_error("Parse Error: Invalid input\n"));
+		}
+		i++;
+		while (line[i] != '\0' && ft_strchr(" \'\"$<>|(&", line[i]) == NULL)
+			i++;
+		tkn->expanded = true;
+	}
 	tkn->end = i - 1;
 	tkn->substr = ft_substr(line, tkn->start, tkn->end - tkn->start + 1);
+	while (contains_env_var(tkn->substr))
+		tkn->substr = expand_double_quote(tkn->substr);
+	if (quote != '\0')
+		tkn->substr = eat_quotes(tkn->substr);
 	if (tkn->substr == NULL)
 		return (NULL);
-	if (ft_strchr(tkn->substr, '*') != NULL)
-	{
-		tkn->type = WILDCARD;
-		tkn->substr = expand_wildcard(tkn->substr);
-	}
 	el = ft_lstnew(tkn);
 	*idx = tkn->end;
 	return (el);
