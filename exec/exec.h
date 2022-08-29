@@ -6,7 +6,7 @@
 /*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/23 17:46:50 by mkhan             #+#    #+#             */
-/*   Updated: 2022/08/23 18:10:27 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/08/29 18:37:06 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,6 @@
 
 #include "../parsing/parsing.h"
 
-void ft_echo(t_exec_step *command);
+void echo(t_exec_step *command);
 
 #endif

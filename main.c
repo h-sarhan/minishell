@@ -6,7 +6,7 @@
 /*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:43:26 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/29 15:55:25 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/08/29 21:52:20 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,7 +102,7 @@ int	main(void)
 			continue;
 		}
 		tokens = tokenize_line(line, &success);
-		print_tokens(tokens);
+		// print_tokens(tokens);
 		if (success == false)
 			continue;
 		t_list *exec_steps = parse_tokens(tokens, &success);
@@ -116,7 +116,7 @@ int	main(void)
 			free(line);
 			continue;
 		}
-		ft_echo(exec_steps->content);
+		echo(exec_steps->content);
 		// while (exec_steps != NULL)
 		// {
 		// 	print_exec_step(exec_steps);
