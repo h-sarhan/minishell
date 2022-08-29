@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 22:19:29 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/29 13:24:13 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/29 13:35:25 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,6 +111,8 @@ t_list	*tokenize_normal(const char *line, size_t *idx)
 	}
 	tkn->end = i - 1;
 	tkn->substr = ft_substr(line, tkn->start, tkn->end - tkn->start + 1);
+	while (contains_env_var(tkn->substr))
+		tkn->substr = expand_double_quote(tkn->substr);
 	if (quote != '\0')
 		tkn->substr = eat_quotes(tkn->substr);
 	if (tkn->substr == NULL)
