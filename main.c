@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:43:26 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/29 15:34:11 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/29 16:24:40 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,12 +17,12 @@ void	print_exec_step(t_list *exec_steps)
 	t_exec_step	*step = exec_steps->content;
 	t_redir	*redir;
 	size_t	i = 0;
-	t_list	*args = NULL;
+	char	**args;
 	t_list	*redirs = NULL;
 	
 	if (step->cmd != NULL)
 	{
-		args = step->cmd->args;
+		args = step->cmd->arg_arr;
 		redirs = step->cmd->redirs;
 	}
 	if (step->subexpr_steps != NULL)
@@ -47,10 +47,10 @@ void	print_exec_step(t_list *exec_steps)
 	}
 	// printf("\n");
 	printf("===================EXPR START===================\n");
-	while (args != NULL)
+	while (args[i] != NULL)
 	{
-		printf("Arg #%lu == %s\n", i + 1, (char *)args->content);
-		args = args->next;
+		printf("Arg #%lu == %s\n", i + 1, args[i]);
+		// args = args->next;
 		i++;
 	}
 	if (step->pipe_next == true)
@@ -115,18 +115,18 @@ int	main(void)
 			free(line);
 			continue;
 		}
-		// while (exec_steps != NULL)
-		// {
-		// 	print_exec_step(exec_steps);
-		// 	exec_steps = exec_steps->next;
-		// }
-		size_t	i;
-		i = 0;
-		while (((t_exec_step *)exec_steps->content)->cmd->arg_arr[i] != NULL)
+		while (exec_steps != NULL)
 		{
-			printf("%s\n", ((t_exec_step *)exec_steps->content)->cmd->arg_arr[i]);
-			i++;
+			print_exec_step(exec_steps);
+			exec_steps = exec_steps->next;
 		}
+		// size_t	i;
+		// i = 0;
+		// while (((t_exec_step *)exec_steps->content)->cmd->arg_arr[i] != NULL)
+		// {
+		// 	printf("%s\n", ((t_exec_step *)exec_steps->content)->cmd->arg_arr[i]);
+		// 	i++;
+		// }
 		ft_lstclear(&tokens, free_token);
 		ft_lstclear(&exec_steps_start, free_exec_step);
 		rl_on_new_line();
