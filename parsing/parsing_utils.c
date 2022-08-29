@@ -5,69 +5,69 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/08/17 14:49:04 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/17 20:50:24 by hsarhan          ###   ########.fr       */
+/*   Created: 2022/08/21 21:38:27 by hsarhan           #+#    #+#             */
+/*   Updated: 2022/08/29 15:46:54 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "parsing.h"
+#include "../minishell.h"
 
-void	write_to_stderr(const char *msg)
+void	free_redir(void *redir_ptr)
 {
-	write(STDERR_FILENO, msg, ft_strlen(msg));
+	t_redir	*redir;
+
+	redir = redir_ptr;
+	ft_free(&redir->file);
+	ft_free(&redir->limiter);
+	ft_free(&redir);
 }
 
-// This is ft_strjoin but with an additional argument
-// to specify which input strings to free
-char	*strjoin_free(char *s1, char *s2, int f)
+void	free_exec_step(void *exec_step_ptr)
 {
-	char	*joined;
-
-	joined = ft_strjoin(s1, s2);
-	if (f == 1)
-		ft_free(&s1);
-	if (f == 2)
-		ft_free(&s2);
-	if (f == 3)
-	{
-		ft_free(&s1);
-		ft_free(&s2);
-	}
-	return (joined);
-}
-
-char	*substr_free(char *s, unsigned int start, size_t len)
-{
-	char	*substr;
-	size_t	substr_length;
+	t_exec_step	*exec_step;
 	size_t	i;
 
-	if (start > ft_strlen(s))
-		len = 0;
-	else
-	{
-		substr_length = ft_strlen(&s[start]);
-		if (len > substr_length)
-			len = substr_length;
-	}
-	substr = malloc(sizeof(char) * (len + 1));
-	if (substr == NULL)
-		return (NULL);
+	exec_step = exec_step_ptr;
+	if (exec_step->cmd != NULL)
+		ft_lstclear(&exec_step->cmd->redirs, free_redir);
+	if (exec_step->subexpr_steps != NULL)
+		ft_lstclear(&exec_step->subexpr_steps, free_exec_step);
 	i = 0;
-	while (i < len)
+	while (exec_step->cmd->arg_arr[i] != NULL)
 	{
-		substr[i] = s[i + start];
+		ft_free(&exec_step->cmd->arg_arr[i]);
 		i++;
 	}
-	substr[i] = '\0';
-	ft_free(&s);
-	return (substr);
+	ft_free(&exec_step->cmd->arg_arr);
+	// if (exec_step->cmd != NULL)
+	// 	ft_lstclear(&exec_step->cmd->args, free);
+	ft_free(&exec_step->cmd);
+	ft_free(&exec_step);
 }
 
-void	ft_free(void *memory)
+void	list_to_str_arr(void *step_ptr)
 {
-	if (*(void **)memory != NULL)
-		free(*(void **)memory);
-	*(void **)memory = NULL;
-}
+	t_list		*arg_list;
+	size_t		i;
+	size_t		list_size;
+	t_exec_step	*step;
 
+	step = step_ptr;
+	arg_list = step->cmd->args;
+	list_size = ft_lstsize(arg_list);
+	step->cmd->arg_arr = ft_calloc(list_size + 1, sizeof(char *));
+	if (step->cmd->arg_arr == NULL)
+	{
+		// ???
+		exit(EXIT_FAILURE);
+	}
+	i = 0;
+	while (i < list_size)
+	{
+		step->cmd->arg_arr[i] = ft_strdup(arg_list->content);
+		arg_list = arg_list->next;
+		i++;
+	}
+	ft_lstclear(&step->cmd->args, free);
+	step->cmd->arg_arr[i] = NULL;
+}

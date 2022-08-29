@@ -6,18 +6,29 @@
 #    By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/04/29 21:51:32 by hsarhan           #+#    #+#              #
-#    Updated: 2022/08/18 10:04:02 by hsarhan          ###   ########.fr        #
+#    Updated: 2022/08/24 11:02:44 by hsarhan          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-SRCS = parsing/main.c parsing/parsing.c parsing/parsing_utils.c parsing/expansion.c \
-		parsing/tokenization.c parsing/wildcard.c parsing/split_wildcard.c
+TOKENIZATION_SRCS = tokenization.c expansion.c \
+					tokenization2.c wildcard.c split_wildcard.c \
+					print_tokens.c free_funcs.c tokenization3.c join_tokens.c
+
+TOKENIZATION_SRCS := $(addprefix tokenization/, $(TOKENIZATION_SRCS))
+
+
+PARSING_SRCS = parsing.c parsing_utils.c
+PARSING_SRCS := $(addprefix parsing/, $(PARSING_SRCS))
+
+SRCS = $(TOKENIZATION_SRCS) $(PARSING_SRCS)
+
+SRCS += utils.c main.c
 
 OBJS := $(SRCS:%.c=%.o)
 
 NAME = minishell
 CC = cc
-CFLAGS = -Werror -Wall -Wextra -fsanitize=address -g
+CFLAGS = -Werror -Wall -Wextra -g
 LIBFT = libft/libft.a
 
 all: $(NAME)
@@ -30,7 +41,7 @@ $(LIBFT):
 
 
 norm:
-	norminette
+	norminette | grep Error
 
 clean:
 	rm -f $(OBJS)
