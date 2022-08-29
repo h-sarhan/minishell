@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 14:46:52 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/29 12:05:35 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/29 12:51:39 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,6 +116,8 @@ t_list	*tokenize_env_variable(const char *line, size_t *idx)
 		while (line[i] != ' ' && line[i] != '\0')
 			i++;
 		tkn->substr = strjoin_free(tkn->substr, eat_quotes(ft_substr(line, start, i - start + 1)), 3);
+		if (tkn->substr == NULL)
+			return (NULL);
 		// ! SHIT CODE
 		if (tkn->substr[0] == '$')
 			tkn->substr = substr_free(tkn->substr, 1, ft_strlen(tkn->substr) - 1);

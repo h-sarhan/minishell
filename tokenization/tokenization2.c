@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 22:19:29 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/29 12:06:04 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/29 12:54:54 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,21 +18,31 @@ static void	*parse_error(const char *msg)
 	return (NULL);
 }
 
-// ! Does not work with nested quotation marks
 char	*eat_quotes(const char *str)
 {
 	size_t	num_quotes;
 	size_t	i;
 	size_t	j;
 	char	*trimmed_str;
+	char	quote;
 
 	num_quotes = 0;
 	i = 0;
 	while (str[i] != '\0')
 	{
 		if (str[i] == '\'' || str[i] == '\"')
-			num_quotes++;
-		i++;
+		{
+			quote = str[i];
+			num_quotes += 2;
+			i++;
+			while (str[i] != quote && str[i] != '\0')
+				i++;
+			if (str[i] == '\0')
+				return (NULL);
+			i++;
+		}
+		else
+			i++;
 	}
 	trimmed_str = ft_calloc(ft_strlen(str) - num_quotes + 1, sizeof(char));
 	if (trimmed_str == NULL)
@@ -41,14 +51,24 @@ char	*eat_quotes(const char *str)
 	j = 0;
 	while (str[i] != '\0')
 	{
-		if (str[i] != '\'' && str[i] != '\"')
+		if (str[i] == '\'' || str[i] == '\"')
 		{
-			trimmed_str[j] = str[i];
+			quote = str[i];
 			i++;
-			j++;
+			while (str[i] != quote)
+			{
+				trimmed_str[j] = str[i];
+				j++;
+				i++;
+			}
+			i++;
 		}
 		else
+		{
+			trimmed_str[j] = str[i];
+			j++;
 			i++;
+		}
 	}
 	ft_free(&str);
 	return (trimmed_str);
@@ -79,7 +99,7 @@ t_list	*tokenize_normal(const char *line, size_t *idx)
 		if (line[i] == '\0')
 		{
 			free_token(tkn);
-			return (NULL);
+			return (parse_error("Parse Error: Invalid input\n"));
 		}
 		i++;
 		while (line[i] != '\0' && ft_strchr(" \'\"$<>|(&", line[i]) == NULL)
