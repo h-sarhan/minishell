@@ -6,7 +6,7 @@
 #    By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/04/29 21:51:32 by hsarhan           #+#    #+#              #
-#    Updated: 2022/08/29 18:36:37 by mkhan            ###   ########.fr        #
+#    Updated: 2022/08/29 22:10:00 by mkhan            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -20,7 +20,7 @@ TOKENIZATION_SRCS := $(addprefix tokenization/, $(TOKENIZATION_SRCS))
 PARSING_SRCS = parsing.c parsing_utils.c
 PARSING_SRCS := $(addprefix parsing/, $(PARSING_SRCS))
 
-EXEC_SRCS = echo.c
+EXEC_SRCS = echo.c pwd.c
 EXEC_SRCS := $(addprefix exec/, $(EXEC_SRCS))
 
 SRCS = $(TOKENIZATION_SRCS) $(PARSING_SRCS) $(EXEC_SRCS)

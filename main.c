@@ -6,7 +6,7 @@
 /*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:43:26 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/29 21:52:20 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/08/29 22:10:35 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,7 +116,8 @@ int	main(void)
 			free(line);
 			continue;
 		}
-		echo(exec_steps->content);
+		// echo(exec_steps->content);
+		ft_pwd(exec_steps->content);
 		// while (exec_steps != NULL)
 		// {
 		// 	print_exec_step(exec_steps);

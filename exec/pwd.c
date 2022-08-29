@@ -1,21 +1,22 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   exec.h                                             :+:      :+:    :+:   */
+/*   pwd.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/08/23 17:46:50 by mkhan             #+#    #+#             */
-/*   Updated: 2022/08/29 22:09:25 by mkhan            ###   ########.fr       */
+/*   Created: 2022/08/29 21:56:29 by mkhan             #+#    #+#             */
+/*   Updated: 2022/08/29 22:13:38 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef EXEC_H
-# define EXEC_H
+#include "../minishell.h"
 
-#include "../parsing/parsing.h"
-
-void	echo(t_exec_step *command);
-void	ft_pwd(t_exec_step *command);
-
-#endif
+void	ft_pwd(t_exec_step *command)
+{
+	(void)command;
+	char	*dir;
+	
+	dir = getcwd(NULL, 0);
+	printf("%s\n", dir);
+}
