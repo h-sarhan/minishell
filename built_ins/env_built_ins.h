@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/29 17:31:18 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/30 21:28:52 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/30 23:43:07 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,5 +17,5 @@ typedef struct s_shell	t_shell;
 
 void	ft_env(const t_shell *shell, t_exec_step *step);
 char	*get_env(const t_shell *shell, const char *name);
-void	ft_export(t_shell *shell, const char *name, const char *value);
+void	ft_export(t_shell *shell, const t_exec_step *step);
 #endif
