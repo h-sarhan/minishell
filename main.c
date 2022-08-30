@@ -6,7 +6,7 @@
 /*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:43:26 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/30 16:30:07 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/08/30 18:37:21 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -120,7 +120,7 @@ int	main(int argc, char **argv, char **env)
 		}
 		// echo(exec_steps->content);
 		// ft_pwd(exec_steps->content);
-		is_builtin(exec_steps->content);
+		is_builtin(exec_steps->content, env);
 		// while (exec_steps != NULL)
 		// {
 		// 	print_exec_step(exec_steps);

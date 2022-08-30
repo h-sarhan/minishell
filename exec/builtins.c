@@ -6,7 +6,7 @@
 /*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/30 13:47:43 by mkhan             #+#    #+#             */
-/*   Updated: 2022/08/30 16:41:06 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/08/30 18:36:39 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,12 +22,12 @@ int	ft_strcmp(char *s1, char *s2)
 	return (s1[i] - s2[i]);
 }
 
-void 	is_builtin(t_exec_step *step)
+void 	is_builtin(t_exec_step *step, char **env)
 {
 	if (ft_strcmp(step->cmd->arg_arr[0], "echo") == 0)
 		ft_echo(step);
 	if (ft_strcmp(step->cmd->arg_arr[0], "cd") == 0)
-		ft_cd(step);
+		ft_cd(step, env);
 	if (ft_strcmp(step->cmd->arg_arr[0], "pwd") == 0)
 		ft_pwd(step);
 	// if (ft_strcmp(step->cmd->arg_arr[0], "env") == 0)
