@@ -6,20 +6,30 @@
 /*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/30 13:47:43 by mkhan             #+#    #+#             */
-/*   Updated: 2022/08/30 14:10:58 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/08/30 16:41:06 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
+int	ft_strcmp(char *s1, char *s2)
+{
+	int i;
+
+	i = 0;
+	while (s1[i] == s2[i] && s1[i] != '\0' && s2[i] != '\0')
+		i++;
+	return (s1[i] - s2[i]);
+}
+
 void 	is_builtin(t_exec_step *step)
 {
 	if (ft_strcmp(step->cmd->arg_arr[0], "echo") == 0)
-		ft_echo(step->content);
+		ft_echo(step);
 	if (ft_strcmp(step->cmd->arg_arr[0], "cd") == 0)
-		ft_cd(step->content, mini->env);
+		ft_cd(step);
 	if (ft_strcmp(step->cmd->arg_arr[0], "pwd") == 0)
-		ft_pwd(step->content);
+		ft_pwd(step);
 	// if (ft_strcmp(step->cmd->arg_arr[0], "env") == 0)
 	// 	ft_env();
 	// if (ft_strcmp(step->cmd->arg_arr[0], "export") == 0)

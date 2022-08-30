@@ -6,13 +6,14 @@
 /*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/30 15:41:46 by mkhan             #+#    #+#             */
-/*   Updated: 2022/08/30 15:42:11 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/08/30 16:44:02 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-void	f_cd(t_exec_step *step)
+void	ft_cd(t_exec_step *step)
 {
-	
+	(void)step;
+	chdir("/Users/mkhan/Desktop/minishell/exec");
 }

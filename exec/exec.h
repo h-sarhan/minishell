@@ -6,7 +6,7 @@
 /*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/23 17:46:50 by mkhan             #+#    #+#             */
-/*   Updated: 2022/08/30 13:52:32 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/08/30 16:43:20 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,10 @@
 
 #include "../parsing/parsing.h"
 
+void 	is_builtin(t_exec_step *step);
+int		ft_strcmp(char *s1, char *s2);
 void	ft_echo(t_exec_step *command);
 void	ft_pwd(t_exec_step *command);
+void	ft_cd(t_exec_step *step);
 
 #endif
