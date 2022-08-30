@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:43:26 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/29 17:46:30 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/30 13:13:19 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -127,7 +127,7 @@ int	main(int argc, char **argv, char **env)
 		if (step->cmd->arg_arr[0] != NULL
 			&& ft_strncmp(step->cmd->arg_arr[0], "env", 3) == 0)
 		{
-			env_builtin(env);
+			ft_env(env);
 		}
 		// size_t	i;
 		// i = 0;
