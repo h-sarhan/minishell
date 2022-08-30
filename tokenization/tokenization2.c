@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 22:19:29 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/29 13:35:25 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/30 20:52:54 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,7 @@ char	*eat_quotes(const char *str)
 	return (trimmed_str);
 }
 
-t_list	*tokenize_normal(const char *line, size_t *idx)
+t_list	*tokenize_normal(const t_shell *shell, const char *line, size_t *idx)
 {
 	size_t	i;
 	t_token	*tkn;
@@ -112,7 +112,7 @@ t_list	*tokenize_normal(const char *line, size_t *idx)
 	tkn->end = i - 1;
 	tkn->substr = ft_substr(line, tkn->start, tkn->end - tkn->start + 1);
 	while (contains_env_var(tkn->substr))
-		tkn->substr = expand_double_quote(tkn->substr);
+		tkn->substr = expand_double_quote(shell, tkn->substr);
 	if (quote != '\0')
 		tkn->substr = eat_quotes(tkn->substr);
 	if (tkn->substr == NULL)
@@ -122,7 +122,7 @@ t_list	*tokenize_normal(const char *line, size_t *idx)
 	return (el);
 }
 
-static t_list	*tokenize_subexpr_helper(t_token *tkn, const size_t i,
+static t_list	*tokenize_subexpr_helper(const t_shell *shell, t_token *tkn, const size_t i,
 					const char *line, size_t *idx)
 {
 	bool	success;
@@ -133,7 +133,7 @@ static t_list	*tokenize_subexpr_helper(t_token *tkn, const size_t i,
 	if (tkn->substr == NULL)
 		return (NULL);
 	success = true;
-	tkn->sub_tokens = tokenize_line(tkn->substr, &success);
+	tkn->sub_tokens = tokenize_line(shell, tkn->substr, &success);
 	if (success == false)
 		return (NULL);
 	el = ft_lstnew(tkn);
@@ -141,7 +141,7 @@ static t_list	*tokenize_subexpr_helper(t_token *tkn, const size_t i,
 	return (el);
 }
 
-t_list	*tokenize_subexpr(const char *line, size_t *idx)
+t_list	*tokenize_subexpr(const t_shell *shell, const char *line, size_t *idx)
 {
 	size_t	i;
 	t_token	*token;
@@ -164,5 +164,5 @@ t_list	*tokenize_subexpr(const char *line, size_t *idx)
 	}
 	if (paren_counter != 0)
 		return (parse_error("Parse Error: Invalid input\n"));
-	return (tokenize_subexpr_helper(token, i, line, idx));
+	return (tokenize_subexpr_helper(shell, token, i, line, idx));
 }

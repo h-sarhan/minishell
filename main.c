@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:43:26 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/30 20:38:41 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/30 21:11:40 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,6 +90,7 @@ int	main(int argc, char **argv, char **env)
 		if (line == NULL)
 		{
 			printf("\n");
+			free_split_array(shell.env);
 			return (EXIT_SUCCESS);
 		}
 		if (line[0] != '\0')
@@ -99,7 +100,7 @@ int	main(int argc, char **argv, char **env)
 			ft_free(&line);
 			continue;
 		}
-		shell.tokens = tokenize_line(line, &success);
+		shell.tokens = tokenize_line(&shell, line, &success);
 		print_tokens(shell.tokens);
 		if (success == false)
 			continue;
@@ -119,17 +120,21 @@ int	main(int argc, char **argv, char **env)
 			print_exec_step(shell.steps);
 			shell.steps = shell.steps->next;
 		}
-		t_exec_step	*step;
-		step = exec_steps_start->content;
-		if (step->cmd->arg_arr[0] != NULL
-			&& ft_strncmp(step->cmd->arg_arr[0], "env", 3) == 0)
+		if (exec_steps_start != NULL)
 		{
-			ft_env(&shell, step);
+			t_exec_step	*step;
+			step = exec_steps_start->content;
+			if (step->cmd->arg_arr[0] != NULL
+				&& ft_strncmp(step->cmd->arg_arr[0], "env", 3) == 0)
+			{
+				ft_env(&shell, step);
+			}
 		}
 		ft_lstclear(&shell.tokens, free_token);
 		ft_lstclear(&exec_steps_start, free_exec_step);
 		rl_on_new_line();
 		ft_free(&line);
 	}
+	free_split_array(shell.env);
 	clear_history();
 }

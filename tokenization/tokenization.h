@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:44:00 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/29 11:07:08 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/30 21:03:22 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@
 
 typedef enum e_token_type	t_token_type;
 typedef struct s_token		t_token;
+typedef struct s_shell		t_shell;
 
 enum	e_token_type
 {
@@ -55,26 +56,26 @@ struct s_token
 	bool			expanded;
 };
 
-t_list	*tokenize_line(const char *line, bool *success);
+t_list	*tokenize_line(const t_shell *shell, const char *line, bool *success);
+t_list	*tokenize_env_variable(const t_shell *shell, const char *line, size_t *idx);
 void	write_to_stderr(const char *msg);
 void	print_tokens_detailed(t_list *tokens);
 char	*strjoin_free(char *s1, char *s2, int f);
 char	*substr_free(char *s, unsigned int start, size_t len);
 bool	contains_env_var(const char *str);
-char	*expand_double_quote(char *str);
+char	*expand_double_quote(const t_shell *shell, char *str);
 void	ft_free(void *memory);
 t_list	*tokenize_operator(const char *line, size_t *idx,
 			const t_token_type type);
-t_list	*tokenize_normal(const char *line, size_t *idx);
-t_list	*tokenize_subexpr(const char *line, size_t *idx);
+t_list	*tokenize_normal(const t_shell *shell, const char *line, size_t *idx);
+t_list	*tokenize_subexpr(const t_shell *shell, const char *line, size_t *idx);
 char	*get_dir_contents(void);
 char	*expand_wildcard(char *token);
 char	**split_wildcard(const char *wildcard_token);
 void	free_token(void *mem);
 void	free_split_array(char **split);
 t_list	*tokenize_single_quote(const char *line, size_t *idx);
-t_list	*tokenize_double_quote(const char *line, size_t *idx);
-t_list	*tokenize_env_variable(const char *line, size_t *idx);
+t_list	*tokenize_double_quote(const t_shell *shell, const char *line, size_t *idx);
 void	print_tokens_detailed(t_list *tokens);
 void	print_tokens(t_list *tokens);
 char	*join_tokens(t_list *tokens);

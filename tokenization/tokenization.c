@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 14:46:52 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/29 13:23:12 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/30 21:20:10 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ t_list	*tokenize_operator(const char *line, size_t *idx,
 	return (el);
 }
 
-static t_list	*tokenize_env_var_helper(t_token *token)
+static t_list	*tokenize_env_var_helper(const t_shell *shell, t_token *token)
 {
 	char	*env_var;
 	char	*expanded;
@@ -53,7 +53,8 @@ static t_list	*tokenize_env_var_helper(t_token *token)
 	if (token->type == ENV_VAR)
 	{
 		env_var = token->substr;
-		if (getenv(env_var) == NULL)
+		expanded = get_env(shell, env_var);
+		if (expanded == NULL)
 		{
 			token->type = NORMAL;
 			ft_free(&env_var);
@@ -62,8 +63,7 @@ static t_list	*tokenize_env_var_helper(t_token *token)
 		}
 		else
 		{
-			expanded = ft_strdup(getenv(env_var));
-			expanded_tokens = tokenize_line(expanded, &success);
+			expanded_tokens = tokenize_line(shell, expanded, &success);
 			ft_free(&expanded);
 			if (success == false)
 			{
@@ -81,7 +81,7 @@ static t_list	*tokenize_env_var_helper(t_token *token)
 	}
 }
 
-t_list	*tokenize_env_variable(const char *line, size_t *idx)
+t_list	*tokenize_env_variable(const t_shell *shell, const char *line, size_t *idx)
 {
 	size_t	i;
 	t_token	*tkn;
@@ -110,7 +110,7 @@ t_list	*tokenize_env_variable(const char *line, size_t *idx)
 		return (NULL);
 	}
 	*idx = i - 1;
-	el = tokenize_env_var_helper(tkn);
+	el = tokenize_env_var_helper(shell, tkn);
 	if (line[i] != '\0')
 	{
 		tkn = ft_lstlast(el)->content;
@@ -132,7 +132,7 @@ t_list	*tokenize_env_variable(const char *line, size_t *idx)
 	return (el);
 }
 
-t_list	*tokenize_line(const char *line, bool *success)
+t_list	*tokenize_line(const t_shell *shell, const char *line, bool *success)
 {
 	size_t	i;
 	t_list	*tokens;
@@ -171,7 +171,7 @@ t_list	*tokenize_line(const char *line, bool *success)
 		}
 		else if (line[i] == '\"')
 		{
-			el = tokenize_double_quote(line, &i);
+			el = tokenize_double_quote(shell, line, &i);
 			if (el == NULL)
 			{
 				*success = false;
@@ -182,7 +182,7 @@ t_list	*tokenize_line(const char *line, bool *success)
 		}
 		else if (line[i] == '$' && line[i + 1] != '?')
 		{
-			el = tokenize_env_variable(line, &i);
+			el = tokenize_env_variable(shell, line, &i);
 			if (el == NULL)
 			{
 				*success = false;
@@ -285,7 +285,7 @@ t_list	*tokenize_line(const char *line, bool *success)
 		}
 		else if (line[i] == '(')
 		{
-			el = tokenize_subexpr(line, &i);
+			el = tokenize_subexpr(shell, line, &i);
 			if (el == NULL)
 			{
 				*success = false;
@@ -303,7 +303,7 @@ t_list	*tokenize_line(const char *line, bool *success)
 		}
 		else if (line[i] != ' ')
 		{
-			el = tokenize_normal(line, &i);
+			el = tokenize_normal(shell, line, &i);
 			if (el == NULL)
 			{
 				*success = false;
@@ -318,7 +318,7 @@ t_list	*tokenize_line(const char *line, bool *success)
 				tok->expanded = true;
 				if (ft_strchr(tok->substr, '*') == NULL)
 				{
-					t_list	*wildcard_tokens = tokenize_line(tok->substr, success);
+					t_list	*wildcard_tokens = tokenize_line(shell, tok->substr, success);
 					if (*success == false || wildcard_tokens == NULL)
 					{
 						ft_lstclear(&el, free_token);

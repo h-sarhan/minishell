@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/19 16:25:19 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/29 15:18:48 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/30 21:03:14 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ t_list	*tokenize_single_quote(const char *line, size_t *idx)
 	return (el);
 }
 
-t_list	*tokenize_double_quote(const char *line, size_t *idx)
+t_list	*tokenize_double_quote(const t_shell *shell, const char *line, size_t *idx)
 {
 	size_t	i;
 	t_token	*tkn;
@@ -93,7 +93,7 @@ t_list	*tokenize_double_quote(const char *line, size_t *idx)
 	if (tkn->substr == NULL)
 		return (NULL);
 	while (contains_env_var(tkn->substr))
-		tkn->substr = expand_double_quote(tkn->substr);
+		tkn->substr = expand_double_quote(shell, tkn->substr);
 	tkn->substr = eat_quotes(tkn->substr);
 	if (tkn->substr == NULL)
 	{

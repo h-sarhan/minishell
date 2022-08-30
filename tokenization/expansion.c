@@ -6,14 +6,14 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 21:30:28 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/29 15:11:32 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/30 20:48:49 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
 // TODO: Protect substr and strjoin
-static char	*create_env_var_str(char *str, const size_t start, const size_t end)
+static char	*create_env_var_str(const t_shell *shell, char *str, const size_t start, const size_t end)
 {
 	char	*before;
 	char	*env_var;
@@ -23,7 +23,7 @@ static char	*create_env_var_str(char *str, const size_t start, const size_t end)
 	// printf("%s\n", str);
 	before = ft_substr(str, 0, start - 1);
 	env_var = ft_substr(str, start, end - start + 1);
-	expansion = getenv(env_var);
+	expansion = get_env(shell, env_var);
 	ft_free(&env_var);
 	after = ft_substr(str, end + 1, ft_strlen(str));
 	ft_free(&str);
@@ -38,7 +38,7 @@ static char	*create_env_var_str(char *str, const size_t start, const size_t end)
 }
 
 // TODO: Expand LAST_EXIT command
-char	*expand_double_quote(char *str)
+char	*expand_double_quote(const t_shell *shell, char *str)
 {
 	size_t	i;
 	size_t	start;
@@ -63,7 +63,7 @@ char	*expand_double_quote(char *str)
 		else
 			i++;
 	}
-	return (create_env_var_str(str, start, end));
+	return (create_env_var_str(shell, str, start, end));
 }
 
 bool	contains_env_var(const char *str)
