@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:43:26 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/30 13:13:19 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/30 16:39:55 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,11 +82,13 @@ int	main(int argc, char **argv, char **env)
 {
 	char	*line;
 	bool	success;
-	t_list	*tokens;
+	t_shell	shell;
 	(void)argc;
 	(void)argv;
 	(void)env;
+	
 	success = true;
+	shell.env = copy_str_arr(env);
 	while (1)
 	{
 		line = readline("minishell$ ");
@@ -102,41 +104,34 @@ int	main(int argc, char **argv, char **env)
 			ft_free(&line);
 			continue;
 		}
-		tokens = tokenize_line(line, &success);
-		print_tokens(tokens);
+		shell.tokens = tokenize_line(line, &success);
+		print_tokens(shell.tokens);
 		if (success == false)
 			continue;
-		t_list *exec_steps = parse_tokens(tokens, &success);
+		t_list *exec_steps = parse_tokens(shell.tokens, &success);
 		t_list *exec_steps_start = exec_steps;
 		if (success == false)
 		{
 			write_to_stderr("Parse error\n");
-			ft_lstclear(&tokens, free_token);
+			ft_lstclear(&shell.tokens, free_token);
 			ft_lstclear(&exec_steps_start, free_exec_step);
 			rl_on_new_line();
 			free(line);
 			continue;
 		}
-		// while (exec_steps != NULL)
-		// {
-		// 	print_exec_step(exec_steps);
-		// 	exec_steps = exec_steps->next;
-		// }
+		while (exec_steps != NULL)
+		{
+			print_exec_step(exec_steps);
+			exec_steps = exec_steps->next;
+		}
 		t_exec_step	*step;
 		step = exec_steps_start->content;
 		if (step->cmd->arg_arr[0] != NULL
 			&& ft_strncmp(step->cmd->arg_arr[0], "env", 3) == 0)
 		{
-			ft_env(env);
+			ft_env(&shell);
 		}
-		// size_t	i;
-		// i = 0;
-		// while (((t_exec_step *)exec_steps->content)->cmd->arg_arr[i] != NULL)
-		// {
-		// 	printf("%s\n", ((t_exec_step *)exec_steps->content)->cmd->arg_arr[i]);
-		// 	i++;
-		// }
-		ft_lstclear(&tokens, free_token);
+		ft_lstclear(&shell.tokens, free_token);
 		ft_lstclear(&exec_steps_start, free_exec_step);
 		rl_on_new_line();
 		ft_free(&line);
