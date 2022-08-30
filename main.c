@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:43:26 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/30 16:47:05 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/30 20:38:41 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,6 @@ void	print_exec_step(t_list *exec_steps)
 	{
 		printf("===================SUB EXPR START===================\n\n");
 		exec_steps = step->subexpr_steps;
-		// printf("\n");
 		while (exec_steps != NULL)
 		{
 			print_exec_step(exec_steps);
@@ -42,15 +41,12 @@ void	print_exec_step(t_list *exec_steps)
 		if (step->or_next == true)
 			printf("OR   subexpr into next command\n");
 		printf("===================SUB EXPR END===================\n\n");
-		// printf("\n");
 		return ;
 	}
-	// printf("\n");
 	printf("===================EXPR START===================\n");
 	while (args[i] != NULL)
 	{
 		printf("Arg #%lu == %s\n", i + 1, args[i]);
-		// args = args->next;
 		i++;
 	}
 	if (step->pipe_next == true)
@@ -85,7 +81,6 @@ int	main(int argc, char **argv, char **env)
 	t_shell	shell;
 	(void)argc;
 	(void)argv;
-	(void)env;
 	
 	success = true;
 	shell.env = copy_str_arr(env);
@@ -129,7 +124,7 @@ int	main(int argc, char **argv, char **env)
 		if (step->cmd->arg_arr[0] != NULL
 			&& ft_strncmp(step->cmd->arg_arr[0], "env", 3) == 0)
 		{
-			ft_env(&shell);
+			ft_env(&shell, step);
 		}
 		ft_lstclear(&shell.tokens, free_token);
 		ft_lstclear(&exec_steps_start, free_exec_step);
