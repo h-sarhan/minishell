@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:43:26 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/30 16:39:55 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/30 16:47:05 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,8 +108,8 @@ int	main(int argc, char **argv, char **env)
 		print_tokens(shell.tokens);
 		if (success == false)
 			continue;
-		t_list *exec_steps = parse_tokens(shell.tokens, &success);
-		t_list *exec_steps_start = exec_steps;
+		shell.steps = parse_tokens(shell.tokens, &success);
+		t_list *exec_steps_start = shell.steps;
 		if (success == false)
 		{
 			write_to_stderr("Parse error\n");
@@ -119,10 +119,10 @@ int	main(int argc, char **argv, char **env)
 			free(line);
 			continue;
 		}
-		while (exec_steps != NULL)
+		while (shell.steps != NULL)
 		{
-			print_exec_step(exec_steps);
-			exec_steps = exec_steps->next;
+			print_exec_step(shell.steps);
+			shell.steps = shell.steps->next;
 		}
 		t_exec_step	*step;
 		step = exec_steps_start->content;
