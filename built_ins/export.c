@@ -1,21 +1,37 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   env_built_ins.h                                    :+:      :+:    :+:   */
+/*   export.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/08/29 17:31:18 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/30 21:28:52 by hsarhan          ###   ########.fr       */
+/*   Created: 2022/08/30 21:25:48 by hsarhan           #+#    #+#             */
+/*   Updated: 2022/08/30 23:39:50 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef ENV_BUILT_INS_H
-# define ENV_BUILT_INS_H
+#include "../minishell.h"
 
-typedef struct s_shell	t_shell;
+char	**resize_str_arr(char **old, size_t new_size)
+{
+	size_t	i;
+	char	**new_arr;
 
-void	ft_env(const t_shell *shell, t_exec_step *step);
-char	*get_env(const t_shell *shell, const char *name);
-void	ft_export(t_shell *shell, const char *name, const char *value);
-#endif
+	new_arr = ft_calloc(new_size + 1, sizeof(char *));
+	if (new_arr == NULL)
+	{
+		// ! Handle error here
+	}
+	i = 0;
+	while (old[i] != NULL)
+	{
+		new_arr = old[i];
+		i++;
+	}
+	return (new_arr);
+}
+
+void	ft_export(t_shell *shell, const char *name, const char *value)
+{
+	
+}
