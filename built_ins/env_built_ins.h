@@ -1,24 +1,18 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   pwd.c                                              :+:      :+:    :+:   */
+/*   env_built_ins.h                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/08/29 21:56:29 by mkhan             #+#    #+#             */
-/*   Updated: 2022/08/30 13:45:15 by mkhan            ###   ########.fr       */
+/*   Created: 2022/08/29 17:31:18 by hsarhan           #+#    #+#             */
+/*   Updated: 2022/08/30 13:13:19 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../minishell.h"
+#ifndef ENV_BUILT_INS_H
+# define ENV_BUILT_INS_H
 
-void	ft_pwd(t_exec_step *step)
-{
-	(void)step;
-	char	*dir;
-	
-	dir = getcwd(NULL, 0);
-	printf("%s\n", dir);
-	ft_free(&dir);
-	step->exit_code = 0;
-}
+void	ft_env(char **env);
+
+#endif

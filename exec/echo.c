@@ -6,7 +6,7 @@
 /*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/23 17:45:38 by mkhan             #+#    #+#             */
-/*   Updated: 2022/08/29 21:56:39 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/08/30 13:52:27 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ bool ft_check(char *s1)
 	return (true);
 }
 
-void echo(t_exec_step *command)
+void ft_echo(t_exec_step *step)
 {
 	int	i;
 	int n;
@@ -53,25 +53,26 @@ void echo(t_exec_step *command)
 	i = 1;
 	n = 0;
 	seen = 0;
-	if (ft_check(command->cmd->arg_arr[1]) == true)
+	if (ft_check(step->cmd->arg_arr[1]) == true)
 		n = 1;
-	while (command->cmd->arg_arr[i])
+	while (step->cmd->arg_arr[i])
 	{
 		if (seen)
 		{
-			printf("%s", command->cmd->arg_arr[i]);
-				if (command->cmd->arg_arr[i + 1])//|| *command->cmd->arg_arr[i] == '\0')
+			printf("%s", step->cmd->arg_arr[i]);
+				if (step->cmd->arg_arr[i + 1])
 					printf(" ");
 		}
-		if (ft_check(command->cmd->arg_arr[i]) != true && !seen)
+		if (ft_check(step->cmd->arg_arr[i]) != true && !seen)
 		{
 			seen = 1;
-			printf("%s", command->cmd->arg_arr[i]);
-			if (command->cmd->arg_arr[i + 1])//|| *command->cmd->arg_arr[i] == '\0')
+			printf("%s", step->cmd->arg_arr[i]);
+			if (step->cmd->arg_arr[i + 1])
 				printf(" ");
 		}
 		i++;
 	}
 	if (n == 0)
 		printf("\n");
+	step->exit_code = 0;
 }

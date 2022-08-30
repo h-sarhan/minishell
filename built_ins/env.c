@@ -1,24 +1,25 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   pwd.c                                              :+:      :+:    :+:   */
+/*   env.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/08/29 21:56:29 by mkhan             #+#    #+#             */
-/*   Updated: 2022/08/30 13:45:15 by mkhan            ###   ########.fr       */
+/*   Created: 2022/08/29 17:43:57 by hsarhan           #+#    #+#             */
+/*   Updated: 2022/08/30 13:13:39 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-void	ft_pwd(t_exec_step *step)
+void	ft_env(char **env)
 {
-	(void)step;
-	char	*dir;
-	
-	dir = getcwd(NULL, 0);
-	printf("%s\n", dir);
-	ft_free(&dir);
-	step->exit_code = 0;
+	size_t	i;
+
+	i = 0;
+	while (env[i] != NULL)
+	{
+		printf("%s\n", env[i]);
+		i++;
+	}
 }
