@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:43:26 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/29 16:24:40 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/30 13:13:19 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,12 +78,14 @@ void	print_exec_step(t_list *exec_steps)
 }
 
 // ? I dont know what rl_on_new_line() does
-int	main(void)
+int	main(int argc, char **argv, char **env)
 {
 	char	*line;
 	bool	success;
 	t_list	*tokens;
-
+	(void)argc;
+	(void)argv;
+	(void)env;
 	success = true;
 	while (1)
 	{
@@ -115,10 +117,17 @@ int	main(void)
 			free(line);
 			continue;
 		}
-		while (exec_steps != NULL)
+		// while (exec_steps != NULL)
+		// {
+		// 	print_exec_step(exec_steps);
+		// 	exec_steps = exec_steps->next;
+		// }
+		t_exec_step	*step;
+		step = exec_steps_start->content;
+		if (step->cmd->arg_arr[0] != NULL
+			&& ft_strncmp(step->cmd->arg_arr[0], "env", 3) == 0)
 		{
-			print_exec_step(exec_steps);
-			exec_steps = exec_steps->next;
+			ft_env(env);
 		}
 		// size_t	i;
 		// i = 0;
