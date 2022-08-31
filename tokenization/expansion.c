@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 21:30:28 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/31 10:46:52 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/31 18:05:54 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,11 +43,19 @@ char	*expand_double_quote(const t_shell *shell, char *str)
 	size_t	i;
 	size_t	start;
 	size_t	end;
+	bool	in_s_quotes;
+	bool	in_d_quotes;
 
 	i = 0;
+	in_s_quotes = false;
+	in_d_quotes = false;
 	while (str[i] != '\0')
 	{
-		if (str[i] == '$' && str[i + 1] != '?')
+		if (str[i] == '\'' && in_d_quotes == false)
+			in_s_quotes = !in_s_quotes;
+		if (str[i] == '\"' && in_s_quotes == false)
+			in_d_quotes = !in_d_quotes;
+		if (str[i] == '$' && str[i + 1] != '?' && in_s_quotes == false)
 		{
 			i++;
 			start = i;
@@ -57,7 +65,7 @@ char	*expand_double_quote(const t_shell *shell, char *str)
 			if (start < end)
 				break ;
 		}
-		else if (str[i] == '$' && str[i + 1] == '?')
+		else if (str[i] == '$' && str[i + 1] == '?' && in_s_quotes == false)
 		{
 		}
 		else
