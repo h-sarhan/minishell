@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/21 09:39:31 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/30 16:58:09 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/31 00:41:39 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@ struct s_shell
 	t_list	*steps;
 	t_list	*tokens;
 	char	**env;
+	int		last_exit_code;
 };
 
 char	**copy_str_arr(char **arr);

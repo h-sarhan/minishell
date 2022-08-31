@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 21:30:28 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/30 20:48:49 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/31 09:34:52 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,11 +69,19 @@ char	*expand_double_quote(const t_shell *shell, char *str)
 bool	contains_env_var(const char *str)
 {
 	size_t	i;
+	bool	in_s_quotes;
+	bool	in_d_quotes;
 
 	i = 0;
+	in_s_quotes = false;
+	in_d_quotes = false;
 	while (str[i] != '\0')
 	{
-		if (str[i] == '$')
+		if (str[i] == '\'' && in_d_quotes == false)
+			in_s_quotes = !in_s_quotes;
+		if (str[i] == '\"' && in_s_quotes == false)
+			in_d_quotes = !in_d_quotes;
+		if (str[i] == '$' && in_s_quotes == false)
 		{
 			i++;
 			if (str[i] == '\0')

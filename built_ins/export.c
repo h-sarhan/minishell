@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/30 21:25:48 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/31 00:35:03 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/31 09:31:22 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,6 +73,31 @@ void	update_env(t_shell *shell, const char *str)
 	shell->env[env_len(shell->env)] = key_val;
 }
 
+static void	export_error(char *arg)
+{
+	ft_putstr_fd("export: `", STDERR_FILENO);
+	ft_putstr_fd(arg, STDERR_FILENO);
+	ft_putendl_fd("`: not a valid identifier", STDERR_FILENO);
+}
+
+static bool	check_export_arg(const char *arg)
+{
+	size_t	i;
+
+	if (ft_isdigit(arg[0]) || arg[0] == '=' || (!ft_isalpha(arg[0]) && arg[0] != '_'))
+		return (false);
+	i = 1;
+	while (arg[i] != '=' && arg[i] != '\0')
+	{
+		if (!ft_isalnum(arg[i]) && arg[i] != '_')
+		{
+			return (false);
+		}
+		i++;
+	}
+	return (true);
+}
+
 // * Case 1: exported variable doesnt exist. Add new line
 // * Case 2: exported variable exists. Update variable
 // * Case 3: no equal sign. Do nothing
@@ -80,21 +105,23 @@ void	update_env(t_shell *shell, const char *str)
 // * Case 5: variable equals "". Set the value of the variable to be nothing
 // * Case 6: Multiple variables. Update/set all of them
 // * Case 7: Includes = by itself. Show error but still update other environmental variables if they are present
+// * Case 8: Identifier starts with a number. Show error but still update other environmental variables if they are present
 void	ft_export(t_shell *shell, const t_exec_step *step)
 {
 	char	**args;
 	size_t	i;
 
 	args = step->cmd->arg_arr;
-	i = 0;
+	i = 1;
 	while (args[i] != NULL)
 	{
 		// if the argument includes an equal sign
-		if (ft_strchr(args[i], '=') != NULL)
+		if (check_export_arg(args[i]) == false)
+			export_error(args[i]);
+		else if (ft_strchr(args[i], '=') != NULL)
+		{
 			update_env(shell, args[i]);
-		if (args[i][0] == '=')
-			write(STDERR_FILENO, "export: Invalid identifier\n",
-				ft_strlen("export: Invalid identifier\n"));
+		}
 		i++;
 	}
 }
