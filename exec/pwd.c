@@ -1,33 +1,24 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   minishell.h                                        :+:      :+:    :+:   */
+/*   pwd.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/08/21 09:39:31 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/31 18:45:10 by mkhan            ###   ########.fr       */
+/*   Created: 2022/08/29 21:56:29 by mkhan             #+#    #+#             */
+/*   Updated: 2022/08/30 13:45:15 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MINISHELL_H
-# define MINISHELL_H
+#include "../minishell.h"
 
-# include "tokenization/tokenization.h"
-# include "parsing/parsing.h"
-# include "exec/exec.h"
-# include "built_ins/env_built_ins.h"
-
-typedef struct s_shell	t_shell;
-
-struct s_shell
+void	ft_pwd(t_exec_step *step)
 {
-	t_list	*steps;
-	t_list	*tokens;
-	char	**env;
-	int		last_exit_code;
-};
-
-char	**copy_str_arr(char **arr);
-
-#endif
+	(void)step;
+	char	*dir;
+	
+	dir = getcwd(NULL, 0);
+	printf("%s\n", dir);
+	ft_free(&dir);
+	step->exit_code = 0;
+}

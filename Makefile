@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+         #
+#    By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/04/29 21:51:32 by hsarhan           #+#    #+#              #
-#    Updated: 2022/08/31 00:11:15 by hsarhan          ###   ########.fr        #
+#    Updated: 2022/08/31 18:44:22 by mkhan            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -62,10 +62,13 @@ GIGASHELL = \
 PARSING_SRCS = parsing.c parsing_utils.c
 PARSING_SRCS := $(addprefix parsing/, $(PARSING_SRCS))
 
+EXEC_SRCS = echo.c pwd.c builtins.c cd.c
+EXEC_SRCS := $(addprefix exec/, $(EXEC_SRCS))
+
 BUILT_INS_SRCS = env.c export.c
 BUILT_INS_SRCS := $(addprefix built_ins/, $(BUILT_INS_SRCS))
 
-SRCS = $(TOKENIZATION_SRCS) $(PARSING_SRCS) $(BUILT_INS_SRCS)
+SRCS = $(TOKENIZATION_SRCS) $(PARSING_SRCS) $(EXEC_SRCS) $(BUILT_INS_SRCS)
 
 SRCS += utils.c main.c
 
