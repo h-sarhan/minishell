@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 14:46:52 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/30 21:20:10 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/31 12:14:02 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,10 +41,9 @@ t_list	*tokenize_operator(const char *line, size_t *idx,
 	return (el);
 }
 
+// Rewrote this but I probably broke something
 static t_list	*tokenize_env_var_helper(const t_shell *shell, t_token *token)
 {
-	char	*env_var;
-	char	*expanded;
 	bool	success;
 	t_list	*expanded_tokens;
 	t_list	*el;
@@ -52,25 +51,18 @@ static t_list	*tokenize_env_var_helper(const t_shell *shell, t_token *token)
 	expanded_tokens = NULL;
 	if (token->type == ENV_VAR)
 	{
-		env_var = token->substr;
-		expanded = get_env(shell, env_var);
-		if (expanded == NULL)
+		while (contains_env_var(token->substr) == true)
+			token->substr = expand_double_quote(shell, token->substr);
+		if (*token->substr == '\0')
 		{
-			token->type = NORMAL;
-			ft_free(&env_var);
-			token->substr = ft_strdup("");
 			expanded_tokens = ft_lstnew(token);
+			return (expanded_tokens);
 		}
-		else
+		expanded_tokens = tokenize_line(shell, token->substr, &success);
+		free_token(token);
+		if (success == false || expanded_tokens == NULL)
 		{
-			expanded_tokens = tokenize_line(shell, expanded, &success);
-			ft_free(&expanded);
-			if (success == false)
-			{
-				free_token(token);
-				return (NULL);
-			}
-			free_token(token);
+			return (NULL);
 		}
 		return (expanded_tokens);
 	}
@@ -93,8 +85,7 @@ t_list	*tokenize_env_variable(const t_shell *shell, const char *line, size_t *id
 		return (NULL);
 	tkn->start = i - 1;
 	tkn->type = ENV_VAR;
-	while (line[i] != '\0' && line[i] != '\"' && line[i] != '*' && line[i] != '\''
-		&& (ft_isalnum(line[i]) || line[i] == '_'))
+	while (line[i] != '\0' && line[i] != '\"' && line[i] != '*' && line[i] != '\'')
 		i++;
 	tkn->end = i - 1;
 	if (tkn->start >= tkn->end)
@@ -104,12 +95,35 @@ t_list	*tokenize_env_variable(const t_shell *shell, const char *line, size_t *id
 	}
 	else
 		tkn->substr = ft_substr(line, tkn->start + 1, tkn->end - tkn->start);
+	if (line[i] == '\'')
+	{
+		*idx = tkn->end + 1;
+		free_token(tkn);
+		el = tokenize_single_quote(line, idx);
+		return (el);
+	}
+	if (line[i] == '\"')
+	{
+		if (line[i + 1] == '\"')
+		{
+			ft_free(&tkn->substr);
+			tkn->substr = ft_strdup("");
+			el = ft_lstnew(tkn);
+			return (el);
+		}
+		*idx = tkn->end + 1;
+		free_token(tkn);
+		el = tokenize_double_quote(shell, line, idx);
+		return (el);
+	}
 	if (tkn->substr == NULL)
 	{
 		free_token(tkn);
 		return (NULL);
 	}
 	*idx = i - 1;
+	// Very stupid that I have to do this
+	tkn->substr = strjoin_free("$", tkn->substr, 2);
 	el = tokenize_env_var_helper(shell, tkn);
 	if (line[i] != '\0')
 	{
@@ -129,6 +143,10 @@ t_list	*tokenize_env_variable(const t_shell *shell, const char *line, size_t *id
 			tkn->substr = substr_free(tkn->substr, 1, ft_strlen(tkn->substr) - 1);
 		*idx = i - 1;
 	}
+	// if (el == NULL)
+	// {
+	// 	printf("Returning NULL\n");
+	// }
 	return (el);
 }
 

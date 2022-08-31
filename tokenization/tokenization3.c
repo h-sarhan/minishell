@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/19 16:25:19 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/30 21:03:14 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/31 12:17:51 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,6 @@ t_list	*tokenize_single_quote(const char *line, size_t *idx)
 	}
 	tkn->end = i - 1;
 	tkn->substr = ft_substr(line, tkn->start, tkn->end - tkn->start + 1);
-	// tkn->substr = ft_strtrim();
 	tkn->sub_tokens = NULL;
 	if (tkn->substr == NULL)
 		return (NULL);
@@ -89,9 +88,15 @@ t_list	*tokenize_double_quote(const t_shell *shell, const char *line, size_t *id
 		i++;
 	}
 	tkn->end = i - 1;
-	tkn->substr = ft_substr(line, tkn->start, tkn->end - tkn->start + 1);
+	if (tkn->end <= tkn->start)
+		tkn->substr = ft_strdup("");
+	else
+		tkn->substr = ft_substr(line, tkn->start, tkn->end - tkn->start + 1);
 	if (tkn->substr == NULL)
+	{
+		free_token(tkn);
 		return (NULL);
+	}
 	while (contains_env_var(tkn->substr))
 		tkn->substr = expand_double_quote(shell, tkn->substr);
 	tkn->substr = eat_quotes(tkn->substr);

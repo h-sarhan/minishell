@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 22:19:29 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/31 00:48:41 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/31 10:51:36 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,7 +91,7 @@ t_list	*tokenize_normal(const t_shell *shell, const char *line, size_t *idx)
 		return (NULL);
 	tkn->start = i;
 	tkn->type = NORMAL;
-	while (line[i] != '\0' && ft_strchr(" \'\"$<>|(&", line[i]) == NULL)
+	while (line[i] != '\0' && ft_strchr(" \'\"<>|(&", line[i]) == NULL)
 		i++;
 	while ((line[i] == '\'' || line[i] == '\"') && line[i] != '\0')
 	{
@@ -111,7 +111,6 @@ t_list	*tokenize_normal(const t_shell *shell, const char *line, size_t *idx)
 	}
 	tkn->end = i - 1;
 	tkn->substr = ft_substr(line, tkn->start, tkn->end - tkn->start + 1);
-	// ! This causes issues when environmental variable is in single quotes
 	while (contains_env_var(tkn->substr))
 		tkn->substr = expand_double_quote(shell, tkn->substr);
 	if (quote != '\0')

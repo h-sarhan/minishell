@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 21:30:28 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/31 09:34:52 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/08/31 10:46:52 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ static char	*create_env_var_str(const t_shell *shell, char *str, const size_t st
 	if (expansion == NULL)
 		str = strjoin_free(before, "", 1);
 	else
-		str = strjoin_free(before, expansion, 1);
+		str = strjoin_free(before, expansion, 3);
 	str = strjoin_free(str, after, 3);
 	return (str);
 }
