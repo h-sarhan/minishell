@@ -6,7 +6,7 @@
 /*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/30 15:41:46 by mkhan             #+#    #+#             */
-/*   Updated: 2022/08/31 18:54:30 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/08/31 19:00:58 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,6 @@ void	find_and_update_pwd(char **env)
 		if (!ft_strncmp("PWD=", env[i], 4))
 		{
 			ft_free(&env[i]);
-			// env[i] = NULL;
 			env[i] = ft_strjoin("PWD=", pwd);
 			break ;
 		}
@@ -42,7 +41,6 @@ void	find_and_update_oldpwd(char **env, char *oldpwd)
 		if (!ft_strncmp("OLDPWD=", env[i], 7))
 		{
 			ft_free(&env[i]);
-			// env[i] = NULL;
 			env[i] = ft_strjoin("OLDPWD=", oldpwd);
 			break ;
 		}
