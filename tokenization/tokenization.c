@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 14:46:52 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/01 11:38:40 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/01 12:40:22 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,12 +106,13 @@ char	*get_env_string(const char *line, size_t *idx)
 			break ;
 		i++;
 	}
-	*idx = i;
 	if (in_quote == true)
 	{
+		*idx = i;
 		return (NULL);
 	}
-	str = ft_substr(line, 0, i);
+	str = ft_substr(line, *idx, i);
+	*idx = i;
 	return (str);
 }
 
@@ -131,6 +132,8 @@ t_list	*tokenize_env_variable(const t_shell *shell, const char *line, size_t *id
 	while (contains_env_var(tkn->substr))
 		tkn->substr = expand_double_quote(shell, tkn->substr);
 	// printf("%s\n", tkn->substr);
+	tkn->type = NORMAL;
+	tkn->substr = eat_quotes(tkn->substr);
 	el = ft_lstnew(tkn);
 	// tkn->end = i - 1;
 	// if (tkn->start >= tkn->end)
