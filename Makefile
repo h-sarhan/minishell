@@ -6,7 +6,7 @@
 #    By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/04/29 21:51:32 by hsarhan           #+#    #+#              #
-#    Updated: 2022/08/31 18:44:22 by mkhan            ###   ########.fr        #
+#    Updated: 2022/09/01 13:10:58 by mkhan            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -62,13 +62,10 @@ GIGASHELL = \
 PARSING_SRCS = parsing.c parsing_utils.c
 PARSING_SRCS := $(addprefix parsing/, $(PARSING_SRCS))
 
-EXEC_SRCS = echo.c pwd.c builtins.c cd.c
+EXEC_SRCS = echo.c pwd.c builtins.c cd.c env.c export.c
 EXEC_SRCS := $(addprefix exec/, $(EXEC_SRCS))
 
-BUILT_INS_SRCS = env.c export.c
-BUILT_INS_SRCS := $(addprefix built_ins/, $(BUILT_INS_SRCS))
-
-SRCS = $(TOKENIZATION_SRCS) $(PARSING_SRCS) $(EXEC_SRCS) $(BUILT_INS_SRCS)
+SRCS = $(TOKENIZATION_SRCS) $(PARSING_SRCS) $(EXEC_SRCS)
 
 SRCS += utils.c main.c
 
@@ -78,17 +75,21 @@ NAME = minishell
 CC = cc
 CFLAGS = -Werror -Wall -Wextra -g
 LIBFT = libft/libft.a
+FT_PRINTF = ft_printf/libftprintf.a
 
 
 all: $(NAME)
 
-$(NAME): $(OBJS) $(LIBFT)
-	$(CC) $(CFLAGS) $(OBJS) -o $(NAME) -L/usr/local/lib -I/usr/local/include -lreadline $(LIBFT)
+$(NAME): $(OBJS) $(LIBFT) $(FT_PRINTF)
+	$(CC) $(CFLAGS) $(OBJS) -o $(NAME) -L/usr/local/lib -I/usr/local/include -lreadline $(LIBFT) $(FT_PRINTF)
 	@echo "$(COLOR)$(GIGASHELL)$(NC)"
 
 
 $(LIBFT):
 	make -C libft
+
+$(FT_PRINTF):
+	make -C ft_printf
 
 
 norm:
@@ -99,6 +100,7 @@ clean:
 
 fclean: clean
 	make -C libft fclean
+	make -C ft_printf fclean
 	rm -f $(NAME)
 
 re: fclean $(NAME)

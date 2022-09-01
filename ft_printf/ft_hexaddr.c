@@ -1,37 +1,38 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   minishell.h                                        :+:      :+:    :+:   */
+/*   ft_hexaddr.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/08/21 09:39:31 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/01 13:08:43 by mkhan            ###   ########.fr       */
+/*   Created: 2022/05/08 17:21:25 by mkhan             #+#    #+#             */
+/*   Updated: 2022/05/19 14:52:41 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MINISHELL_H
-# define MINISHELL_H
+#include "ft_printf.h"
 
-# include "tokenization/tokenization.h"
-# include "parsing/parsing.h"
-# include "exec/exec.h"
-# include "built_ins/env_built_ins.h"
-# include "ft_printf/ft_printf.h"
-
-#include <sys/errno.h>
-#include <string.h>
-
-typedef struct s_shell	t_shell;
-
-struct s_shell
+int	ft_hexadec(unsigned long n)
 {
-	t_list	*steps;
-	t_list	*tokens;
-	char	**env;
-	int		last_exit_code;
-};
+	int		len;
+	char	*s;
 
-char	**copy_str_arr(char **arr);
+	s = "0123456789abcdef";
+	len = 0;
+	if (n > 15)
+		len += ft_hexadec(n / 16);
+	len += ft_putchar(s[n % 16]);
+	return (len);
+}
 
-#endif
+int	ft_hexaddr(unsigned long n)
+{
+	int	len;
+
+	len = ft_putstr("0x");
+	if (n == 0)
+		len += ft_putchar('0');
+	else
+		len += ft_hexadec(n);
+	return (len);
+}

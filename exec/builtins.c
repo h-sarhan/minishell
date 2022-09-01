@@ -6,7 +6,7 @@
 /*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/30 13:47:43 by mkhan             #+#    #+#             */
-/*   Updated: 2022/08/31 18:47:31 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/08/31 19:05:38 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,10 +30,10 @@ void 	is_builtin(t_exec_step *step, t_shell *shell)
 		ft_cd(step, shell->env);
 	if (ft_strcmp(step->cmd->arg_arr[0], "pwd") == 0)
 		ft_pwd(step);
-	// if (ft_strcmp(step->cmd->arg_arr[0], "env") == 0)
-	// 	ft_env();
-	// if (ft_strcmp(step->cmd->arg_arr[0], "export") == 0)
-	// 	ft_export();
+	if (ft_strcmp(step->cmd->arg_arr[0], "env") == 0)
+		ft_env(shell, step);
+	if (ft_strcmp(step->cmd->arg_arr[0], "export") == 0)
+		ft_export(shell, step);
 	// if (ft_strcmp(step->cmd->arg_arr[0], "unset") == 0)
 	// 	ft_unset();
 }
