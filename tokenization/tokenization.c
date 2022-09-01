@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 14:46:52 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/01 16:20:51 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/01 16:29:30 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -212,13 +212,14 @@ t_list	*tokenize_env_variable(const t_shell *shell, const char *line, size_t *id
 	// if ()
 	if (tkn->substr == NULL)
 		return (NULL);
-	// if (ft_strncmp(tkn->substr, "$\"\"", 3) == 0)
-	// {
-	// 	ft_free(&tkn->substr);
-	// 	tkn->substr = ft_strdup("");
-	// 	el = ft_lstnew(tkn);
-	// 	return (el);
-	// }
+	if (ft_strncmp(tkn->substr, "$\"\"", 3) == 0)
+	{
+		// ft_free(&tkn->substr);
+		// tkn->substr = ft_strdup("");
+		tkn->type = NORMAL;
+		el = ft_lstnew(tkn);
+		return (el);
+	}
 	while (contains_env_var(tkn->substr))
 		tkn->substr = expand_double_quote(shell, tkn->substr);
 	
@@ -380,8 +381,14 @@ t_list	*tokenize_line(const t_shell *shell, const char *line, bool *success)
 				return (NULL);
 			}
 			t_token	*envvar_token = el->content;
-			printf("TOKEN |%s|\n", envvar_token->substr);
-			if (ft_strlen(envvar_token->substr) != 0)
+			// printf("TOKEN |%s|\n", envvar_token->substr);
+			if (ft_strncmp(envvar_token->substr, "$\"\"", 3) == 0)
+			{
+				ft_free(&envvar_token->substr);
+				envvar_token->substr = ft_strdup("");
+				ft_lstadd_back(&tokens, el);
+			}
+			else if (ft_strlen(envvar_token->substr) != 0)
 				ft_lstadd_back(&tokens, el);
 			else
 				ft_lstclear(&el, free_token);
