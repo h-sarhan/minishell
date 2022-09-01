@@ -6,9 +6,10 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:43:26 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/31 00:15:53 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/01 17:22:36 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
 
 #include "minishell.h"
 
@@ -86,7 +87,7 @@ int	main(int argc, char **argv, char **env)
 	shell.env = copy_str_arr(env);
 	while (1)
 	{
-		line = readline("minishell$ ");
+		line = readline("GIGASHELL$ ");
 		if (line == NULL)
 		{
 			printf("\n");
@@ -120,20 +121,22 @@ int	main(int argc, char **argv, char **env)
 			print_exec_step(shell.steps);
 			shell.steps = shell.steps->next;
 		}
+		shell.steps = exec_steps_start;
 		if (exec_steps_start != NULL)
 		{
 			t_exec_step	*step;
 			step = exec_steps_start->content;
-			if (step->cmd->arg_arr[0] != NULL
-				&& ft_strncmp(step->cmd->arg_arr[0], "env", ft_strlen("env")) == 0)
-			{
-				ft_env(&shell, step);
-			}
-			if (step->cmd->arg_arr[0] != NULL
-				&& ft_strncmp(step->cmd->arg_arr[0], "export", ft_strlen("export")) == 0)
-			{
-				ft_export(&shell, step);
-			}
+			// if (step->cmd->arg_arr[0] != NULL
+			// 	&& ft_strncmp(step->cmd->arg_arr[0], "env", ft_strlen("env")) == 0)
+			// {
+			// 	ft_env(&shell, step);
+			// }
+			// if (step->cmd->arg_arr[0] != NULL
+			// 	&& ft_strncmp(step->cmd->arg_arr[0], "export", ft_strlen("export")) == 0)
+			// {
+			// 	ft_export(&shell, step);
+			// }
+			is_builtin(step, &shell, line);
 		}
 		ft_lstclear(&shell.tokens, free_token);
 		ft_lstclear(&exec_steps_start, free_exec_step);
