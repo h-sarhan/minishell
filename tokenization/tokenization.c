@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 14:46:52 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/01 16:59:04 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/01 17:29:06 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,39 +40,6 @@ t_list	*tokenize_operator(const char *line, size_t *idx,
 		*idx += 1;
 	return (el);
 }
-
-// Rewrote this but I probably broke something
-// static t_list	*tokenize_env_var_helper(const t_shell *shell, t_token *token)
-// {
-// 	bool	success;
-// 	t_list	*expanded_tokens;
-// 	t_list	*el;
-
-// 	expanded_tokens = NULL;
-// 	if (token->type == ENV_VAR)
-// 	{
-// 		while (contains_env_var(token->substr) == true)
-// 			token->substr = expand_double_quote(shell, token->substr);
-// 		if (*token->substr == '\0')
-// 		{
-// 			expanded_tokens = ft_lstnew(token);
-// 			return (expanded_tokens);
-// 		}
-// 		expanded_tokens = tokenize_line(shell, token->substr, &success);
-// 		free_token(token);
-// 		if (success == false || expanded_tokens == NULL)
-// 		{
-// 			return (NULL);
-// 		}
-// 		return (expanded_tokens);
-// 	}
-// 	else
-// 	{
-// 		el = ft_lstnew(token);
-// 		return (el);
-// 	}
-// }
-
 
 static char	*get_env_string(const char *line, size_t *idx)
 {
@@ -178,13 +145,7 @@ char *eat_dollars(const char *str)
 		else if (str[i] == '$' && (str[i + 1] == '\'' || str[i + 1] == '\"'))
 		{
 			quote = str[i + 1];
-			// i += 1;
-			// while (str[i] != quote)
-			// {
 			trimmed_str[j] = str[i];
-			// 	j++;
-			// 	i++;
-			// }
 			i++;
 		}
 		else
@@ -206,121 +167,25 @@ t_list	*tokenize_env_variable(const t_shell *shell, const char *line, size_t *id
 	tkn = ft_calloc(1, sizeof(t_token));
 	if (tkn == NULL)
 		return (NULL);
-	// tkn->start = i - 1;
 	tkn->type = ENV_VAR;
 	tkn->substr = get_env_string(line, idx);
-	// if ()
 	if (tkn->substr == NULL)
 		return (NULL);
-	if (*tkn->substr != '$' && ft_strncmp(tkn->substr, "$\"\"", ft_strlen(tkn->substr)) == 0)
+	if (ft_strncmp(tkn->substr, "$\"\"", ft_strlen(tkn->substr)) == 0 && ft_strlen(tkn->substr) == 3)
 	{
-		// ft_free(&tkn->substr);
-		// tkn->substr = ft_strdup("");
 		tkn->type = NORMAL;
 		el = ft_lstnew(tkn);
 		return (el);
 	}
 	while (contains_env_var(tkn->substr))
 		tkn->substr = expand_double_quote(shell, tkn->substr);
-	
-	// printf("%s\n", tkn->substr);
 	tkn->type = NORMAL;
-	// if (ft_strlen(tkn->substr) != 0)
-	// {
-		tkn->substr = eat_dollars(tkn->substr);
-		tkn->substr = eat_quotes(tkn->substr);
-	// }
+	tkn->substr = eat_dollars(tkn->substr);
+	tkn->substr = eat_quotes(tkn->substr);
 	el = ft_lstnew(tkn);
-	// tkn->end = i - 1;
-	// if (tkn->start >= tkn->end)
-	// {
-	// 	tkn->type = NORMAL;
-	// 	tkn->substr = ft_substr(line, tkn->start, 1);
-	// }
-	// else
-	// 	tkn->substr = ft_substr(line, tkn->start + 1, tkn->end - tkn->start);
 	return (el);
 	
 }
-// t_list	*tokenize_env_variable(const t_shell *shell, const char *line, size_t *idx)
-// {
-// 	size_t	i;
-// 	t_token	*tkn;
-// 	t_list	*el;
-
-// 	i = *idx + 1;
-// 	tkn = ft_calloc(1, sizeof(t_token));
-// 	if (tkn == NULL)
-// 		return (NULL);
-// 	tkn->start = i - 1;
-// 	tkn->type = ENV_VAR;
-// 	while (line[i] != '\0' && line[i] != '\"' && line[i] != '*' && line[i] != '\'' && line[i] != ' ')
-// 		i++;
-// 	tkn->end = i - 1;
-// 	if (tkn->start >= tkn->end)
-// 	{
-// 		tkn->type = NORMAL;
-// 		tkn->substr = ft_substr(line, tkn->start, 1);
-// 	}
-// 	else
-// 		tkn->substr = ft_substr(line, tkn->start + 1, tkn->end - tkn->start);
-// 	if (tkn->substr == NULL)
-// 	{
-// 		free_token(tkn);
-// 		return (NULL);
-// 	}
-// 	*idx = i - 1;
-// 	// Very stupid that I have to do this
-// 	tkn->substr = strjoin_free("$", tkn->substr, 2);
-// 	el = tokenize_env_var_helper(shell, tkn);
-// 	tkn = ft_lstlast(el)->content;
-// 	if (line[i] == '\'')
-// 	{
-// 		*idx = tkn->end + 1;
-// 		free_token(tkn);
-// 		el = tokenize_single_quote(line, idx);
-// 		return (el);
-// 	}
-// 	if (line[i] == '\"')
-// 	{
-// 		// printf();
-// 		if (line[i + 1] == '\"')
-// 		{
-// 			ft_free(&tkn->substr);
-			
-// 			tkn->substr = ft_strdup("");
-// 			el = ft_lstnew(tkn);
-// 			return (el);
-// 		}
-// 		*idx = tkn->end + 1;
-// 		free_token(tkn);
-// 		el = tokenize_double_quote(shell, line, idx);
-// 		return (el);
-// 	}
-// 	if (line[i] != '\0')
-// 	{
-// 		tkn = ft_lstlast(el)->content;
-// 		size_t	start;
-// 		start = i;
-// 		while (line[i] != ' ' && line[i] != '\0')
-// 			i++;
-// 		tkn->substr = strjoin_free(tkn->substr, eat_quotes(ft_substr(line, start, i - start + 1)), 3);
-// 		if (tkn->substr == NULL)
-// 		{
-// 			ft_lstclear(&el, free_token);
-// 			return (NULL);
-// 		}
-// 		// ! SHIT CODE
-// 		if (tkn->substr[0] == '$' && (ft_isalnum(tkn->substr[1]) || tkn->substr[1] == '_'))
-// 			tkn->substr = substr_free(tkn->substr, 1, ft_strlen(tkn->substr) - 1);
-// 		*idx = i - 1;
-// 	}
-// 	// if (el == NULL)
-// 	// {
-// 	// 	printf("Returning NULL\n");
-// 	// }
-// 	return (el);
-// }
 
 t_list	*tokenize_line(const t_shell *shell, const char *line, bool *success)
 {
@@ -381,9 +246,10 @@ t_list	*tokenize_line(const t_shell *shell, const char *line, bool *success)
 				return (NULL);
 			}
 			t_token	*envvar_token = el->content;
-			// printf("TOKEN |%s|\n", envvar_token->substr);
+			printf("TOKEN |%s|\n", envvar_token->substr);
 			if (ft_strncmp(envvar_token->substr, "$\"\"", 3) == 0)
 			{
+				// printf("IM IN\n");
 				ft_free(&envvar_token->substr);
 				envvar_token->substr = ft_strdup("");
 				ft_lstadd_back(&tokens, el);
