@@ -6,7 +6,7 @@
 #    By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/04/29 21:51:32 by hsarhan           #+#    #+#              #
-#    Updated: 2022/09/01 13:10:58 by mkhan            ###   ########.fr        #
+#    Updated: 2022/09/01 14:00:47 by mkhan            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -62,7 +62,7 @@ GIGASHELL = \
 PARSING_SRCS = parsing.c parsing_utils.c
 PARSING_SRCS := $(addprefix parsing/, $(PARSING_SRCS))
 
-EXEC_SRCS = echo.c pwd.c builtins.c cd.c env.c export.c
+EXEC_SRCS = echo.c pwd.c builtins.c cd.c env.c export.c exit.c
 EXEC_SRCS := $(addprefix exec/, $(EXEC_SRCS))
 
 SRCS = $(TOKENIZATION_SRCS) $(PARSING_SRCS) $(EXEC_SRCS)
