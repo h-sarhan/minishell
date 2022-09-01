@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 14:46:52 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/01 16:29:30 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/01 16:59:04 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,7 +116,7 @@ static char	*get_env_string(const char *line, size_t *idx)
 	return (str);
 }
 
-static char *eat_dollars(const char *str)
+char *eat_dollars(const char *str)
 {
 	size_t	num_dollars;
 	size_t	i;
@@ -212,7 +212,7 @@ t_list	*tokenize_env_variable(const t_shell *shell, const char *line, size_t *id
 	// if ()
 	if (tkn->substr == NULL)
 		return (NULL);
-	if (ft_strncmp(tkn->substr, "$\"\"", 3) == 0)
+	if (*tkn->substr != '$' && ft_strncmp(tkn->substr, "$\"\"", ft_strlen(tkn->substr)) == 0)
 	{
 		// ft_free(&tkn->substr);
 		// tkn->substr = ft_strdup("");
