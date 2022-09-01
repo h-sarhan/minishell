@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 21:30:28 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/31 10:46:52 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/01 16:17:20 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,8 +21,11 @@ static char	*create_env_var_str(const t_shell *shell, char *str, const size_t st
 	char	*after;
 	
 	// printf("%s\n", str);
+	// if (ft_strncmp())
 	before = ft_substr(str, 0, start - 1);
 	env_var = ft_substr(str, start, end - start + 1);
+	// if (ft_strncmp(env_var))
+	// printf("ENV VAR IS |%s|\n", env_var);
 	expansion = get_env(shell, env_var);
 	ft_free(&env_var);
 	after = ft_substr(str, end + 1, ft_strlen(str));
@@ -86,6 +89,10 @@ bool	contains_env_var(const char *str)
 			i++;
 			if (str[i] == '\0')
 				return (false);
+			// else if (str[i] == '\"' && str[i + 1] == '\"')
+			// {
+			// 	return (true);
+			// }
 			else if (!ft_isalnum(str[i]) && str[i] != '_')
 				i++;
 			else
