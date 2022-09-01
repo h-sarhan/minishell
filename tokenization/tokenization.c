@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 14:46:52 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/01 12:40:22 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/01 16:20:51 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,7 @@ t_list	*tokenize_operator(const char *line, size_t *idx,
 // }
 
 
-char	*get_env_string(const char *line, size_t *idx)
+static char	*get_env_string(const char *line, size_t *idx)
 {
 	char	*str;
 	size_t	i;
@@ -94,7 +94,6 @@ char	*get_env_string(const char *line, size_t *idx)
 			{
 				quote = line[i];
 				in_quote = !in_quote;
-
 			}
 			else if (quote == line[i])
 			{
@@ -103,6 +102,7 @@ char	*get_env_string(const char *line, size_t *idx)
 			}
 		}
 		if (line[i] == ' ' && in_quote == false)
+		
 			break ;
 		i++;
 	}
@@ -111,9 +111,91 @@ char	*get_env_string(const char *line, size_t *idx)
 		*idx = i;
 		return (NULL);
 	}
-	str = ft_substr(line, *idx, i);
+	str = ft_substr(line, *idx, i - *idx);
 	*idx = i;
 	return (str);
+}
+
+static char *eat_dollars(const char *str)
+{
+	size_t	num_dollars;
+	size_t	i;
+	size_t	j;
+	char	*trimmed_str;
+	char	quote;
+	bool	in_quote;
+
+	in_quote = false;
+	num_dollars = 0;
+	i = 0;
+	while (str[i] != '\0' && str[i + 1] != '\0')
+	{
+		if (str[i] == '$' && (str[i + 1] == '\'' || str[i + 1] == '\"'))
+		{
+			quote = str[i + 1];
+			num_dollars += 1;
+			i += 2;
+			while (str[i] != quote && str[i] != '\0')
+				i++;
+			if (str[i] == '\0')
+			{
+				ft_free(&str);
+				return (NULL);
+			}
+			i++;
+		}
+		else
+			i++;
+	}
+	trimmed_str = ft_calloc(ft_strlen(str) + 1, sizeof(char));
+	if (trimmed_str == NULL)
+		return (NULL);
+	i = 0;
+	j = 0;
+	quote = '\0';
+	while (str[i] != '\0')
+	{
+		if (str[i] == '\'' || str[i] == '\"')
+		{
+			if (quote == '\0')
+			{
+				quote = str[i];
+				in_quote = !in_quote;
+			}
+			else if (quote == str[i])
+			{
+				in_quote = !in_quote;
+				quote = '\0';
+			}
+		}
+		if (in_quote == true)
+		{
+
+			trimmed_str[j] = str[i];
+			j++;
+			i++;
+		}
+		else if (str[i] == '$' && (str[i + 1] == '\'' || str[i + 1] == '\"'))
+		{
+			quote = str[i + 1];
+			// i += 1;
+			// while (str[i] != quote)
+			// {
+			trimmed_str[j] = str[i];
+			// 	j++;
+			// 	i++;
+			// }
+			i++;
+		}
+		else
+		{
+			trimmed_str[j] = str[i];
+			j++;
+			i++;
+		}
+	}
+	ft_free(&str);
+	return (trimmed_str);
 }
 
 t_list	*tokenize_env_variable(const t_shell *shell, const char *line, size_t *idx)
@@ -127,13 +209,26 @@ t_list	*tokenize_env_variable(const t_shell *shell, const char *line, size_t *id
 	// tkn->start = i - 1;
 	tkn->type = ENV_VAR;
 	tkn->substr = get_env_string(line, idx);
+	// if ()
 	if (tkn->substr == NULL)
 		return (NULL);
+	// if (ft_strncmp(tkn->substr, "$\"\"", 3) == 0)
+	// {
+	// 	ft_free(&tkn->substr);
+	// 	tkn->substr = ft_strdup("");
+	// 	el = ft_lstnew(tkn);
+	// 	return (el);
+	// }
 	while (contains_env_var(tkn->substr))
 		tkn->substr = expand_double_quote(shell, tkn->substr);
+	
 	// printf("%s\n", tkn->substr);
 	tkn->type = NORMAL;
-	tkn->substr = eat_quotes(tkn->substr);
+	// if (ft_strlen(tkn->substr) != 0)
+	// {
+		tkn->substr = eat_dollars(tkn->substr);
+		tkn->substr = eat_quotes(tkn->substr);
+	// }
 	el = ft_lstnew(tkn);
 	// tkn->end = i - 1;
 	// if (tkn->start >= tkn->end)
@@ -285,7 +380,8 @@ t_list	*tokenize_line(const t_shell *shell, const char *line, bool *success)
 				return (NULL);
 			}
 			t_token	*envvar_token = el->content;
-			if (*envvar_token->substr != '\0')
+			printf("TOKEN |%s|\n", envvar_token->substr);
+			if (ft_strlen(envvar_token->substr) != 0)
 				ft_lstadd_back(&tokens, el);
 			else
 				ft_lstclear(&el, free_token);
