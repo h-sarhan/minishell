@@ -6,7 +6,7 @@
 /*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/30 15:41:46 by mkhan             #+#    #+#             */
-/*   Updated: 2022/08/31 19:00:58 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/01 13:14:27 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,8 @@ void	cd_to_path(t_exec_step *step, char **env)
 	}
 	else if (chdir(step->cmd->arg_arr[1]) == -1)
 	{
-		write(2, "Error\n", 6);
+		ft_stderr("minishell: cd: %s: %s\n", step->cmd->arg_arr[1], strerror(errno));
+				
 		step->exit_code = 1;
 	}
 	ft_free(&oldpwd);
@@ -89,7 +90,7 @@ void	cd_to_home(t_exec_step *step, char **env, char *home)
 	}
 	else
 	{
-		write(2, "minishell : cd: HOME not set\n", 29);
+		ft_stderr("minishell: cd: HOME not set\n");
 		step->exit_code = 1;
 	}
 }

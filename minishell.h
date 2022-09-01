@@ -6,7 +6,7 @@
 /*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/21 09:39:31 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/31 18:45:10 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/01 13:08:43 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,10 @@
 # include "parsing/parsing.h"
 # include "exec/exec.h"
 # include "built_ins/env_built_ins.h"
+# include "ft_printf/ft_printf.h"
+
+#include <sys/errno.h>
+#include <string.h>
 
 typedef struct s_shell	t_shell;
 
