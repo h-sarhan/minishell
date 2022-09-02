@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 21:30:28 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/01 17:41:28 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/02 18:53:19 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -62,6 +62,11 @@ char	*expand_double_quote(const t_shell *shell, char *str)
 		{
 			i++;
 			start = i;
+			if (ft_isdigit(str[i]))
+			{
+				end = i;
+				break;
+			}
 			while (str[i] != '\0' && (ft_isalnum(str[i]) || str[i] == '_'))
 				i++;
 			end = i - 1;
