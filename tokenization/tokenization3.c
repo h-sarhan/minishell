@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/19 16:25:19 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/01 17:44:20 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/03 00:50:30 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,7 @@ t_list	*tokenize_single_quote(const t_shell *shell, const char *line, size_t *id
 		if (line[i] == '\'' || line[i] == '\"')
 		{
 			quote = line[i];
+			i++;
 			while (line[i] != quote && line[i] != '\0')
 				i++;
 			if (line[i] == '\0')
@@ -49,15 +50,18 @@ t_list	*tokenize_single_quote(const t_shell *shell, const char *line, size_t *id
 				free_token(tkn);
 				return (parse_error(("Parse Error: Unterminated string\n")));
 			}
+			i++;
 		}
-		i++;
+		else if (ft_strchr("<>|(&", line[i]) != NULL)
+			break;
+		else
+			i++;
 	}
 	tkn->end = i - 1;
 	tkn->substr = ft_substr(line, tkn->start, tkn->end - tkn->start + 1);
 	tkn->sub_tokens = NULL;
 	if (tkn->substr == NULL)
 		return (NULL);
-	printf("token is %s\n", tkn->substr);
 	while (contains_env_var(tkn->substr))
 		tkn->substr = expand_double_quote(shell, tkn->substr);
 	tkn->substr = eat_quotes(tkn->substr);
@@ -69,7 +73,7 @@ t_list	*tokenize_single_quote(const t_shell *shell, const char *line, size_t *id
 	el = ft_lstnew(tkn);
 	if (el == NULL)
 		return (NULL);
-	*idx = i;
+	*idx = tkn->end;
 	return (el);
 }
 
@@ -96,6 +100,7 @@ t_list	*tokenize_double_quote(const t_shell *shell, const char *line, size_t *id
 		if (line[i] == '\'' || line[i] == '\"')
 		{
 			quote = line[i];
+			i++;
 			while (line[i] != quote && line[i] != '\0')
 				i++;
 			if (line[i] == '\0')
@@ -103,8 +108,12 @@ t_list	*tokenize_double_quote(const t_shell *shell, const char *line, size_t *id
 				free_token(tkn);
 				return (parse_error(("Parse Error: Unterminated string\n")));
 			}
+			i++;
 		}
-		i++;
+		else if (ft_strchr("<>|(&", line[i]) != NULL)
+			break;
+		else
+			i++;
 	}
 	tkn->end = i - 1;
 	if (tkn->end <= tkn->start)
@@ -127,6 +136,6 @@ t_list	*tokenize_double_quote(const t_shell *shell, const char *line, size_t *id
 	el = ft_lstnew(tkn);
 	if (el == NULL)
 		return (NULL);
-	*idx = i;
+	*idx = tkn->end;
 	return (el);
 }
