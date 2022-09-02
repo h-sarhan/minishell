@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/30 21:25:48 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/31 09:31:22 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/02 12:56:59 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,7 @@ void	update_env(t_shell *shell, const char *str)
 	char	*key;
 	char	*val;
 	char	*key_val;
+	char	*to_look;
 
 	i = 0;
 	while (str[i] != '=')
@@ -55,12 +56,14 @@ void	update_env(t_shell *shell, const char *str)
 	key = ft_substr(str, 0, i);
 	val = ft_substr(str, i + 1, ft_strlen(str));
 	key_val = ft_strjoin(key, "=");
+	to_look = ft_strjoin(key, "=");
 	key_val = strjoin_free(key_val, val, 3);
 	i = 0;
 	while (shell->env[i] != NULL)
 	{
-		if (ft_strncmp(shell->env[i], key, ft_strlen(key)) == 0)
+		if (ft_strncmp(shell->env[i], to_look, ft_strlen(to_look)) == 0)
 		{
+			ft_free(&to_look);
 			ft_free(&shell->env[i]);
 			ft_free(&key);
 			shell->env[i] = key_val;
@@ -68,6 +71,7 @@ void	update_env(t_shell *shell, const char *str)
 		}
 		i++;
 	}
+	ft_free(&to_look);
 	ft_free(&key);
 	shell->env = resize_str_arr(shell->env, env_len(shell->env) + 1);
 	shell->env[env_len(shell->env)] = key_val;

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtins.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/30 13:47:43 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/01 14:32:06 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/01 19:17:58 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,4 +36,6 @@ void 	is_builtin(t_exec_step *step, t_shell *shell, char *line)
 		ft_export(shell, step);
 	if (ft_strcmp(step->cmd->arg_arr[0], "exit") == 0)
 		ft_exit(step, shell, line);
+	if (ft_strcmp(step->cmd->arg_arr[0], "unset") == 0)
+		ft_unset(shell, step);
 }
