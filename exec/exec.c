@@ -6,7 +6,7 @@
 /*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/01 18:16:54 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/05 20:09:02 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/05 20:25:26 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,7 +130,7 @@ int	*mid_cmd(t_exec_step *step, int *fd, t_shell *shell)
 	ft_close(&fdtmp);
 	return fd;
 }
-
+#include <fcntl.h>
 
 void	exec_cmd(t_shell *shell)
 {
@@ -154,7 +154,9 @@ void	exec_cmd(t_shell *shell)
 			ft_stderr("minishell: %s: command not found\n", step->cmd->arg_arr[0]);
 			steps = steps->next;
 			ft_close(&fd[0]);
-			flag = false;
+			fd[0] = open("/dev/null", O_RDWR);
+			if (!flag)
+				flag = true;
 			continue;
 		}
 		if (!flag)
@@ -166,6 +168,7 @@ void	exec_cmd(t_shell *shell)
 			fd = mid_cmd(step, fd, shell);
 		steps = steps->next;
 	}
+	ft_close(&fd[0]);
 	ft_free(&fd);
 	steps = shell->steps;
 	while (steps)
