@@ -6,17 +6,27 @@
 /*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/01 18:16:54 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/05 16:03:35 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/05 20:09:02 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
+
+void	ft_close(int *fd)
+{
+	if (*fd != -1)
+	{
+		close(*fd);
+		*fd = -1;
+	}
+}
 
 char	*get_full_path(char *bin, char **env)
 {
 	int		i;
 	char	*path;
 	char	**paths;
+	char	*bin_cpy;
 
 	i = 0;
 	while (env[i] != NULL && ft_strncmp(env[i], "PATH=", 5) != 0)
@@ -25,19 +35,23 @@ char	*get_full_path(char *bin, char **env)
 		return (NULL);
 	paths = ft_split(ft_strchr(env[i], '=') + 1, ':');
 	i = 0;
-	bin = strjoin_free("/", bin, 0);
+	bin_cpy = ft_strdup(bin);
+	bin = strjoin_free("/", bin, 2);
 	while (bin != NULL && paths != NULL && paths[i] != NULL)
 	{
 		path = ft_strjoin(paths[i], bin);
 		if (path == NULL || access(path, X_OK) != -1)
 			break ;
-		// ft_free(&path);
+		ft_free(&path);
 		i++;
 	}
 	if (bin == NULL || paths == NULL || paths[i] == NULL)
 		path = NULL;
-	// ft_free(&bin);
-	// free_split_array(paths);
+	ft_free(&bin);
+	free_split_array(paths);
+	if (path == NULL)
+		return (bin_cpy);
+	ft_free(&bin_cpy);
 	return (path);
 }
 
@@ -50,14 +64,29 @@ int	*first_cmd(t_exec_step *step, int *fd, t_shell *shell)
 	{
 		if (step->pipe_next)
 		{
-			close(fd[0]);
+			ft_close(&fd[0]);
 			dup2(fd[1], 1);
+		}
+		if (is_builtin(step))
+		{
+			ft_stderr("GOING IN BUILTIN\n");
+			run_builtin(step, shell);
+			ft_close(&fd[1]);
+			ft_close(&fd[0]);
+			close(1);
+			close(0);
+			int	exit_code = step->exit_code;
+			ft_lstclear(&shell->tokens, free_token);
+			ft_lstclear(&shell->steps, free_exec_step);
+			free_split_array(shell->env);
+			ft_free(&fd);
+			exit(exit_code);
 		}
 		execve(step->cmd->arg_arr[0], step->cmd->arg_arr, shell->env);
 		printf("FAIL AT Start\n");
 	}
 	if (step->pipe_next)
-		close(fd[1]);
+		ft_close(&fd[1]);
 	return fd;
 }
 
@@ -74,19 +103,34 @@ int	*mid_cmd(t_exec_step *step, int *fd, t_shell *shell)
 		dup2(fdtmp, 0);
 		if (step->pipe_next)
 		{	
-			close(fd[0]);
+			ft_close(&fd[0]);
 			dup2(fd[1], 1);
 		}
-		// printf("step %s\n", step->cmd->arg_arr[0]);
+		if (is_builtin(step))
+		{
+			run_builtin(step, shell);
+			ft_close(&fd[1]);
+			ft_close(&fd[0]);
+			ft_close(&fdtmp);
+			close(1);
+			close(0);
+			int	exit_code = step->exit_code;
+			ft_lstclear(&shell->tokens, free_token);
+			ft_lstclear(&shell->steps, free_exec_step);
+			free_split_array(shell->env);
+			ft_free(&fd);
+			exit(exit_code);
+		}
 		execve(step->cmd->arg_arr[0], step->cmd->arg_arr, shell->env);
 		printf("FAIL\n");
 	}
-	if (step->pipe_next)
-		close(fd[1]);
-	else
-		close(fdtmp);
+	if (!step->pipe_next)
+		ft_close(&fd[0]);
+	ft_close(&fd[1]);
+	ft_close(&fdtmp);
 	return fd;
 }
+
 
 void	exec_cmd(t_shell *shell)
 {
@@ -96,14 +140,23 @@ void	exec_cmd(t_shell *shell)
 	bool		flag;
 
 	fd = ft_calloc(2, sizeof(int));
+	fd[0] = -1;
+	fd[1] = -1;
 	steps = shell->steps;
 	flag = false;
-	// printf("%s\n", get_full_path(step->cmd->arg_arr[0], shell->env));
 	while (steps)
 	{
 		step = steps->content;
-		step->cmd->arg_arr[0] = get_full_path(step->cmd->arg_arr[0], shell->env);
-		// printf("step %s\n", step->cmd->arg_arr[0]);
+		if (access(step->cmd->arg_arr[0], X_OK) == -1 && !is_builtin(step))
+			step->cmd->arg_arr[0] = get_full_path(step->cmd->arg_arr[0], shell->env);
+		if (access(step->cmd->arg_arr[0], X_OK) == -1 && !is_builtin(step))
+		{
+			ft_stderr("minishell: %s: command not found\n", step->cmd->arg_arr[0]);
+			steps = steps->next;
+			ft_close(&fd[0]);
+			flag = false;
+			continue;
+		}
 		if (!flag)
 		{
 			fd = first_cmd(step, fd, shell);
@@ -111,8 +164,18 @@ void	exec_cmd(t_shell *shell)
 		}
 		else
 			fd = mid_cmd(step, fd, shell);
-		waitpid(step->cmd->pid, 0, 0);
 		steps = steps->next;
 	}
-	
+	ft_free(&fd);
+	steps = shell->steps;
+	while (steps)
+	{
+		step = steps->content;
+		if (access(step->cmd->arg_arr[0], X_OK) != -1 || is_builtin(step))
+		{
+			printf("WAITING FOR %s\n", step->cmd->arg_arr[0]);
+			waitpid(step->cmd->pid, 0, 0);
+		}
+		steps = steps->next;
+	}
 }

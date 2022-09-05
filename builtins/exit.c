@@ -6,13 +6,13 @@
 /*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/01 13:43:52 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/01 14:48:45 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/05 18:26:18 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-void	ft_exit(t_exec_step *step, t_shell *shell, char *line)
+void	ft_exit(t_exec_step *step, t_shell *shell)
 {
 	int	i;
 	int j;
@@ -45,7 +45,7 @@ void	ft_exit(t_exec_step *step, t_shell *shell, char *line)
 		ft_lstclear(&shell->tokens, free_token);
 		ft_lstclear(&shell->steps, free_exec_step);
 		free_split_array(shell->env);
-		ft_free(&line);
+		// ft_free(&line);
 	}
 	ft_stderr("exit\n");
 	exit(exitcode);
