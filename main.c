@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:43:26 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/01 17:22:36 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/01 19:33:48 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -136,7 +136,10 @@ int	main(int argc, char **argv, char **env)
 			// {
 			// 	ft_export(&shell, step);
 			// }
-			is_builtin(step, &shell, line);
+			// printf("%s\n", (char *)((t_exec_step *)shell.steps->content)->cmd->arg_arr[0]);
+			if (!is_builtin(step, &shell, line))
+				exec_cmd(&shell);
+			
 		}
 		ft_lstclear(&shell.tokens, free_token);
 		ft_lstclear(&exec_steps_start, free_exec_step);

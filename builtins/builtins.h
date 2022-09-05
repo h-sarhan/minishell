@@ -6,7 +6,7 @@
 /*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/23 17:46:50 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/01 18:11:32 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/01 18:26:33 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 
 typedef struct s_shell	t_shell;
 
-void 	is_builtin(t_exec_step *step, t_shell *shell, char *line);
+bool 	is_builtin(t_exec_step *step, t_shell *shell, char *line);
 int		ft_strcmp(char *s1, char *s2);
 void	ft_echo(t_exec_step *command);
 void	ft_pwd(t_exec_step *command);

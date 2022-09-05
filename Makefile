@@ -6,7 +6,7 @@
 #    By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/04/29 21:51:32 by hsarhan           #+#    #+#              #
-#    Updated: 2022/09/01 18:11:18 by mkhan            ###   ########.fr        #
+#    Updated: 2022/09/05 14:28:29 by mkhan            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -65,7 +65,10 @@ PARSING_SRCS := $(addprefix parsing/, $(PARSING_SRCS))
 BUILTINS_SRCS = echo.c pwd.c builtins.c cd.c env.c export.c exit.c
 BUILTINS_SRCS := $(addprefix builtins/, $(BUILTINS_SRCS))
 
-SRCS = $(TOKENIZATION_SRCS) $(PARSING_SRCS) $(BUILTINS_SRCS)
+EXEC_SRCS = exec.c
+EXEC_SRCS := $(addprefix exec/, $(EXEC_SRCS))
+
+SRCS = $(TOKENIZATION_SRCS) $(PARSING_SRCS) $(BUILTINS_SRCS) $(EXEC_SRCS)
 
 SRCS += utils.c main.c
 

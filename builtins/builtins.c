@@ -6,7 +6,7 @@
 /*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/30 13:47:43 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/01 14:32:06 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/01 18:24:52 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ int	ft_strcmp(char *s1, char *s2)
 	return (s1[i] - s2[i]);
 }
 
-void 	is_builtin(t_exec_step *step, t_shell *shell, char *line)
+bool 	is_builtin(t_exec_step *step, t_shell *shell, char *line)
 {
 	if (ft_strcmp(step->cmd->arg_arr[0], "echo") == 0)
 		ft_echo(step);
@@ -36,4 +36,12 @@ void 	is_builtin(t_exec_step *step, t_shell *shell, char *line)
 		ft_export(shell, step);
 	if (ft_strcmp(step->cmd->arg_arr[0], "exit") == 0)
 		ft_exit(step, shell, line);
+	if (ft_strcmp(step->cmd->arg_arr[0], "echo") == 0
+		|| ft_strcmp(step->cmd->arg_arr[0], "cd") == 0
+		|| ft_strcmp(step->cmd->arg_arr[0], "pwd") == 0
+		|| ft_strcmp(step->cmd->arg_arr[0], "env") == 0
+		|| ft_strcmp(step->cmd->arg_arr[0], "export") == 0
+		|| ft_strcmp(step->cmd->arg_arr[0], "exit") == 0)
+		return (true);
+	return (false);
 }
