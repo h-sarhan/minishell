@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:43:26 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/01 19:33:48 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/05 16:38:06 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,12 +19,14 @@ void	print_exec_step(t_list *exec_steps)
 	t_redir	*redir;
 	size_t	i = 0;
 	char	**args;
-	t_list	*redirs = NULL;
+	t_list	*in_redirs = NULL;
+	t_list	*out_redirs = NULL;
 	
 	if (step->cmd != NULL)
 	{
 		args = step->cmd->arg_arr;
-		redirs = step->cmd->redirs;
+		in_redirs = step->cmd->in_redirs;
+		out_redirs = step->cmd->out_redirs;
 	}
 	if (step->subexpr_steps != NULL)
 	{
@@ -58,18 +60,23 @@ void	print_exec_step(t_list *exec_steps)
 		printf("OR   expr into next command\n");
 	printf("\n");
 	
-	while (redirs != NULL)
+	while (in_redirs != NULL)
 	{
-		redir = redirs->content;
+		redir = in_redirs->content;
 		if (redir->type == INPUT_REDIR)
 			printf("Input redirection from %s\n", redir->file);
+		if (redir->type == HEREDOC)
+			printf("Heredoc redir. Limiter is %s\n", redir->limiter);
+		in_redirs = in_redirs->next;
+	}
+	while (out_redirs != NULL)
+	{
+		redir = out_redirs->content;
 		if (redir->type == OUTPUT_REDIR)
 			printf("Output redirection to %s\n", redir->file);
 		if (redir->type == APPEND)
 			printf("Append redirection to %s\n", redir->file);
-		if (redir->type == HEREDOC)
-			printf("Limiter is %s\n", redir->limiter);
-		redirs = redirs->next;
+		out_redirs = out_redirs->next;
 	}
 	printf("===================EXPR END===================\n\n");
 }

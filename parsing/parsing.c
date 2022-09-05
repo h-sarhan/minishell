@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parsing.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/21 12:03:03 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/29 15:56:17 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/05 16:35:02 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,7 +83,8 @@ bool	fill_exec_step(t_exec_step *step, t_list *start,
 				// ??????
 				ft_free(&redir);
 				ft_lstclear(&step->cmd->args, free);
-				ft_lstclear(&step->cmd->redirs, free_redir);
+				ft_lstclear(&step->cmd->in_redirs, free_redir);
+				ft_lstclear(&step->cmd->out_redirs, free_redir);
 				return (false);
 			}
 			token = start->content;
@@ -92,14 +93,18 @@ bool	fill_exec_step(t_exec_step *step, t_list *start,
 				// ??????
 				ft_free(&redir);
 				ft_lstclear(&step->cmd->args, free);
-				ft_lstclear(&step->cmd->redirs, free_redir);
+				ft_lstclear(&step->cmd->in_redirs, free_redir);
+				ft_lstclear(&step->cmd->out_redirs, free_redir);
 				return (false);
 			}
 			if (redir->type != HEREDOC)
 				redir->file = ft_strdup(token->substr);
 			else
 				redir->limiter = ft_strdup(token->substr);
-			ft_lstadd_back(&step->cmd->redirs, ft_lstnew(redir));
+			if (redir->type == INPUT_REDIR || redir->type == HEREDOC)
+				ft_lstadd_back(&step->cmd->in_redirs, ft_lstnew(redir));
+			else
+				ft_lstadd_back(&step->cmd->out_redirs, ft_lstnew(redir));
 		}
 		else if (token->type == DOUBLE_QUOTED_STRING
 				|| token->type == QUOTED_STRING || token->type == NORMAL)
@@ -111,7 +116,8 @@ bool	fill_exec_step(t_exec_step *step, t_list *start,
 		{
 			ft_free(&redir);
 			ft_lstclear(&step->cmd->args, free);
-			ft_lstclear(&step->cmd->redirs, free_redir);
+			ft_lstclear(&step->cmd->in_redirs, free_redir);
+			ft_lstclear(&step->cmd->out_redirs, free_redir);
 			return (false);
 		}
 		start = start->next;
