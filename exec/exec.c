@@ -6,11 +6,20 @@
 /*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/01 18:16:54 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/06 13:16:38 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/06 15:06:43 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
+
+int is_dir(const char *path) 
+{
+   struct stat statbuf;
+   
+   if (stat(path, &statbuf) != 0)
+       return (0);
+   return S_ISDIR(statbuf.st_mode);
+}
 
 void	ft_close(int *fd)
 {
@@ -57,10 +66,14 @@ char	*get_full_path(char *bin, char **env)
 
 int	*first_cmd(t_exec_step *step, int *fd, t_shell *shell)
 {
-	int	exitcode;
+	int			in_fd;
+	int			exitcode;
+	t_redir		*inredir;
+	
+	in_fd = -1;
 	if (fork_builtin(step) && !step->pipe_next)
 	{
-		run_builtin(step, shell);
+		run_builtin(step, shell, false);
 		if (ft_strcmp(step->cmd->arg_arr[0], "exit") == 0)
 		{
 			// Hardcoding :(
@@ -79,9 +92,19 @@ int	*first_cmd(t_exec_step *step, int *fd, t_shell *shell)
 	}
 	if (step->pipe_next)
 		pipe(fd);
+	// check_valid_redir(step);
+	if (step->cmd->in_redirs)
+	{
+		inredir = ft_lstlast(step->cmd->in_redirs)->content;
+		in_fd = open(inredir->file, O_RDONLY);
+		if (in_fd == -1)
+			ft_stderr("minishell: %s: No such file or directory\n", inredir->file);
+	}
 	step->cmd->pid = fork();
 	if (step->cmd->pid == 0)
 	{
+		if (step->cmd->in_redirs)
+			dup2(in_fd, 0);
 		if (step->pipe_next)
 		{
 			ft_close(&fd[0]);
@@ -90,13 +113,13 @@ int	*first_cmd(t_exec_step *step, int *fd, t_shell *shell)
 		if (is_builtin(step))
 		{
 			ft_stderr("GOING IN BUILTIN\n");
-			if (step->pipe_next)
-				close(2);
-			run_builtin(step, shell);
+			// if (step->pipe_next)
+			// 	close(2);
+			run_builtin(step, shell, true);
 			ft_close(&fd[1]);
 			ft_close(&fd[0]);
-			// close(1);
-			// close(0);
+			close(1);
+			close(0);
 			int	exit_code = step->exit_code;
 			ft_lstclear(&shell->tokens, free_token);
 			ft_lstclear(&shell->steps, free_exec_step);
@@ -107,6 +130,7 @@ int	*first_cmd(t_exec_step *step, int *fd, t_shell *shell)
 		execve(step->cmd->arg_arr[0], step->cmd->arg_arr, shell->env);
 		printf("FAIL AT Start\n");
 	}
+	ft_close(&in_fd);
 	if (step->pipe_next)
 		ft_close(&fd[1]);
 	return fd;
@@ -136,14 +160,13 @@ int	*mid_cmd(t_exec_step *step, int *fd, t_shell *shell)
 		if (is_builtin(step))
 		{
 			ft_stderr("GOING IN BUILTIN\n");
-			close(2);
-			run_builtin(step, shell);
+			// close(2);
+			run_builtin(step, shell, true);
 			ft_close(&fd[1]);
 			ft_close(&fd[0]);
 			ft_close(&fdtmp);
-			
-			// close(1);
-			// close(0);
+			close(1);
+			close(0);
 			int	exit_code = step->exit_code;
 			ft_lstclear(&shell->tokens, free_token);
 			ft_lstclear(&shell->steps, free_exec_step);
@@ -160,7 +183,6 @@ int	*mid_cmd(t_exec_step *step, int *fd, t_shell *shell)
 	ft_close(&fdtmp);
 	return fd;
 }
-#include <fcntl.h>
 
 void	exec_cmd(t_shell *shell)
 {
@@ -177,11 +199,14 @@ void	exec_cmd(t_shell *shell)
 	while (steps)
 	{
 		step = steps->content;
-		if (access(step->cmd->arg_arr[0], X_OK) == -1 && !is_builtin(step))
+		if (access(step->cmd->arg_arr[0], X_OK) == -1 && !is_builtin(step) && !is_dir(step->cmd->arg_arr[0]))
 			step->cmd->arg_arr[0] = get_full_path(step->cmd->arg_arr[0], shell->env);
-		if (access(step->cmd->arg_arr[0], X_OK) == -1 && !is_builtin(step))
+		if ((access(step->cmd->arg_arr[0], X_OK) == -1 && !is_builtin(step)) || is_dir(step->cmd->arg_arr[0]))
 		{
-			ft_stderr("minishell: %s: command not found\n", step->cmd->arg_arr[0]);
+			if (is_dir(step->cmd->arg_arr[0]))
+				ft_stderr("minishell: %s: is a directory\n", step->cmd->arg_arr[0]);
+			else
+				ft_stderr("minishell: %s: command not found\n", step->cmd->arg_arr[0]);
 			steps = steps->next;
 			ft_close(&fd[0]);
 			fd[0] = open("/dev/null", O_RDWR);
@@ -204,7 +229,7 @@ void	exec_cmd(t_shell *shell)
 	while (steps)
 	{
 		step = steps->content;
-		if (access(step->cmd->arg_arr[0], X_OK) != -1 || is_builtin(step))
+		if ((access(step->cmd->arg_arr[0], X_OK) != -1 || is_builtin(step)) && !is_dir(step->cmd->arg_arr[0]))
 		{
 			printf("WAITING FOR %s\n", step->cmd->arg_arr[0]);
 			waitpid(step->cmd->pid, 0, 0);

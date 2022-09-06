@@ -6,7 +6,7 @@
 /*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/30 13:47:43 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/06 12:39:11 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/06 15:06:03 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ bool	fork_builtin(t_exec_step *step)
 	return (false);
 }
 
-bool 	run_builtin(t_exec_step *step, t_shell *shell)
+bool 	run_builtin(t_exec_step *step, t_shell *shell, bool child)
 {
 	if (ft_strcmp(step->cmd->arg_arr[0], "echo") == 0)
 		ft_echo(step);
@@ -58,7 +58,7 @@ bool 	run_builtin(t_exec_step *step, t_shell *shell)
 	if (ft_strcmp(step->cmd->arg_arr[0], "export") == 0)
 		ft_export(shell, step);
 	if (ft_strcmp(step->cmd->arg_arr[0], "exit") == 0)
-		ft_exit(step, shell);
+		ft_exit(step, shell, child);
 	if (ft_strcmp(step->cmd->arg_arr[0], "unset") == 0)
 		ft_unset(shell, step);
 	if (ft_strcmp(step->cmd->arg_arr[0], "echo") == 0
