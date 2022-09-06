@@ -6,7 +6,7 @@
 /*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/23 17:46:50 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/05 18:26:41 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/06 12:39:21 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,4 +29,5 @@ void	ft_exit(t_exec_step *step, t_shell *shell);
 char	*get_env(const t_shell *shell, const char *name);
 size_t	env_len(char **env);
 bool	is_builtin(t_exec_step *step);
+bool	fork_builtin(t_exec_step *step);
 #endif

@@ -6,7 +6,7 @@
 /*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/01 13:43:52 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/05 18:26:18 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/06 13:09:46 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ void	ft_exit(t_exec_step *step, t_shell *shell)
 	int	i;
 	int j;
 	int exitcode;
-
+	(void)shell;
 	i = 0;
 	j = 0;
 	exitcode = 0;
@@ -40,13 +40,15 @@ void	ft_exit(t_exec_step *step, t_shell *shell)
 	if (!j && step->cmd->arg_arr[1] != NULL)
 		step->exit_code =  ft_atoi(step->cmd->arg_arr[1]);
 	exitcode = step->exit_code;
-	if (step->cmd->arg_arr)
-	{
-		ft_lstclear(&shell->tokens, free_token);
-		ft_lstclear(&shell->steps, free_exec_step);
-		free_split_array(shell->env);
-		// ft_free(&line);
-	}
+	// if (step->cmd->arg_arr)
+	// {
+	// 	ft_lstclear(&shell->tokens, free_token);
+	// 	ft_lstclear(&shell->steps, free_exec_step);
+	// 	free_split_array(shell->env);
+	// 	// ft_free(&line);
+	// }
 	ft_stderr("exit\n");
-	exit(exitcode);
+	// printf("exit\n");
+	step->exit_code = exitcode;
+	// exit(exitcode);
 }

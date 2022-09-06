@@ -6,7 +6,7 @@
 /*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/01 18:16:54 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/05 20:25:26 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/06 13:16:38 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,26 @@ char	*get_full_path(char *bin, char **env)
 
 int	*first_cmd(t_exec_step *step, int *fd, t_shell *shell)
 {
+	int	exitcode;
+	if (fork_builtin(step) && !step->pipe_next)
+	{
+		run_builtin(step, shell);
+		if (ft_strcmp(step->cmd->arg_arr[0], "exit") == 0)
+		{
+			// Hardcoding :(
+			exitcode = step->exit_code;
+			if (step->cmd->arg_arr)
+			{
+				ft_lstclear(&shell->tokens, free_token);
+				ft_lstclear(&shell->steps, free_exec_step);
+				free_split_array(shell->env);
+				ft_free(&fd);
+				// ft_free(&line);
+			}
+			exit(exitcode);
+		}
+		return fd;
+	}
 	if (step->pipe_next)
 		pipe(fd);
 	step->cmd->pid = fork();
@@ -70,11 +90,13 @@ int	*first_cmd(t_exec_step *step, int *fd, t_shell *shell)
 		if (is_builtin(step))
 		{
 			ft_stderr("GOING IN BUILTIN\n");
+			if (step->pipe_next)
+				close(2);
 			run_builtin(step, shell);
 			ft_close(&fd[1]);
 			ft_close(&fd[0]);
-			close(1);
-			close(0);
+			// close(1);
+			// close(0);
 			int	exit_code = step->exit_code;
 			ft_lstclear(&shell->tokens, free_token);
 			ft_lstclear(&shell->steps, free_exec_step);
@@ -95,6 +117,11 @@ int	*mid_cmd(t_exec_step *step, int *fd, t_shell *shell)
 	int fdtmp;
 	
 	fdtmp = fd[0];
+	// if (fork_builtin(step) && !step->pipe_next)
+	// {
+	// 	run_builtin(step, shell);
+	// 	return fd;
+	// }
 	if (step->pipe_next)
 		pipe(fd);
 	step->cmd->pid = fork();
@@ -108,12 +135,15 @@ int	*mid_cmd(t_exec_step *step, int *fd, t_shell *shell)
 		}
 		if (is_builtin(step))
 		{
+			ft_stderr("GOING IN BUILTIN\n");
+			close(2);
 			run_builtin(step, shell);
 			ft_close(&fd[1]);
 			ft_close(&fd[0]);
 			ft_close(&fdtmp);
-			close(1);
-			close(0);
+			
+			// close(1);
+			// close(0);
 			int	exit_code = step->exit_code;
 			ft_lstclear(&shell->tokens, free_token);
 			ft_lstclear(&shell->steps, free_exec_step);
