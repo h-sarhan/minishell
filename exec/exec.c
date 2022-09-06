@@ -6,7 +6,7 @@
 /*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/01 18:16:54 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/06 15:06:43 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/06 19:39:09 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,13 +64,91 @@ char	*get_full_path(char *bin, char **env)
 	return (path);
 }
 
+bool	check_valid_inredir(t_exec_step *step)
+{
+	t_list	*redir;
+	t_redir	*redir_file;
+	
+	redir = step->cmd->in_redirs;
+	while (redir)
+	{
+		redir_file = redir->content;
+		if (access(redir_file->file, R_OK) == -1 || is_dir(redir_file->file))
+		{
+			ft_stderr("minishell: %s: Permission denied\n", redir_file->file);
+			return (false);
+		}
+		redir = redir->next;
+	}
+	return (true);
+}
+
+bool	check_valid_outredir(t_exec_step *step)
+{
+	t_list	*redir;
+	t_redir	*redir_file;
+	
+	redir = step->cmd->out_redirs;
+	while (redir)
+	{
+		redir_file = redir->content;
+		if ((access(redir_file->file, F_OK) != -1 && access(redir_file->file, W_OK) == -1) || is_dir(redir_file->file))
+		{
+			ft_stderr("minishell: %s: Permission denied\n", redir_file->file);
+			return (false);
+		}
+		redir = redir->next;
+	}
+	return (true);
+}
+
+int	exec_outredir(t_exec_step *step)
+{
+	t_list	*redir;
+	t_redir	*redir_file;
+	int		out_fd;
+
+	out_fd = -1;
+	redir = step->cmd->out_redirs;
+	while (redir)
+	{
+		redir_file = redir->content;
+		if (access(redir_file->file, W_OK) == 0)
+		{
+			ft_close(&out_fd);
+			out_fd = open(redir_file->file, O_WRONLY | O_TRUNC);
+			if (out_fd == -1)
+				ft_stderr("minishell: %s: failed\n", redir_file->file);
+			// return (out_fd);
+		}
+		else if ((access(redir_file->file, F_OK) != -1 && access(redir_file->file, W_OK) == -1) || is_dir(redir_file->file))
+		{
+			return (out_fd);
+		}
+		else
+		{
+			ft_close(&out_fd);
+			out_fd = open(redir_file->file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+			// printf("%d", out_fd);
+			if (out_fd == -1)
+				ft_stderr("minishell: %s: file failed to create\n", redir_file->file);
+			// ft_close(&out_fd);
+			// return (out_fd);
+		}
+		redir = redir->next;
+	}
+	return (out_fd);
+}
+
 int	*first_cmd(t_exec_step *step, int *fd, t_shell *shell)
 {
 	int			in_fd;
+	int			out_fd;
 	int			exitcode;
 	t_redir		*inredir;
 	
 	in_fd = -1;
+	out_fd = -1;
 	if (fork_builtin(step) && !step->pipe_next)
 	{
 		run_builtin(step, shell, false);
@@ -92,7 +170,7 @@ int	*first_cmd(t_exec_step *step, int *fd, t_shell *shell)
 	}
 	if (step->pipe_next)
 		pipe(fd);
-	// check_valid_redir(step);
+	check_valid_inredir(step);
 	if (step->cmd->in_redirs)
 	{
 		inredir = ft_lstlast(step->cmd->in_redirs)->content;
@@ -100,16 +178,21 @@ int	*first_cmd(t_exec_step *step, int *fd, t_shell *shell)
 		if (in_fd == -1)
 			ft_stderr("minishell: %s: No such file or directory\n", inredir->file);
 	}
+	check_valid_outredir(step);
+	if (step->cmd->out_redirs)
+		out_fd = exec_outredir(step);
 	step->cmd->pid = fork();
 	if (step->cmd->pid == 0)
 	{
-		if (step->cmd->in_redirs)
-			dup2(in_fd, 0);
 		if (step->pipe_next)
 		{
 			ft_close(&fd[0]);
 			dup2(fd[1], 1);
 		}
+		if (step->cmd->in_redirs)
+			dup2(in_fd, 0);
+		if (step->cmd->out_redirs)
+			dup2(out_fd, 1);
 		if (is_builtin(step))
 		{
 			ft_stderr("GOING IN BUILTIN\n");
@@ -123,6 +206,8 @@ int	*first_cmd(t_exec_step *step, int *fd, t_shell *shell)
 			int	exit_code = step->exit_code;
 			ft_lstclear(&shell->tokens, free_token);
 			ft_lstclear(&shell->steps, free_exec_step);
+			ft_close(&out_fd);
+			ft_close(&in_fd);
 			free_split_array(shell->env);
 			ft_free(&fd);
 			exit(exit_code);
@@ -131,6 +216,7 @@ int	*first_cmd(t_exec_step *step, int *fd, t_shell *shell)
 		printf("FAIL AT Start\n");
 	}
 	ft_close(&in_fd);
+	ft_close(&out_fd);
 	if (step->pipe_next)
 		ft_close(&fd[1]);
 	return fd;
@@ -201,11 +287,11 @@ void	exec_cmd(t_shell *shell)
 		step = steps->content;
 		if (access(step->cmd->arg_arr[0], X_OK) == -1 && !is_builtin(step) && !is_dir(step->cmd->arg_arr[0]))
 			step->cmd->arg_arr[0] = get_full_path(step->cmd->arg_arr[0], shell->env);
-		if ((access(step->cmd->arg_arr[0], X_OK) == -1 && !is_builtin(step)) || is_dir(step->cmd->arg_arr[0]))
+		if ((access(step->cmd->arg_arr[0], X_OK) == -1 && !is_builtin(step)) || is_dir(step->cmd->arg_arr[0]) || !check_valid_inredir(step))
 		{
 			if (is_dir(step->cmd->arg_arr[0]))
 				ft_stderr("minishell: %s: is a directory\n", step->cmd->arg_arr[0]);
-			else
+			else if ((access(step->cmd->arg_arr[0], X_OK) == -1 && !is_builtin(step)))
 				ft_stderr("minishell: %s: command not found\n", step->cmd->arg_arr[0]);
 			steps = steps->next;
 			ft_close(&fd[0]);
