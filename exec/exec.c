@@ -6,7 +6,7 @@
 /*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/01 18:16:54 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/06 19:39:09 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/07 12:31:01 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -116,7 +116,10 @@ int	exec_outredir(t_exec_step *step)
 		if (access(redir_file->file, W_OK) == 0)
 		{
 			ft_close(&out_fd);
-			out_fd = open(redir_file->file, O_WRONLY | O_TRUNC);
+			if (redir_file->type == APPEND)
+				out_fd = open(redir_file->file, O_WRONLY | O_APPEND);
+			else
+				out_fd = open(redir_file->file, O_WRONLY | O_TRUNC);
 			if (out_fd == -1)
 				ft_stderr("minishell: %s: failed\n", redir_file->file);
 			// return (out_fd);
@@ -128,7 +131,10 @@ int	exec_outredir(t_exec_step *step)
 		else
 		{
 			ft_close(&out_fd);
-			out_fd = open(redir_file->file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+			if (redir_file->type == APPEND)
+				out_fd = open(redir_file->file, O_WRONLY | O_CREAT | O_APPEND, 0644);
+			else
+				out_fd = open(redir_file->file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 			// printf("%d", out_fd);
 			if (out_fd == -1)
 				ft_stderr("minishell: %s: file failed to create\n", redir_file->file);
@@ -140,15 +146,13 @@ int	exec_outredir(t_exec_step *step)
 	return (out_fd);
 }
 
-int	*first_cmd(t_exec_step *step, int *fd, t_shell *shell)
+int	*first_cmd(t_exec_step *step, int *fd, t_shell *shell, int out_fd)
 {
 	int			in_fd;
-	int			out_fd;
 	int			exitcode;
 	t_redir		*inredir;
 	
 	in_fd = -1;
-	out_fd = -1;
 	if (fork_builtin(step) && !step->pipe_next)
 	{
 		run_builtin(step, shell, false);
@@ -178,9 +182,6 @@ int	*first_cmd(t_exec_step *step, int *fd, t_shell *shell)
 		if (in_fd == -1)
 			ft_stderr("minishell: %s: No such file or directory\n", inredir->file);
 	}
-	check_valid_outredir(step);
-	if (step->cmd->out_redirs)
-		out_fd = exec_outredir(step);
 	step->cmd->pid = fork();
 	if (step->cmd->pid == 0)
 	{
@@ -191,7 +192,7 @@ int	*first_cmd(t_exec_step *step, int *fd, t_shell *shell)
 		}
 		if (step->cmd->in_redirs)
 			dup2(in_fd, 0);
-		if (step->cmd->out_redirs)
+		if (step->cmd->out_redirs && out_fd != -1)
 			dup2(out_fd, 1);
 		if (is_builtin(step))
 		{
@@ -222,10 +223,13 @@ int	*first_cmd(t_exec_step *step, int *fd, t_shell *shell)
 	return fd;
 }
 
-int	*mid_cmd(t_exec_step *step, int *fd, t_shell *shell)
+int	*mid_cmd(t_exec_step *step, int *fd, t_shell *shell, int out_fd)
 {
-	int fdtmp;
+	int	in_fd;
+	int	fdtmp;
+	t_redir		*inredir;
 	
+	in_fd = -1;
 	fdtmp = fd[0];
 	// if (fork_builtin(step) && !step->pipe_next)
 	// {
@@ -234,6 +238,14 @@ int	*mid_cmd(t_exec_step *step, int *fd, t_shell *shell)
 	// }
 	if (step->pipe_next)
 		pipe(fd);
+	check_valid_inredir(step);
+	if (step->cmd->in_redirs)
+	{
+		inredir = ft_lstlast(step->cmd->in_redirs)->content;
+		in_fd = open(inredir->file, O_RDONLY);
+		if (in_fd == -1)
+			ft_stderr("minishell: %s: No such file or directory\n", inredir->file);
+	}
 	step->cmd->pid = fork();
 	if (step->cmd->pid == 0)
 	{
@@ -243,6 +255,10 @@ int	*mid_cmd(t_exec_step *step, int *fd, t_shell *shell)
 			ft_close(&fd[0]);
 			dup2(fd[1], 1);
 		}
+		if (step->cmd->in_redirs)
+			dup2(in_fd, 0);
+		if (step->cmd->out_redirs && out_fd != -1)
+			dup2(out_fd, 1);
 		if (is_builtin(step))
 		{
 			ft_stderr("GOING IN BUILTIN\n");
@@ -257,6 +273,8 @@ int	*mid_cmd(t_exec_step *step, int *fd, t_shell *shell)
 			ft_lstclear(&shell->tokens, free_token);
 			ft_lstclear(&shell->steps, free_exec_step);
 			free_split_array(shell->env);
+			ft_close(&out_fd);
+			ft_close(&in_fd);
 			ft_free(&fd);
 			exit(exit_code);
 		}
@@ -265,6 +283,8 @@ int	*mid_cmd(t_exec_step *step, int *fd, t_shell *shell)
 	}
 	if (!step->pipe_next)
 		ft_close(&fd[0]);
+	ft_close(&in_fd);
+	ft_close(&out_fd);
 	ft_close(&fd[1]);
 	ft_close(&fdtmp);
 	return fd;
@@ -276,17 +296,24 @@ void	exec_cmd(t_shell *shell)
 	t_list		*steps;
 	int			*fd;
 	bool		flag;
+	int			out_fd;
 
 	fd = ft_calloc(2, sizeof(int));
 	fd[0] = -1;
 	fd[1] = -1;
+	out_fd = -1;
 	steps = shell->steps;
 	flag = false;
 	while (steps)
 	{
 		step = steps->content;
+		
+		check_valid_outredir(step);
+		if (step->cmd->out_redirs)
+			out_fd = exec_outredir(step);
 		if (access(step->cmd->arg_arr[0], X_OK) == -1 && !is_builtin(step) && !is_dir(step->cmd->arg_arr[0]))
 			step->cmd->arg_arr[0] = get_full_path(step->cmd->arg_arr[0], shell->env);
+		
 		if ((access(step->cmd->arg_arr[0], X_OK) == -1 && !is_builtin(step)) || is_dir(step->cmd->arg_arr[0]) || !check_valid_inredir(step))
 		{
 			if (is_dir(step->cmd->arg_arr[0]))
@@ -302,11 +329,11 @@ void	exec_cmd(t_shell *shell)
 		}
 		if (!flag)
 		{
-			fd = first_cmd(step, fd, shell);
+			fd = first_cmd(step, fd, shell, out_fd);
 			flag = true;
 		}
 		else
-			fd = mid_cmd(step, fd, shell);
+			fd = mid_cmd(step, fd, shell, out_fd);
 		steps = steps->next;
 	}
 	ft_close(&fd[0]);
