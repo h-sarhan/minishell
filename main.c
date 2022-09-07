@@ -6,7 +6,7 @@
 /*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:43:26 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/05 18:30:38 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/07 16:26:58 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,17 +81,42 @@ void	print_exec_step(t_list *exec_steps)
 	printf("===================EXPR END===================\n\n");
 }
 
+// void	reciever(int sig, siginfo_t *siginfo, void *context)
+// {
+// 	if (sig == SIGINT)
+// }
+
+
+
+void	handler(int	sig)
+{
+	if (sig == SIGINT)
+	{
+		write(2, "\n", 1);
+		rl_replace_line("", 0);
+		rl_on_new_line();
+		rl_redisplay();
+	}
+}
+
 // ? I dont know what rl_on_new_line() does
 int	main(int argc, char **argv, char **env)
 {
 	char	*line;
 	bool	success;
 	t_shell	shell;
+	// sigaction struct sa;
+	
 	(void)argc;
 	(void)argv;
 	
 	success = true;
 	shell.env = copy_str_arr(env);
+	// sa.sa_sigaction = reciever;
+	// sigemptyset(&sa.sa_mask);
+	// sa.sa_flags = SA_SIGINFO;
+	signal(SIGINT, handler);
+	// sigaction(SIGKILL, &sa, NULL);
 	while (1)
 	{
 		line = readline("GIGASHELL$ ");

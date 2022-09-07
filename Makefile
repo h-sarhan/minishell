@@ -6,7 +6,7 @@
 #    By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/04/29 21:51:32 by hsarhan           #+#    #+#              #
-#    Updated: 2022/09/05 16:24:57 by mkhan            ###   ########.fr        #
+#    Updated: 2022/09/07 16:32:38 by mkhan            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -76,7 +76,7 @@ OBJS := $(SRCS:%.c=%.o)
 
 NAME = minishell
 CC = cc
-CFLAGS = -Werror -Wall -Wextra -g
+CFLAGS = -Werror -Wall -Wextra -g -I/usr/local/opt/readline/include
 LIBFT = libft/libft.a
 FT_PRINTF = ft_printf/libftprintf.a
 
@@ -84,7 +84,7 @@ FT_PRINTF = ft_printf/libftprintf.a
 all: $(NAME)
 
 $(NAME): $(OBJS) $(LIBFT) $(FT_PRINTF)
-	$(CC) $(CFLAGS) $(OBJS) -o $(NAME) -L/usr/local/lib -I/usr/local/include -lreadline $(LIBFT) $(FT_PRINTF)
+	$(CC) $(CFLAGS) -I/usr/local/opt/readline/include -L/usr/local/opt/readline/lib -I/usr/include/readline -lreadline $(OBJS) -o $(NAME)  $(LIBFT) $(FT_PRINTF)  
 	@echo "$(COLOR)$(GIGASHELL)$(NC)"
 
 
