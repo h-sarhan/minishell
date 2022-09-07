@@ -6,7 +6,7 @@
 /*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:43:26 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/07 16:26:58 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/07 16:56:43 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,6 +87,7 @@ void	print_exec_step(t_list *exec_steps)
 // }
 
 
+bool	g_interactive;
 
 void	handler(int	sig)
 {
@@ -96,6 +97,22 @@ void	handler(int	sig)
 		rl_replace_line("", 0);
 		rl_on_new_line();
 		rl_redisplay();
+	}
+	else if (sig == SIGQUIT)
+	{
+		if (g_interactive == false)
+		{
+
+			write(2, "QUIT\n", ft_strlen("QUIT\n"));
+			rl_replace_line("", 0);
+			rl_redisplay();
+		}
+		else
+		{
+			rl_on_new_line();
+			rl_redisplay();
+		}
+		// return ;
 	}
 }
 
@@ -116,10 +133,13 @@ int	main(int argc, char **argv, char **env)
 	// sigemptyset(&sa.sa_mask);
 	// sa.sa_flags = SA_SIGINFO;
 	signal(SIGINT, handler);
+	signal(SIGQUIT, handler);
 	// sigaction(SIGKILL, &sa, NULL);
 	while (1)
 	{
+		g_interactive = true;
 		line = readline("GIGASHELL$ ");
+		g_interactive = false;
 		if (line == NULL)
 		{
 			printf("\n");
