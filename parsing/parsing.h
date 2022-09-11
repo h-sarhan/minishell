@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/21 11:55:31 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/05 16:34:03 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/11 13:46:21 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,8 +29,7 @@ struct	s_cmd
 	t_list	*args;
 	char	**arg_arr;
 	int		pid;
-	t_list	*in_redirs;
-	t_list	*out_redirs;
+	t_list	*redirs;
 };
 
 struct	s_exec_step

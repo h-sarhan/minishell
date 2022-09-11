@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/21 21:38:27 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/05 16:39:36 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/11 13:46:58 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,8 +31,7 @@ void	free_exec_step(void *exec_step_ptr)
 	if (exec_step->cmd != NULL)
 	{
 
-		ft_lstclear(&exec_step->cmd->in_redirs, free_redir);
-		ft_lstclear(&exec_step->cmd->out_redirs, free_redir);
+		ft_lstclear(&exec_step->cmd->redirs, free_redir);
 	}
 	if (exec_step->subexpr_steps != NULL)
 		ft_lstclear(&exec_step->subexpr_steps, free_exec_step);
