@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/21 21:38:27 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/11 13:46:58 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/11 15:33:49 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,20 +30,18 @@ void	free_exec_step(void *exec_step_ptr)
 	exec_step = exec_step_ptr;
 	if (exec_step->cmd != NULL)
 	{
-
 		ft_lstclear(&exec_step->cmd->redirs, free_redir);
+		ft_lstclear(&exec_step->cmd->args, free);
+		i = 0;
+		while (exec_step->cmd->arg_arr != NULL && exec_step->cmd->arg_arr[i] != NULL)
+		{
+			ft_free(&exec_step->cmd->arg_arr[i]);
+			i++;
+		}
+		ft_free(&exec_step->cmd->arg_arr);
 	}
 	if (exec_step->subexpr_steps != NULL)
 		ft_lstclear(&exec_step->subexpr_steps, free_exec_step);
-	i = 0;
-	while (exec_step->cmd->arg_arr[i] != NULL)
-	{
-		ft_free(&exec_step->cmd->arg_arr[i]);
-		i++;
-	}
-	ft_free(&exec_step->cmd->arg_arr);
-	// if (exec_step->cmd != NULL)
-	// 	ft_lstclear(&exec_step->cmd->args, free);
 	ft_free(&exec_step->cmd);
 	ft_free(&exec_step);
 }
