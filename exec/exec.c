@@ -6,7 +6,7 @@
 /*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/01 18:16:54 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/07 14:36:02 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/11 14:35:56 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,43 +64,59 @@ char	*get_full_path(char *bin, char **env)
 	return (path);
 }
 
-bool	check_valid_inredir(t_exec_step *step)
+bool	check_valid_redir(t_exec_step *step)
 {
 	t_list	*redir;
 	t_redir	*redir_file;
 	
-	redir = step->cmd->in_redirs;
+	redir = step->cmd->redirs;
 	while (redir)
 	{
 		redir_file = redir->content;
-		if (access(redir_file->file, R_OK) == -1 || is_dir(redir_file->file))
+		if (redir_file->type == HEREDOC || redir_file->type == INPUT_REDIR)
 		{
-			ft_stderr("minishell: %s: Permission denied\n", redir_file->file);
-			return (false);
+			if (access(redir_file->file, F_OK) == -1)
+			{
+				ft_stderr("minishell: %s: No such file or directory\n", redir_file->file);
+				return (false);
+			}
+			if (access(redir_file->file, R_OK) == -1)
+			{
+				ft_stderr("minishell: %s: Permission denied\n", redir_file->file);
+				return (false);
+			}
+		}
+		else
+		{
+			if ((access(redir_file->file, F_OK) != -1 && access(redir_file->file, W_OK) == -1) || is_dir(redir_file->file))
+			{
+				ft_stderr("minishell: %s: Permission denied\n", redir_file->file);
+				return (false);
+			}
 		}
 		redir = redir->next;
 	}
 	return (true);
 }
 
-bool	check_valid_outredir(t_exec_step *step)
-{
-	t_list	*redir;
-	t_redir	*redir_file;
+// bool	check_valid_outredir(t_exec_step *step)
+// {
+// 	t_list	*redir;
+// 	t_redir	*redir_file;
 	
-	redir = step->cmd->out_redirs;
-	while (redir)
-	{
-		redir_file = redir->content;
-		if ((access(redir_file->file, F_OK) != -1 && access(redir_file->file, W_OK) == -1) || is_dir(redir_file->file))
-		{
-			ft_stderr("minishell: %s: Permission denied\n", redir_file->file);
-			return (false);
-		}
-		redir = redir->next;
-	}
-	return (true);
-}
+// 	redir = step->cmd->out_redirs;
+// 	while (redir)
+// 	{
+// 		redir_file = redir->content;
+// 		if ((access(redir_file->file, F_OK) != -1 && access(redir_file->file, W_OK) == -1) || is_dir(redir_file->file))
+// 		{
+// 			ft_stderr("minishell: %s: Permission denied\n", redir_file->file);
+// 			return (false);
+// 		}
+// 		redir = redir->next;
+// 	}
+// 	return (true);
+// }
 
 int	exec_outredir(t_exec_step *step)
 {
@@ -109,10 +125,26 @@ int	exec_outredir(t_exec_step *step)
 	int		out_fd;
 
 	out_fd = -1;
-	redir = step->cmd->out_redirs;
+	redir = step->cmd->redirs;
+
 	while (redir)
 	{
 		redir_file = redir->content;
+		if (redir_file->type == HEREDOC || redir_file->type == INPUT_REDIR)
+		{
+			if (access(redir_file->file, R_OK) == -1)
+				break;
+		}
+		else
+		{
+			if ((access(redir_file->file, F_OK) != -1 && access(redir_file->file, W_OK) == -1) || is_dir(redir_file->file))
+				break;
+		}
+		if (redir_file->type == INPUT_REDIR || redir_file->type == HEREDOC)
+		{
+			redir = redir->next;
+			continue;
+		}
 		if (access(redir_file->file, W_OK) == 0)
 		{
 			ft_close(&out_fd);
@@ -121,7 +153,7 @@ int	exec_outredir(t_exec_step *step)
 			else
 				out_fd = open(redir_file->file, O_WRONLY | O_TRUNC);
 			if (out_fd == -1)
-				ft_stderr("minishell: %s: failed\n", redir_file->file);
+				ft_stderr("minishell: %s: failed to open\n", redir_file->file);
 			// return (out_fd);
 		}
 		else if ((access(redir_file->file, F_OK) != -1 && access(redir_file->file, W_OK) == -1) || is_dir(redir_file->file))
@@ -145,6 +177,22 @@ int	exec_outredir(t_exec_step *step)
 	}
 	return (out_fd);
 }
+
+  t_redir *last_inredir(t_list *in_redir)
+  {
+	t_redir *last;
+	t_redir *current_redir;
+
+	last = NULL;
+	while (in_redir)
+	{
+		current_redir = in_redir->content;
+		if (current_redir->type == INPUT_REDIR)
+			last = current_redir;
+		in_redir = in_redir->next;
+	}
+	return(last);
+  }
 
 int	*first_cmd(t_exec_step *step, int *fd, t_shell *shell, int out_fd)
 {
@@ -174,13 +222,16 @@ int	*first_cmd(t_exec_step *step, int *fd, t_shell *shell, int out_fd)
 	}
 	if (step->pipe_next)
 		pipe(fd);
-	check_valid_inredir(step);
-	if (step->cmd->in_redirs)
+	check_valid_redir(step);
+	if (step->cmd->redirs)
 	{
-		inredir = ft_lstlast(step->cmd->in_redirs)->content;
-		in_fd = open(inredir->file, O_RDONLY);
-		if (in_fd == -1)
-			ft_stderr("minishell: %s: No such file or directory\n", inredir->file);
+		inredir = last_inredir(step->cmd->redirs);
+		if (inredir != NULL)
+		{
+			in_fd = open(inredir->file, O_RDONLY);
+			if (in_fd == -1)
+				ft_stderr("minishell: %s: No such file or directory\n", inredir->file);
+		}
 	}
 	step->cmd->pid = fork();
 	if (step->cmd->pid == 0)
@@ -190,9 +241,9 @@ int	*first_cmd(t_exec_step *step, int *fd, t_shell *shell, int out_fd)
 			ft_close(&fd[0]);
 			dup2(fd[1], 1);
 		}
-		if (step->cmd->in_redirs)
+		if (in_fd != -1)
 			dup2(in_fd, 0);
-		if (step->cmd->out_redirs && out_fd != -1)
+		if (out_fd != -1)
 			dup2(out_fd, 1);
 		if (is_builtin(step))
 		{
@@ -238,13 +289,16 @@ int	*mid_cmd(t_exec_step *step, int *fd, t_shell *shell, int out_fd)
 	// }
 	if (step->pipe_next)
 		pipe(fd);
-	check_valid_inredir(step);
-	if (step->cmd->in_redirs)
+	check_valid_redir(step);
+	if (step->cmd->redirs)
 	{
-		inredir = ft_lstlast(step->cmd->in_redirs)->content;
-		in_fd = open(inredir->file, O_RDONLY);
-		if (in_fd == -1)
-			ft_stderr("minishell: %s: No such file or directory\n", inredir->file);
+		inredir = last_inredir(step->cmd->redirs);
+		if (inredir != NULL)
+		{
+			in_fd = open(inredir->file, O_RDONLY);
+			if (in_fd == -1)
+				ft_stderr("minishell: %s: No such file or directory\n", inredir->file);
+		}
 	}
 	step->cmd->pid = fork();
 	if (step->cmd->pid == 0)
@@ -255,9 +309,9 @@ int	*mid_cmd(t_exec_step *step, int *fd, t_shell *shell, int out_fd)
 			ft_close(&fd[0]);
 			dup2(fd[1], 1);
 		}
-		if (step->cmd->in_redirs)
+		if (in_fd != -1)
 			dup2(in_fd, 0);
-		if (step->cmd->out_redirs && out_fd != -1)
+		if (out_fd != -1)
 			dup2(out_fd, 1);
 		if (is_builtin(step))
 		{
@@ -308,13 +362,12 @@ void	exec_cmd(t_shell *shell)
 	{
 		step = steps->content;
 		
-		check_valid_outredir(step);
-		if (step->cmd->out_redirs)
-			out_fd = exec_outredir(step);
+		// check_valid_redir(step);
+		out_fd = exec_outredir(step);
 		if (access(step->cmd->arg_arr[0], X_OK) == -1 && !is_builtin(step) && !is_dir(step->cmd->arg_arr[0]))
 			step->cmd->arg_arr[0] = get_full_path(step->cmd->arg_arr[0], shell->env);
 		
-		if ((access(step->cmd->arg_arr[0], X_OK) == -1 && !is_builtin(step)) || is_dir(step->cmd->arg_arr[0]) || !check_valid_inredir(step))
+		if ((access(step->cmd->arg_arr[0], X_OK) == -1 && !is_builtin(step)) || is_dir(step->cmd->arg_arr[0]) || !check_valid_redir(step))
 		{
 			if (is_dir(step->cmd->arg_arr[0]))
 				ft_stderr("minishell: %s: is a directory\n", step->cmd->arg_arr[0]);

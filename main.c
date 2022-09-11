@@ -6,7 +6,7 @@
 /*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:43:26 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/07 16:56:43 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/11 14:16:54 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,14 +19,12 @@ void	print_exec_step(t_list *exec_steps)
 	t_redir	*redir;
 	size_t	i = 0;
 	char	**args;
-	t_list	*in_redirs = NULL;
-	t_list	*out_redirs = NULL;
+	t_list	*redirs = NULL;
 	
 	if (step->cmd != NULL)
 	{
 		args = step->cmd->arg_arr;
-		in_redirs = step->cmd->in_redirs;
-		out_redirs = step->cmd->out_redirs;
+		redirs = step->cmd->redirs;
 	}
 	if (step->subexpr_steps != NULL)
 	{
@@ -60,25 +58,19 @@ void	print_exec_step(t_list *exec_steps)
 		printf("OR   expr into next command\n");
 	printf("\n");
 	
-	while (in_redirs != NULL)
+	while (redirs != NULL)
 	{
-		redir = in_redirs->content;
-		if (redir->type == INPUT_REDIR)
-			printf("Input redirection from %s\n", redir->file);
-		if (redir->type == HEREDOC)
-			printf("Heredoc redir. Limiter is %s\n", redir->limiter);
-		in_redirs = in_redirs->next;
-	}
-	while (out_redirs != NULL)
-	{
-		redir = out_redirs->content;
+		redir = redirs->content;
 		if (redir->type == OUTPUT_REDIR)
 			printf("Output redirection to %s\n", redir->file);
 		if (redir->type == APPEND)
 			printf("Append redirection to %s\n", redir->file);
-		out_redirs = out_redirs->next;
+		if (redir->type == INPUT_REDIR)
+			printf("Input redirection from %s\n", redir->file);
+		if (redir->type == HEREDOC)
+			printf("Heredoc redir. Limiter is %s\n", redir->limiter);
+		redirs = redirs->next;
 	}
-	printf("===================EXPR END===================\n\n");
 }
 
 // void	reciever(int sig, siginfo_t *siginfo, void *context)
@@ -154,7 +146,7 @@ int	main(int argc, char **argv, char **env)
 			continue;
 		}
 		shell.tokens = tokenize_line(&shell, line, &success);
-		print_tokens(shell.tokens);
+		// print_tokens(shell.tokens);
 		if (success == false)
 			continue;
 		shell.steps = parse_tokens(shell.tokens, &success);
@@ -170,7 +162,7 @@ int	main(int argc, char **argv, char **env)
 		}
 		while (shell.steps != NULL)
 		{
-			print_exec_step(shell.steps);
+			// print_exec_step(shell.steps);
 			shell.steps = shell.steps->next;
 		}
 		shell.steps = exec_steps_start;
