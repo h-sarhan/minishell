@@ -6,7 +6,7 @@
 /*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/01 18:16:54 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/11 14:35:56 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/11 17:15:18 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,7 @@ bool	check_valid_redir(t_exec_step *step)
 	while (redir)
 	{
 		redir_file = redir->content;
-		if (redir_file->type == HEREDOC || redir_file->type == INPUT_REDIR)
+		if (redir_file->type == INPUT_REDIR)
 		{
 			if (access(redir_file->file, F_OK) == -1)
 			{
@@ -130,7 +130,7 @@ int	exec_outredir(t_exec_step *step)
 	while (redir)
 	{
 		redir_file = redir->content;
-		if (redir_file->type == HEREDOC || redir_file->type == INPUT_REDIR)
+		if (redir_file->type == INPUT_REDIR)
 		{
 			if (access(redir_file->file, R_OK) == -1)
 				break;
@@ -363,6 +363,7 @@ void	exec_cmd(t_shell *shell)
 		step = steps->content;
 		
 		// check_valid_redir(step);
+		// run_here_doc(step);
 		out_fd = exec_outredir(step);
 		if (access(step->cmd->arg_arr[0], X_OK) == -1 && !is_builtin(step) && !is_dir(step->cmd->arg_arr[0]))
 			step->cmd->arg_arr[0] = get_full_path(step->cmd->arg_arr[0], shell->env);
