@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 14:46:52 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/03 00:27:43 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/11 13:41:15 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -245,10 +245,8 @@ t_list	*tokenize_line(const t_shell *shell, const char *line, bool *success)
 				return (NULL);
 			}
 			t_token	*envvar_token = el->content;
-			printf("TOKEN |%s|\n", envvar_token->substr);
 			if (ft_strncmp(envvar_token->substr, "$\"\"", 3) == 0)
 			{
-				// printf("IM IN\n");
 				ft_free(&envvar_token->substr);
 				envvar_token->substr = ft_strdup("");
 				ft_lstadd_back(&tokens, el);

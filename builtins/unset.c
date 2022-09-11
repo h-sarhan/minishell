@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/01 19:01:46 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/02 13:27:22 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/11 13:40:53 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,7 +92,6 @@ void	ft_unset(t_shell *shell, const t_exec_step *step)
 	(void)shell;
 	args = step->cmd->arg_arr;
 	i = 1;
-	printf("Running unset\n");
 	while (args[i] != NULL)
 	{
 		// if the argument includes an equal sign
