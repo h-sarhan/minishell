@@ -6,7 +6,7 @@
 /*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/01 18:16:54 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/11 17:28:55 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/11 17:52:47 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,25 +98,6 @@ bool	check_valid_redir(t_exec_step *step)
 	}
 	return (true);
 }
-
-// bool	check_valid_outredir(t_exec_step *step)
-// {
-// 	t_list	*redir;
-// 	t_redir	*redir_file;
-	
-// 	redir = step->cmd->out_redirs;
-// 	while (redir)
-// 	{
-// 		redir_file = redir->content;
-// 		if ((access(redir_file->file, F_OK) != -1 && access(redir_file->file, W_OK) == -1) || is_dir(redir_file->file))
-// 		{
-// 			ft_stderr("minishell: %s: Permission denied\n", redir_file->file);
-// 			return (false);
-// 		}
-// 		redir = redir->next;
-// 	}
-// 	return (true);
-// }
 
 int	exec_outredir(t_exec_step *step)
 {
@@ -245,7 +226,7 @@ int	*first_cmd(t_exec_step *step, int *fd, t_shell *shell, int out_fd)
 			dup2(in_fd, 0);
 		if (out_fd != -1)
 			dup2(out_fd, 1);
-		if (is_builtin(step))
+		if (step->cmd->arg_arr[0] &&is_builtin(step))
 		{
 			ft_stderr("GOING IN BUILTIN\n");
 			// if (step->pipe_next)
@@ -263,6 +244,20 @@ int	*first_cmd(t_exec_step *step, int *fd, t_shell *shell, int out_fd)
 			free_split_array(shell->env);
 			ft_free(&fd);
 			exit(exit_code);
+		}
+		if (step->cmd->arg_arr[0] == NULL)
+		{
+			ft_lstclear(&shell->tokens, free_token);
+			ft_lstclear(&shell->steps, free_exec_step);
+			free_split_array(shell->env);
+			ft_close(&fd[1]);
+			ft_close(&fd[0]);
+			close(0);
+			close(1);
+			ft_close(&out_fd);
+			ft_close(&in_fd);
+			ft_free(&fd);
+			exit(0);
 		}
 		execve(step->cmd->arg_arr[0], step->cmd->arg_arr, shell->env);
 		printf("FAIL AT Start\n");
@@ -313,7 +308,7 @@ int	*mid_cmd(t_exec_step *step, int *fd, t_shell *shell, int out_fd)
 			dup2(in_fd, 0);
 		if (out_fd != -1)
 			dup2(out_fd, 1);
-		if (is_builtin(step))
+		if (step->cmd->arg_arr[0] &&  is_builtin(step))
 		{
 			ft_stderr("GOING IN BUILTIN\n");
 			// close(2);
@@ -331,6 +326,20 @@ int	*mid_cmd(t_exec_step *step, int *fd, t_shell *shell, int out_fd)
 			ft_close(&in_fd);
 			ft_free(&fd);
 			exit(exit_code);
+		}
+		if (step->cmd->arg_arr[0] == NULL)
+		{
+			ft_lstclear(&shell->tokens, free_token);
+			ft_lstclear(&shell->steps, free_exec_step);
+			free_split_array(shell->env);
+			ft_close(&fd[1]);
+			ft_close(&fd[0]);
+			close(0);
+			close(1);
+			ft_close(&out_fd);
+			ft_close(&in_fd);
+			ft_free(&fd);
+			exit(0);
 		}
 		execve(step->cmd->arg_arr[0], step->cmd->arg_arr, shell->env);
 		printf("FAIL\n");
@@ -381,12 +390,12 @@ void	exec_cmd(t_shell *shell)
 				flag = true;
 			continue;
 		}
-		if (step->cmd->arg_arr[0] && !flag)
+		if (!flag)
 		{
 			fd = first_cmd(step, fd, shell, out_fd);
 			flag = true;
 		}
-		else if (step->cmd->arg_arr[0])
+		else
 			fd = mid_cmd(step, fd, shell, out_fd);
 		steps = steps->next;
 	}
