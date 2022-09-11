@@ -6,7 +6,7 @@
 /*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/01 18:16:54 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/11 17:15:18 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/11 17:28:55 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -365,10 +365,10 @@ void	exec_cmd(t_shell *shell)
 		// check_valid_redir(step);
 		// run_here_doc(step);
 		out_fd = exec_outredir(step);
-		if (access(step->cmd->arg_arr[0], X_OK) == -1 && !is_builtin(step) && !is_dir(step->cmd->arg_arr[0]))
+		if (step->cmd->arg_arr[0] &&  (access(step->cmd->arg_arr[0], X_OK) == -1 && !is_builtin(step) && !is_dir(step->cmd->arg_arr[0])))
 			step->cmd->arg_arr[0] = get_full_path(step->cmd->arg_arr[0], shell->env);
 		
-		if ((access(step->cmd->arg_arr[0], X_OK) == -1 && !is_builtin(step)) || is_dir(step->cmd->arg_arr[0]) || !check_valid_redir(step))
+		if (step->cmd->arg_arr[0] && ((access(step->cmd->arg_arr[0], X_OK) == -1 && !is_builtin(step)) || is_dir(step->cmd->arg_arr[0]) || !check_valid_redir(step)))
 		{
 			if (is_dir(step->cmd->arg_arr[0]))
 				ft_stderr("minishell: %s: is a directory\n", step->cmd->arg_arr[0]);
@@ -381,22 +381,23 @@ void	exec_cmd(t_shell *shell)
 				flag = true;
 			continue;
 		}
-		if (!flag)
+		if (step->cmd->arg_arr[0] && !flag)
 		{
 			fd = first_cmd(step, fd, shell, out_fd);
 			flag = true;
 		}
-		else
+		else if (step->cmd->arg_arr[0])
 			fd = mid_cmd(step, fd, shell, out_fd);
 		steps = steps->next;
 	}
 	ft_close(&fd[0]);
+	ft_close(&out_fd);
 	ft_free(&fd);
 	steps = shell->steps;
 	while (steps)
 	{
 		step = steps->content;
-		if ((access(step->cmd->arg_arr[0], X_OK) != -1 || is_builtin(step)) && !is_dir(step->cmd->arg_arr[0]))
+		if (step->cmd->arg_arr[0] && (access(step->cmd->arg_arr[0], X_OK) != -1 || is_builtin(step)) && !is_dir(step->cmd->arg_arr[0]))
 		{
 			printf("WAITING FOR %s\n", step->cmd->arg_arr[0]);
 			waitpid(step->cmd->pid, 0, 0);
