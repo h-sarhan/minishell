@@ -6,7 +6,7 @@
 /*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/11 14:52:15 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/12 13:47:07 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/12 14:43:45 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,25 +49,49 @@ char	*read_from_stdin(char *limiter)
 	int		i;
 	char	ch;
 
+	// printf("STARTING HEREDOC\n");
 	buffer_len = 100;
 	buff = ft_calloc(buffer_len + 1, sizeof(char));
 	if (buff == NULL)
 		return (NULL);
 	i = 0;
+	ft_stderr("> ");
 	while (ft_strnstr(buff, limiter, ft_strlen(buff)) == NULL)
 	{
 		if (i == buffer_len)
 			buff = resize(&buff, &buffer_len);
 		if (read(0, &ch, 1) < 1)
 			break ;
+		if (ch == '\n')
+		{
+			ft_stderr("> ");
+		}
 		buff[i] = ch;
 		i++;
 	}
 	buff[i] = '\0';
 	if (ft_strnstr(buff, limiter, ft_strlen(buff)) != NULL)
-		ft_strnstr(buff, limiter, ft_strlen(buff))[1] = '\0';
+		ft_strnstr(buff, limiter, ft_strlen(buff))[-1] = '\0';
 	return (buff);
 }
 
 
 
+void	run_here_docs(t_exec_step *step)
+{
+	t_redir *redir;
+	t_list *redir_lst;
+
+	redir_lst = step->cmd->redirs;
+	while (redir_lst)
+	{
+		redir = redir_lst->content;
+		if (redir->type == HEREDOC)
+		{
+			ft_free(&step->cmd->heredoc_contents);
+			step->cmd->heredoc_contents =  read_from_stdin(redir->limiter);
+			// printf("PRINTING HEREDOC CONTENTS: |%s|", step->cmd->heredoc_contents);
+		}
+		redir_lst = redir_lst->next;
+	}
+}

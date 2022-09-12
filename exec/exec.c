@@ -6,7 +6,7 @@
 /*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/01 18:16:54 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/12 13:58:12 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/12 14:33:37 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,7 +86,7 @@ bool	check_valid_redir(t_exec_step *step)
 				return (false);
 			}
 		}
-		else
+		else if (redir_file->type == OUTPUT_REDIR || redir_file->type == APPEND)
 		{
 			if ((access(redir_file->file, F_OK) != -1 && access(redir_file->file, W_OK) == -1) || is_dir(redir_file->file))
 			{
@@ -116,7 +116,7 @@ int	exec_outredir(t_exec_step *step)
 			if (access(redir_file->file, R_OK) == -1)
 				break;
 		}
-		else
+		else if (redir_file->type == OUTPUT_REDIR || redir_file->type == APPEND)
 		{
 			if ((access(redir_file->file, F_OK) != -1 && access(redir_file->file, W_OK) == -1) || is_dir(redir_file->file))
 				break;
@@ -168,7 +168,7 @@ int	exec_outredir(t_exec_step *step)
 	while (in_redir)
 	{
 		current_redir = in_redir->content;
-		if (current_redir->type == INPUT_REDIR)
+		if (current_redir->type == INPUT_REDIR || current_redir->type == HEREDOC)
 			last = current_redir;
 		in_redir = in_redir->next;
 	}
@@ -209,7 +209,13 @@ int	*first_cmd(t_exec_step *step, int *fd, t_shell *shell, int out_fd)
 		inredir = last_inredir(step->cmd->redirs);
 		if (inredir != NULL)
 		{
-			in_fd = open(inredir->file, O_RDONLY);
+			if (inredir->type == INPUT_REDIR)
+				in_fd = open(inredir->file, O_RDONLY);
+			else
+			{
+				pipe(fd);
+				ft_putstr_fd(step->cmd->heredoc_contents, fd[1]);
+			}
 			// if (in_fd == -1)
 			// 	ft_stderr("minishell: %s: No such file or directory\n", inredir->file);
 		}
@@ -218,6 +224,11 @@ int	*first_cmd(t_exec_step *step, int *fd, t_shell *shell, int out_fd)
 		step->cmd->pid = fork();
 	if (step->cmd->arg_arr[0] != NULL && step->cmd->pid == 0)
 	{
+		if (inredir->type == HEREDOC)
+		{
+			ft_close(&fd[1]);
+			dup2(fd[0], 0);
+		}
 		if (step->pipe_next)
 		{
 			ft_close(&fd[0]);
@@ -251,7 +262,9 @@ int	*first_cmd(t_exec_step *step, int *fd, t_shell *shell, int out_fd)
 	}
 	ft_close(&in_fd);
 	ft_close(&out_fd);
-	if (step->pipe_next)
+	ft_close(&fd[0]);
+	ft_close(&fd[1]);
+	if (step->pipe_next || inredir->type == HEREDOC)
 		ft_close(&fd[1]);
 	return fd;
 }
@@ -327,24 +340,7 @@ int	*mid_cmd(t_exec_step *step, int *fd, t_shell *shell, int out_fd)
 	return fd;
 }
 
-void	run_here_docs(t_exec_step *step)
-{
-	t_redir *redir;
-	t_list *redir_lst;
 
-	redir_lst = step->cmd->redirs;
-	while (redir_lst)
-	{
-		redir = step->cmd->redirs->content;
-		if (redir->type == HEREDOC)
-		{
-			ft_free(&step->cmd->heredoc_contents);
-			step->cmd->heredoc_contents =  read_from_stdin(redir->limiter);
-			printf("%s", step->cmd->heredoc_contents);
-		}
-		redir_lst = redir_lst->next;
-	}
-}
 void	exec_cmd(t_shell *shell)
 {
 	t_exec_step *step;
@@ -400,7 +396,7 @@ void	exec_cmd(t_shell *shell)
 		step = steps->content;
 		if (step->cmd->arg_arr[0] && (access(step->cmd->arg_arr[0], X_OK) != -1 || is_builtin(step)) && !is_dir(step->cmd->arg_arr[0]))
 		{
-			printf("WAITING FOR %s\n", step->cmd->arg_arr[0]);
+			// printf("WAITING FOR %s\n", step->cmd->arg_arr[0]);
 			waitpid(step->cmd->pid, 0, 0);
 		}
 		steps = steps->next;

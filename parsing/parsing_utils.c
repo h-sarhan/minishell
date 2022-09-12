@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parsing_utils.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/21 21:38:27 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/11 15:33:49 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/12 14:01:46 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,7 @@ void	free_exec_step(void *exec_step_ptr)
 	}
 	if (exec_step->subexpr_steps != NULL)
 		ft_lstclear(&exec_step->subexpr_steps, free_exec_step);
+	ft_free(&exec_step->cmd->heredoc_contents);
 	ft_free(&exec_step->cmd);
 	ft_free(&exec_step);
 }

@@ -6,7 +6,7 @@
 /*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/01 18:17:33 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/12 13:42:00 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/12 14:16:19 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,5 +17,7 @@
 
 void	exec_cmd(t_shell *shell);
 char	*read_from_stdin(char *limiter);
+void	run_here_docs(t_exec_step *step);
+
 
 #endif
