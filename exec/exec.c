@@ -6,7 +6,7 @@
 /*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/01 18:16:54 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/12 14:33:37 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/12 16:28:01 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,11 @@ void	ft_close(int *fd)
 		close(*fd);
 		*fd = -1;
 	}
+	// else
+	// {
+	// 	printf
+	// 	);
+	// }
 }
 
 char	*get_full_path(char *bin, char **env)
@@ -178,9 +183,11 @@ int	exec_outredir(t_exec_step *step)
 int	*first_cmd(t_exec_step *step, int *fd, t_shell *shell, int out_fd)
 {
 	int			in_fd;
+	// int			
 	int			exitcode;
 	t_redir		*inredir;
 	
+	inredir = NULL;
 	in_fd = -1;
 	if (fork_builtin(step) && !step->pipe_next)
 	{
@@ -224,8 +231,9 @@ int	*first_cmd(t_exec_step *step, int *fd, t_shell *shell, int out_fd)
 		step->cmd->pid = fork();
 	if (step->cmd->arg_arr[0] != NULL && step->cmd->pid == 0)
 	{
-		if (inredir->type == HEREDOC)
+		if (inredir && inredir->type == HEREDOC)
 		{
+			// if (!step->pipe_next)
 			ft_close(&fd[1]);
 			dup2(fd[0], 0);
 		}
@@ -241,8 +249,6 @@ int	*first_cmd(t_exec_step *step, int *fd, t_shell *shell, int out_fd)
 		if (is_builtin(step))
 		{
 			ft_stderr("GOING IN BUILTIN\n");
-			// if (step->pipe_next)
-			// 	close(2);
 			run_builtin(step, shell, true);
 			ft_close(&fd[1]);
 			ft_close(&fd[0]);
@@ -264,7 +270,7 @@ int	*first_cmd(t_exec_step *step, int *fd, t_shell *shell, int out_fd)
 	ft_close(&out_fd);
 	ft_close(&fd[0]);
 	ft_close(&fd[1]);
-	if (step->pipe_next || inredir->type == HEREDOC)
+	if (step->pipe_next)
 		ft_close(&fd[1]);
 	return fd;
 }
@@ -277,6 +283,7 @@ int	*mid_cmd(t_exec_step *step, int *fd, t_shell *shell, int out_fd)
 	
 	in_fd = -1;
 	fdtmp = fd[0];
+	inredir = NULL;
 	// if (fork_builtin(step) && !step->pipe_next)
 	// {
 	// 	run_builtin(step, shell);
@@ -290,9 +297,15 @@ int	*mid_cmd(t_exec_step *step, int *fd, t_shell *shell, int out_fd)
 		inredir = last_inredir(step->cmd->redirs);
 		if (inredir != NULL)
 		{
-			in_fd = open(inredir->file, O_RDONLY);
+			if (inredir->type == INPUT_REDIR)
+				in_fd = open(inredir->file, O_RDONLY);
 			// if (in_fd == -1)
 			// 	ft_stderr("minishell: %s: No such file or directory\n", inredir->file);
+			else
+			{
+				pipe(fd);
+				ft_putstr_fd(step->cmd->heredoc_contents, fd[1]);
+			}
 		}
 	}
 	if (step->cmd->arg_arr[0] != NULL)
@@ -300,6 +313,13 @@ int	*mid_cmd(t_exec_step *step, int *fd, t_shell *shell, int out_fd)
 	if (step->cmd->arg_arr[0] != NULL && step->cmd->pid == 0)
 	{
 		dup2(fdtmp, 0);
+		if (inredir && inredir->type == HEREDOC)
+		{
+			// if (!step->pipe_next)
+			ft_close(&fd[1]);
+			ft_close(&fdtmp);
+			dup2(fd[0], 0);
+		}
 		if (step->pipe_next)
 		{	
 			ft_close(&fd[0]);

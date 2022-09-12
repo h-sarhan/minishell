@@ -6,7 +6,7 @@
 /*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/11 14:52:15 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/12 14:43:45 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/12 16:05:53 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,33 +45,39 @@ void	*resize(char **arr, int *old_len)
 char	*read_from_stdin(char *limiter)
 {
 	char	*buff;
-	int		buffer_len;
-	int		i;
-	char	ch;
+	// int		buffer_len;
+	// int		i;
+	// char	ch;
+	char	*line;
 
 	// printf("STARTING HEREDOC\n");
-	buffer_len = 100;
-	buff = ft_calloc(buffer_len + 1, sizeof(char));
+	// buffer_len = 100;
+	buff = ft_calloc(1, sizeof(char));
 	if (buff == NULL)
 		return (NULL);
-	i = 0;
-	ft_stderr("> ");
-	while (ft_strnstr(buff, limiter, ft_strlen(buff)) == NULL)
+	// i = 0;
+	// ft_stderr("> ");
+	while (1)
 	{
-		if (i == buffer_len)
-			buff = resize(&buff, &buffer_len);
-		if (read(0, &ch, 1) < 1)
-			break ;
-		if (ch == '\n')
-		{
-			ft_stderr("> ");
-		}
-		buff[i] = ch;
-		i++;
+		// if (i == buffer_len)
+		// 	buff = resize(&buff, &buffer_len);
+		// if (read(0, &ch, 1) < 1)
+		// 	break ;
+		// if (ch == '\n')
+		// {
+		// 	ft_stderr("> ");
+		// }
+		line = readline("> ");
+		if (ft_strcmp(line, limiter) == 0)
+			break;
+		line = strjoin_free(line, "\n", 1);
+		buff = strjoin_free(buff, line, 3);
+		// buff[i] = ch;
+		// i++;
 	}
-	buff[i] = '\0';
-	if (ft_strnstr(buff, limiter, ft_strlen(buff)) != NULL)
-		ft_strnstr(buff, limiter, ft_strlen(buff))[-1] = '\0';
+	// buff[i] = '\0';
+	// if (ft_strnstr(buff, limiter, ft_strlen(buff)) != NULL)
+	// 	ft_strnstr(buff, limiter, ft_strlen(buff))[0] = '\0';
 	return (buff);
 }
 
