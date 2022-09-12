@@ -6,13 +6,13 @@
 /*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/11 14:52:15 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/11 15:00:00 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/12 13:47:07 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-void	*resize(char **arr, int *old_len, char *limiter)
+void	*resize(char **arr, int *old_len)
 {
 	int		i;
 	char	*new_arr;
@@ -57,7 +57,7 @@ char	*read_from_stdin(char *limiter)
 	while (ft_strnstr(buff, limiter, ft_strlen(buff)) == NULL)
 	{
 		if (i == buffer_len)
-			buff = resize(&buff, &buffer_len, limiter);
+			buff = resize(&buff, &buffer_len);
 		if (read(0, &ch, 1) < 1)
 			break ;
 		buff[i] = ch;

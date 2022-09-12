@@ -6,7 +6,7 @@
 /*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/01 18:16:54 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/11 17:52:47 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/12 13:58:12 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -210,12 +210,13 @@ int	*first_cmd(t_exec_step *step, int *fd, t_shell *shell, int out_fd)
 		if (inredir != NULL)
 		{
 			in_fd = open(inredir->file, O_RDONLY);
-			if (in_fd == -1)
-				ft_stderr("minishell: %s: No such file or directory\n", inredir->file);
+			// if (in_fd == -1)
+			// 	ft_stderr("minishell: %s: No such file or directory\n", inredir->file);
 		}
 	}
-	step->cmd->pid = fork();
-	if (step->cmd->pid == 0)
+	if (step->cmd->arg_arr[0] != NULL)
+		step->cmd->pid = fork();
+	if (step->cmd->arg_arr[0] != NULL && step->cmd->pid == 0)
 	{
 		if (step->pipe_next)
 		{
@@ -226,7 +227,7 @@ int	*first_cmd(t_exec_step *step, int *fd, t_shell *shell, int out_fd)
 			dup2(in_fd, 0);
 		if (out_fd != -1)
 			dup2(out_fd, 1);
-		if (step->cmd->arg_arr[0] &&is_builtin(step))
+		if (is_builtin(step))
 		{
 			ft_stderr("GOING IN BUILTIN\n");
 			// if (step->pipe_next)
@@ -244,20 +245,6 @@ int	*first_cmd(t_exec_step *step, int *fd, t_shell *shell, int out_fd)
 			free_split_array(shell->env);
 			ft_free(&fd);
 			exit(exit_code);
-		}
-		if (step->cmd->arg_arr[0] == NULL)
-		{
-			ft_lstclear(&shell->tokens, free_token);
-			ft_lstclear(&shell->steps, free_exec_step);
-			free_split_array(shell->env);
-			ft_close(&fd[1]);
-			ft_close(&fd[0]);
-			close(0);
-			close(1);
-			ft_close(&out_fd);
-			ft_close(&in_fd);
-			ft_free(&fd);
-			exit(0);
 		}
 		execve(step->cmd->arg_arr[0], step->cmd->arg_arr, shell->env);
 		printf("FAIL AT Start\n");
@@ -291,12 +278,13 @@ int	*mid_cmd(t_exec_step *step, int *fd, t_shell *shell, int out_fd)
 		if (inredir != NULL)
 		{
 			in_fd = open(inredir->file, O_RDONLY);
-			if (in_fd == -1)
-				ft_stderr("minishell: %s: No such file or directory\n", inredir->file);
+			// if (in_fd == -1)
+			// 	ft_stderr("minishell: %s: No such file or directory\n", inredir->file);
 		}
 	}
-	step->cmd->pid = fork();
-	if (step->cmd->pid == 0)
+	if (step->cmd->arg_arr[0] != NULL)
+		step->cmd->pid = fork();
+	if (step->cmd->arg_arr[0] != NULL && step->cmd->pid == 0)
 	{
 		dup2(fdtmp, 0);
 		if (step->pipe_next)
@@ -308,7 +296,7 @@ int	*mid_cmd(t_exec_step *step, int *fd, t_shell *shell, int out_fd)
 			dup2(in_fd, 0);
 		if (out_fd != -1)
 			dup2(out_fd, 1);
-		if (step->cmd->arg_arr[0] &&  is_builtin(step))
+		if (is_builtin(step))
 		{
 			ft_stderr("GOING IN BUILTIN\n");
 			// close(2);
@@ -327,20 +315,6 @@ int	*mid_cmd(t_exec_step *step, int *fd, t_shell *shell, int out_fd)
 			ft_free(&fd);
 			exit(exit_code);
 		}
-		if (step->cmd->arg_arr[0] == NULL)
-		{
-			ft_lstclear(&shell->tokens, free_token);
-			ft_lstclear(&shell->steps, free_exec_step);
-			free_split_array(shell->env);
-			ft_close(&fd[1]);
-			ft_close(&fd[0]);
-			close(0);
-			close(1);
-			ft_close(&out_fd);
-			ft_close(&in_fd);
-			ft_free(&fd);
-			exit(0);
-		}
 		execve(step->cmd->arg_arr[0], step->cmd->arg_arr, shell->env);
 		printf("FAIL\n");
 	}
@@ -353,6 +327,24 @@ int	*mid_cmd(t_exec_step *step, int *fd, t_shell *shell, int out_fd)
 	return fd;
 }
 
+void	run_here_docs(t_exec_step *step)
+{
+	t_redir *redir;
+	t_list *redir_lst;
+
+	redir_lst = step->cmd->redirs;
+	while (redir_lst)
+	{
+		redir = step->cmd->redirs->content;
+		if (redir->type == HEREDOC)
+		{
+			ft_free(&step->cmd->heredoc_contents);
+			step->cmd->heredoc_contents =  read_from_stdin(redir->limiter);
+			printf("%s", step->cmd->heredoc_contents);
+		}
+		redir_lst = redir_lst->next;
+	}
+}
 void	exec_cmd(t_shell *shell)
 {
 	t_exec_step *step;
@@ -372,7 +364,7 @@ void	exec_cmd(t_shell *shell)
 		step = steps->content;
 		
 		// check_valid_redir(step);
-		// run_here_doc(step);
+		run_here_docs(step);
 		out_fd = exec_outredir(step);
 		if (step->cmd->arg_arr[0] &&  (access(step->cmd->arg_arr[0], X_OK) == -1 && !is_builtin(step) && !is_dir(step->cmd->arg_arr[0])))
 			step->cmd->arg_arr[0] = get_full_path(step->cmd->arg_arr[0], shell->env);
