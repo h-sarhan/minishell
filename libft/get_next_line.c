@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/06/12 13:53:05 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/14 14:11:06 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/14 22:58:11 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -108,7 +108,12 @@ char	*get_next_line(int fd)
 	char		*s;
 
 	if (BUFFER_SIZE <= 0 || fd < 0)
+	{
+		if (str != NULL)
+			free(str);
+		str = NULL;
 		return (NULL);
+	}
 	str = ft_readline(fd, str, BUFFER_SIZE);
 	if (!str)
 		return (NULL);

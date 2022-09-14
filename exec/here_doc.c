@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   here_doc.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/11 14:52:15 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/14 14:23:39 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/14 22:58:14 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,6 +84,9 @@ char	*read_from_stdin(char *limiter)
 		// i++;
 	}
 	ft_free(&limiter);
+	ft_free(&line);
+	// to free the static variable
+	get_next_line(-1);
 	// buff[i] = '\0';
 	// if (ft_strnstr(buff, limiter, ft_strlen(buff)) != NULL)
 	// 	ft_strnstr(buff, limiter, ft_strlen(buff))[0] = '\0';
