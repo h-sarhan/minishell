@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   unset.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/01 19:01:46 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/14 14:56:21 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/14 20:30:16 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,7 +85,7 @@ static void	unset_var(t_shell *shell, const char *var)
 }
 
 
-void	ft_unset(t_shell *shell, const t_exec_step *step)
+void	ft_unset(t_shell *shell, t_exec_step *step)
 {
 	size_t	i;
 	char	**args;

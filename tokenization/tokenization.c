@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 14:46:52 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/11 13:41:15 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/14 20:39:07 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -194,6 +194,7 @@ t_list	*tokenize_line(const t_shell *shell, const char *line, bool *success)
 
 	i = 0;
 	*success = true;
+	// ! Add in quotes check
 	while (line[i] != '\0')
 	{
 		if (line[i] == '\\' || line[i] == ';' || line[i] == '`'

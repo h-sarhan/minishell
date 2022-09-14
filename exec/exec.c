@@ -3,14 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/01 18:16:54 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/14 13:17:15 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/14 20:42:31 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
+
+extern int g_dupstdin;
 
 int is_dir(const char *path) 
 {
@@ -250,14 +252,17 @@ int	*first_cmd(t_exec_step *step, int *fd, t_shell *shell, int out_fd)
 			dup2(out_fd, 1);
 		if (is_builtin(step))
 		{
-			ft_stderr("GOING IN BUILTIN\n");
+			// ft_stderr("GOING IN BUILTIN\n");
 			run_builtin(step, shell, true);
 			ft_close(&fd[1]);
 			ft_close(&fd[0]);
 			ft_close(&hd_fd[0]);
 			ft_close(&hd_fd[1]);
-			close(1);
-			close(0);
+			// ! Only close 1 if it is going to be piped
+			// close(1);
+			// ! Only close 0 if it has been piped
+			// close(0);
+			ft_close(&g_dupstdin);
 			int	exit_code = step->exit_code;
 			ft_lstclear(&shell->tokens, free_token);
 			ft_lstclear(&shell->steps, free_exec_step);
@@ -338,7 +343,7 @@ int	*mid_cmd(t_exec_step *step, int *fd, t_shell *shell, int out_fd)
 			dup2(out_fd, 1);
 		if (is_builtin(step))
 		{
-			ft_stderr("GOING IN BUILTIN\n");
+			// ft_stderr("GOING IN BUILTIN\n");
 			// close(2);
 			run_builtin(step, shell, true);
 			ft_close(&fd[1]);
@@ -346,8 +351,10 @@ int	*mid_cmd(t_exec_step *step, int *fd, t_shell *shell, int out_fd)
 			ft_close(&fdtmp);
 			ft_close(&hd_fd[0]);
 			ft_close(&hd_fd[1]);
-			close(1);
-			close(0);
+			// ! Only close 1 if it is going to be piped
+			// close(1);
+			// ! Only close 0 if it has been piped
+			// close(0);
 			int	exit_code = step->exit_code;
 			ft_lstclear(&shell->tokens, free_token);
 			ft_lstclear(&shell->steps, free_exec_step);

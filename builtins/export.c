@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   export.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/30 21:25:48 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/14 14:57:36 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/14 20:29:58 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,7 +110,7 @@ static bool	check_export_arg(const char *arg)
 // * Case 6: Multiple variables. Update/set all of them
 // * Case 7: Includes = by itself. Show error but still update other environmental variables if they are present
 // * Case 8: Identifier starts with a number. Show error but still update other environmental variables if they are present
-void	ft_export(t_shell *shell, const t_exec_step *step)
+void	ft_export(t_shell *shell, t_exec_step *step)
 {
 	char	**args;
 	size_t	i;
