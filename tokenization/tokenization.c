@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 14:46:52 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/14 20:39:07 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/14 21:11:20 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -168,6 +168,7 @@ t_list	*tokenize_env_variable(const t_shell *shell, const char *line, size_t *id
 		return (NULL);
 	tkn->type = ENV_VAR;
 	tkn->substr = get_env_string(line, idx);
+	// printf("substr is |%s|\n", tkn->substr);
 	if (tkn->substr == NULL)
 		return (NULL);
 	if (ft_strncmp(tkn->substr, "$\"\"", ft_strlen(tkn->substr)) == 0 && ft_strlen(tkn->substr) == 3)
@@ -191,21 +192,36 @@ t_list	*tokenize_line(const t_shell *shell, const char *line, bool *success)
 	size_t	i;
 	t_list	*tokens;
 	t_list	*el;
-
+	bool	in_quotes = false;
+	char	quote = '\0';
+	
 	i = 0;
 	*success = true;
 	// ! Add in quotes check
 	while (line[i] != '\0')
 	{
-		if (line[i] == '\\' || line[i] == ';' || line[i] == '`'
+		if (line[i] == '\'' || line[i] == '\"')
+		{
+			if (quote == '\0')
+			{
+				quote = line[i];
+				in_quotes = !in_quotes;
+			}
+			else if (line[i] == quote)
+			{
+				quote = '\0';
+				in_quotes = !in_quotes;
+			}
+		}
+		if (!in_quotes && (line[i] == '\\' || line[i] == ';' || line[i] == '`'
 			|| (line[i] == '&' && line[i + 1] != '&')
-			|| (line[i] == '(' && line[i + 1] == ')'))
+			|| (line[i] == '(' && line[i + 1] == ')')))
 		{
 			write_to_stderr("Parse Error: Invalid input\n");
 			*success = false;
 			return (NULL);
 		}
-		if (line[i] == '&' && line[i + 1] != '\0')
+		if (!in_quotes && (line[i] == '&' && line[i + 1] != '\0'))
 			i++;
 		i++;
 	}
@@ -235,7 +251,8 @@ t_list	*tokenize_line(const t_shell *shell, const char *line, bool *success)
 			}
 			ft_lstadd_back(&tokens, el);
 		}
-		else if (line[i] == '$' && line[i + 1] != '?')
+		// else if (line[i] == '$' && line[i + 1] != '?')
+		else if (line[i] == '$')
 		{
 			el = tokenize_env_variable(shell, line, &i);
 			if (el == NULL)
@@ -311,17 +328,17 @@ t_list	*tokenize_line(const t_shell *shell, const char *line, bool *success)
 			}
 			ft_lstadd_back(&tokens, el);
 		}
-		else if (line[i] == '$' && line[i + 1] == '?')
-		{
-			el = tokenize_operator(line, &i, LAST_EXIT);
-			if (el == NULL)
-			{
-				*success = false;
-				ft_lstclear(&tokens, free_token);
-				return (NULL);
-			}
-			ft_lstadd_back(&tokens, el);
-		}
+		// else if (line[i] == '$' && line[i + 1] == '?')
+		// {
+		// 	el = tokenize_operator(line, &i, LAST_EXIT);
+		// 	if (el == NULL)
+		// 	{
+		// 		*success = false;
+		// 		ft_lstclear(&tokens, free_token);
+		// 		return (NULL);
+		// 	}
+		// 	ft_lstadd_back(&tokens, el);
+		// }
 		else if (line[i] == '&' && line[i + 1] == '&')
 		{
 			el = tokenize_operator(line, &i, AND);

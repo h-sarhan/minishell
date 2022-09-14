@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/29 17:43:57 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/30 21:25:25 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/14 21:00:20 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,6 +39,11 @@ char	*get_env(const t_shell *shell, const char *name)
 
 	i = 0;
 	vars = shell->env;
+	if (name[0] == '?')
+	{
+		// ! Hardcoded for now
+		return (ft_strdup("0"));
+	}
 	while (vars[i] != NULL)
 	{
 		look_for = ft_strjoin(name, "=");

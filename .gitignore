@@ -2,3 +2,4 @@
 minishell
 *.a
 .vscode
+minishell_tester

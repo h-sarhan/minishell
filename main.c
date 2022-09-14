@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:43:26 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/14 20:36:38 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/14 20:52:39 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -164,7 +164,7 @@ int	main(int argc, char **argv, char **env)
 			continue;
 		}
 		shell.tokens = tokenize_line(&shell, line, &success);
-		print_tokens(shell.tokens);
+		// print_tokens(shell.tokens);
 		if (success == false)
 			continue;
 		shell.steps = parse_tokens(shell.tokens, &success);

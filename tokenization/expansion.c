@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 21:30:28 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/11 13:42:35 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/14 21:08:53 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,6 @@ static char	*create_env_var_str(const t_shell *shell, char *str, const size_t st
 	before = ft_substr(str, 0, start - 1);
 	env_var = ft_substr(str, start, end - start + 1);
 	// if (ft_strncmp(env_var))
-	// printf("ENV VAR IS |%s|\n", env_var);
 	expansion = get_env(shell, env_var);
 	ft_free(&env_var);
 	after = ft_substr(str, end + 1, ft_strlen(str));
@@ -75,6 +74,9 @@ char	*expand_double_quote(const t_shell *shell, char *str)
 		}
 		else if (str[i] == '$' && str[i + 1] == '?' && in_s_quotes == false)
 		{
+			start = i + 1;
+			end = i + 1;
+			break;
 		}
 		else
 			i++;
@@ -102,6 +104,8 @@ bool	contains_env_var(const char *str)
 			i++;
 			if (str[i] == '\0')
 				return (false);
+			else if (str[i] == '?')
+				return (true);
 			else if (str[i] == '\"' || str[i] == '\'')
 				return (true);
 			else if (!ft_isalnum(str[i]) && str[i] != '_')
