@@ -6,7 +6,7 @@
 /*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/30 15:41:46 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/01 13:14:27 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/14 14:51:08 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,7 +61,6 @@ void	cd_to_path(t_exec_step *step, char **env)
 	else if (chdir(step->cmd->arg_arr[1]) == -1)
 	{
 		ft_stderr("minishell: cd: %s: %s\n", step->cmd->arg_arr[1], strerror(errno));
-				
 		step->exit_code = 1;
 	}
 	ft_free(&oldpwd);

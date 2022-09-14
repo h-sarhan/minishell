@@ -6,7 +6,7 @@
 /*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/21 09:39:31 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/07 16:09:24 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/14 14:19:20 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ struct signal
 	
 };
 
-
+void	ft_close(int *fd);
 char	**copy_str_arr(char **arr);
 // void	rl_replace_line(const char *text, int clear_undo);
 

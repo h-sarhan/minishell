@@ -6,11 +6,13 @@
 /*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/11 14:52:15 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/14 13:13:00 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/14 14:23:39 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
+extern int g_interactive;
+extern int g_dupstdin;
 
 void	*resize(char **arr, int *old_len)
 {
@@ -55,6 +57,7 @@ char	*read_from_stdin(char *limiter)
 	buff = ft_calloc(1, sizeof(char));
 	if (buff == NULL)
 		return (NULL);
+	limiter = strjoin_free(limiter, "\n", 0);
 	// i = 0;
 	// ft_stderr("> ");
 	while (1)
@@ -67,16 +70,20 @@ char	*read_from_stdin(char *limiter)
 		// {
 		// 	ft_stderr("> ");
 		// }
-		line = readline("> ");
+		if (g_dupstdin != -1)
+			ft_putstr_fd("> ", 1);
+		line = get_next_line(g_dupstdin);
 		if (line == NULL)
 			break;
+		// if (g_interactive == false)
+		// 	break;
 		if (ft_strcmp(line, limiter) == 0)
 			break;
-		line = strjoin_free(line, "\n", 1);
 		buff = strjoin_free(buff, line, 3);
 		// buff[i] = ch;
 		// i++;
 	}
+	ft_free(&limiter);
 	// buff[i] = '\0';
 	// if (ft_strnstr(buff, limiter, ft_strlen(buff)) != NULL)
 	// 	ft_strnstr(buff, limiter, ft_strlen(buff))[0] = '\0';

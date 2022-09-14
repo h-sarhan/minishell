@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   export.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/30 21:25:48 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/02 12:56:59 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/14 14:57:36 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,18 +114,27 @@ void	ft_export(t_shell *shell, const t_exec_step *step)
 {
 	char	**args;
 	size_t	i;
+	bool	error;
 
 	args = step->cmd->arg_arr;
+	error = false;
 	i = 1;
 	while (args[i] != NULL)
 	{
 		// if the argument includes an equal sign
 		if (check_export_arg(args[i]) == false)
+		{
+			error = true;
 			export_error(args[i]);
+		}
 		else if (ft_strchr(args[i], '=') != NULL)
 		{
 			update_env(shell, args[i]);
 		}
 		i++;
 	}
+	if (error)
+		step->exit_code = 1;
+	else
+		step->exit_code = 0;
 }

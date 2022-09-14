@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   unset.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/01 19:01:46 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/11 13:40:53 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/14 14:56:21 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,6 +81,7 @@ static void	unset_var(t_shell *shell, const char *var)
 	ft_free(&shell->env);
 	ft_free(&to_look);
 	shell->env = env_copy;
+	
 }
 
 
@@ -88,18 +89,26 @@ void	ft_unset(t_shell *shell, const t_exec_step *step)
 {
 	size_t	i;
 	char	**args;
+	bool	error;
 
-	(void)shell;
+	error = false;
 	args = step->cmd->arg_arr;
 	i = 1;
 	while (args[i] != NULL)
 	{
 		// if the argument includes an equal sign
 		if (check_unset_arg(args[i]) == false)
+		{
 			unset_error(args[i]);
+			error = true;
+		}
 		else
 			unset_var(shell, args[i]);
 		i++;
 	}
+	if (error)
+		step->exit_code = 1;
+	else
+		step->exit_code = 0;
 }
 

@@ -1,33 +1,26 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strchr.c                                        :+:      :+:    :+:   */
+/*   get_next_line.h                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/05/10 09:12:14 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/14 14:06:58 by mkhan            ###   ########.fr       */
+/*   Created: 2022/06/12 13:53:09 by mkhan             #+#    #+#             */
+/*   Updated: 2022/09/14 14:11:58 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#ifndef GET_NEXT_LINE_H
+# define GET_NEXT_LINE_H
 
-char	*ft_strchr(const char *s, int c)
-{
-	size_t	i;
-	char	to_find;
+# include <stdlib.h>
+# include <stdio.h>
+# include <unistd.h>
+# include "libft.h"
 
-	i = 0;
-	if (s == NULL)
-		return (NULL);
-	to_find = (char) c;
-	while (s[i] != '\0')
-	{
-		if (s[i] == to_find)
-			return ((char *) &s[i]);
-		i++;
-	}
-	if (s[i] == to_find)
-		return ((char *) &s[i]);
-	return (NULL);
-}
+# define BUFFER_SIZE 1
+
+char	*get_next_line(int fd);
+char	*ft_gnl_strjoin(char *s1, char *s2);
+
+#endif

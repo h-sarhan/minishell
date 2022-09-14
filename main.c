@@ -6,7 +6,7 @@
 /*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:43:26 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/14 13:00:35 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/14 14:41:03 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,6 +80,10 @@ void	print_exec_step(t_list *exec_steps)
 
 
 bool	g_interactive;
+int 	g_dupstdin;
+
+// bool	g_interactive;
+// int		stdin_dup;
 
 void	handler(int	sig)
 {
@@ -88,7 +92,8 @@ void	handler(int	sig)
 		write(2, "\n", 1);
 		rl_replace_line("", 0);
 		rl_on_new_line();
-		rl_redisplay();
+		if (g_interactive == true)
+			rl_redisplay();
 	}
 	else if (sig == SIGQUIT)
 	{
@@ -101,10 +106,20 @@ void	handler(int	sig)
 		}
 		else
 		{
+			// rl_replace_line("", 0);
 			rl_on_new_line();
 			rl_redisplay();
 		}
 		// return ;
+	}
+}
+
+void test(int sig)
+{
+	if (sig == SIGINT)
+	{
+		ft_close(&g_dupstdin);
+		printf("\n");
 	}
 }
 
@@ -118,17 +133,19 @@ int	main(int argc, char **argv, char **env)
 	
 	(void)argc;
 	(void)argv;
-	
 	success = true;
 	shell.env = copy_str_arr(env);
 	// sa.sa_sigaction = reciever;
 	// sigemptyset(&sa.sa_mask);
 	// sa.sa_flags = SA_SIGINFO;
+	
 	signal(SIGINT, handler);
 	signal(SIGQUIT, handler);
+	// signal(SIGQUIT, test);
 	// sigaction(SIGKILL, &sa, NULL);
 	while (1)
 	{
+		g_dupstdin = dup(0);
 		g_interactive = true;
 		line = readline("GIGASHELL$ ");
 		g_interactive = false;
@@ -136,6 +153,7 @@ int	main(int argc, char **argv, char **env)
 		{
 			printf("\n");
 			free_split_array(shell.env);
+			ft_close(&g_dupstdin);
 			return (EXIT_SUCCESS);
 		}
 		if (line[0] != '\0')
@@ -160,12 +178,24 @@ int	main(int argc, char **argv, char **env)
 			free(line);
 			continue;
 		}
+		signal(SIGINT, test);
+		signal(SIGQUIT, test);
 		while (shell.steps != NULL)
 		{
 			// print_exec_step(shell.steps);
 			run_here_docs(shell.steps->content);
 			shell.steps = shell.steps->next;
 		}
+		if (g_dupstdin == -1)
+		{
+			ft_lstclear(&shell.tokens, free_token);
+			ft_lstclear(&exec_steps_start, free_exec_step);
+			rl_on_new_line();
+			ft_free(&line);
+			continue;
+		}
+		signal(SIGINT, handler);
+		signal(SIGQUIT, handler);
 		shell.steps = exec_steps_start;
 		if (exec_steps_start != NULL)
 		{
@@ -175,7 +205,9 @@ int	main(int argc, char **argv, char **env)
 		ft_lstclear(&exec_steps_start, free_exec_step);
 		rl_on_new_line();
 		ft_free(&line);
+		ft_close(&g_dupstdin);
 	}
+	ft_close(&g_dupstdin);
 	free_split_array(shell.env);
 	clear_history();
 }
