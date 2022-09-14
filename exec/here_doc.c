@@ -6,7 +6,7 @@
 /*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/11 14:52:15 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/12 16:05:53 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/14 13:13:00 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,6 +68,8 @@ char	*read_from_stdin(char *limiter)
 		// 	ft_stderr("> ");
 		// }
 		line = readline("> ");
+		if (line == NULL)
+			break;
 		if (ft_strcmp(line, limiter) == 0)
 			break;
 		line = strjoin_free(line, "\n", 1);

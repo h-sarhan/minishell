@@ -6,7 +6,7 @@
 /*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/01 18:16:54 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/12 16:28:01 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/14 13:17:15 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -183,12 +183,14 @@ int	exec_outredir(t_exec_step *step)
 int	*first_cmd(t_exec_step *step, int *fd, t_shell *shell, int out_fd)
 {
 	int			in_fd;
-	// int			
+	int			hd_fd[2];
 	int			exitcode;
 	t_redir		*inredir;
 	
 	inredir = NULL;
 	in_fd = -1;
+	hd_fd[0] = -1;
+	hd_fd[1] = -1;
 	if (fork_builtin(step) && !step->pipe_next)
 	{
 		run_builtin(step, shell, false);
@@ -210,7 +212,7 @@ int	*first_cmd(t_exec_step *step, int *fd, t_shell *shell, int out_fd)
 	}
 	if (step->pipe_next)
 		pipe(fd);
-	check_valid_redir(step);
+	// check_valid_redir(step);
 	if (step->cmd->redirs)
 	{
 		inredir = last_inredir(step->cmd->redirs);
@@ -220,8 +222,8 @@ int	*first_cmd(t_exec_step *step, int *fd, t_shell *shell, int out_fd)
 				in_fd = open(inredir->file, O_RDONLY);
 			else
 			{
-				pipe(fd);
-				ft_putstr_fd(step->cmd->heredoc_contents, fd[1]);
+				pipe(hd_fd);
+				ft_putstr_fd(step->cmd->heredoc_contents, hd_fd[1]);
 			}
 			// if (in_fd == -1)
 			// 	ft_stderr("minishell: %s: No such file or directory\n", inredir->file);
@@ -234,8 +236,8 @@ int	*first_cmd(t_exec_step *step, int *fd, t_shell *shell, int out_fd)
 		if (inredir && inredir->type == HEREDOC)
 		{
 			// if (!step->pipe_next)
-			ft_close(&fd[1]);
-			dup2(fd[0], 0);
+			ft_close(&hd_fd[1]);
+			dup2(hd_fd[0], 0);
 		}
 		if (step->pipe_next)
 		{
@@ -252,6 +254,8 @@ int	*first_cmd(t_exec_step *step, int *fd, t_shell *shell, int out_fd)
 			run_builtin(step, shell, true);
 			ft_close(&fd[1]);
 			ft_close(&fd[0]);
+			ft_close(&hd_fd[0]);
+			ft_close(&hd_fd[1]);
 			close(1);
 			close(0);
 			int	exit_code = step->exit_code;
@@ -268,8 +272,8 @@ int	*first_cmd(t_exec_step *step, int *fd, t_shell *shell, int out_fd)
 	}
 	ft_close(&in_fd);
 	ft_close(&out_fd);
-	ft_close(&fd[0]);
-	ft_close(&fd[1]);
+	ft_close(&hd_fd[0]);
+	ft_close(&hd_fd[1]);
 	if (step->pipe_next)
 		ft_close(&fd[1]);
 	return fd;
@@ -279,11 +283,14 @@ int	*mid_cmd(t_exec_step *step, int *fd, t_shell *shell, int out_fd)
 {
 	int	in_fd;
 	int	fdtmp;
+	int			hd_fd[2];
 	t_redir		*inredir;
 	
 	in_fd = -1;
 	fdtmp = fd[0];
 	inredir = NULL;
+	hd_fd[0] = -1;
+	hd_fd[1] = -1;
 	// if (fork_builtin(step) && !step->pipe_next)
 	// {
 	// 	run_builtin(step, shell);
@@ -291,7 +298,7 @@ int	*mid_cmd(t_exec_step *step, int *fd, t_shell *shell, int out_fd)
 	// }
 	if (step->pipe_next)
 		pipe(fd);
-	check_valid_redir(step);
+	// check_valid_redir(step);
 	if (step->cmd->redirs)
 	{
 		inredir = last_inredir(step->cmd->redirs);
@@ -303,8 +310,8 @@ int	*mid_cmd(t_exec_step *step, int *fd, t_shell *shell, int out_fd)
 			// 	ft_stderr("minishell: %s: No such file or directory\n", inredir->file);
 			else
 			{
-				pipe(fd);
-				ft_putstr_fd(step->cmd->heredoc_contents, fd[1]);
+				pipe(hd_fd);
+				ft_putstr_fd(step->cmd->heredoc_contents, hd_fd[1]);
 			}
 		}
 	}
@@ -316,9 +323,9 @@ int	*mid_cmd(t_exec_step *step, int *fd, t_shell *shell, int out_fd)
 		if (inredir && inredir->type == HEREDOC)
 		{
 			// if (!step->pipe_next)
-			ft_close(&fd[1]);
+			ft_close(&hd_fd[1]);
 			ft_close(&fdtmp);
-			dup2(fd[0], 0);
+			dup2(hd_fd[0], 0);
 		}
 		if (step->pipe_next)
 		{	
@@ -337,6 +344,8 @@ int	*mid_cmd(t_exec_step *step, int *fd, t_shell *shell, int out_fd)
 			ft_close(&fd[1]);
 			ft_close(&fd[0]);
 			ft_close(&fdtmp);
+			ft_close(&hd_fd[0]);
+			ft_close(&hd_fd[1]);
 			close(1);
 			close(0);
 			int	exit_code = step->exit_code;
@@ -355,6 +364,8 @@ int	*mid_cmd(t_exec_step *step, int *fd, t_shell *shell, int out_fd)
 		ft_close(&fd[0]);
 	ft_close(&in_fd);
 	ft_close(&out_fd);
+	ft_close(&hd_fd[0]);
+	ft_close(&hd_fd[1]);
 	ft_close(&fd[1]);
 	ft_close(&fdtmp);
 	return fd;
@@ -378,18 +389,18 @@ void	exec_cmd(t_shell *shell)
 	while (steps)
 	{
 		step = steps->content;
-		
-		// check_valid_redir(step);
-		run_here_docs(step);
+
+		// run_here_docs(step);
+		bool valid_redirs = check_valid_redir(step);
 		out_fd = exec_outredir(step);
 		if (step->cmd->arg_arr[0] &&  (access(step->cmd->arg_arr[0], X_OK) == -1 && !is_builtin(step) && !is_dir(step->cmd->arg_arr[0])))
 			step->cmd->arg_arr[0] = get_full_path(step->cmd->arg_arr[0], shell->env);
 		
-		if (step->cmd->arg_arr[0] && ((access(step->cmd->arg_arr[0], X_OK) == -1 && !is_builtin(step)) || is_dir(step->cmd->arg_arr[0]) || !check_valid_redir(step)))
+		if (step->cmd->arg_arr[0] && ((access(step->cmd->arg_arr[0], X_OK) == -1 && !is_builtin(step)) || is_dir(step->cmd->arg_arr[0]) || !valid_redirs))
 		{
-			if (is_dir(step->cmd->arg_arr[0]))
+			if (is_dir(step->cmd->arg_arr[0]) && valid_redirs)
 				ft_stderr("minishell: %s: is a directory\n", step->cmd->arg_arr[0]);
-			else if ((access(step->cmd->arg_arr[0], X_OK) == -1 && !is_builtin(step)))
+			else if ((access(step->cmd->arg_arr[0], X_OK) == -1 && !is_builtin(step)) && valid_redirs)
 				ft_stderr("minishell: %s: command not found\n", step->cmd->arg_arr[0]);
 			steps = steps->next;
 			ft_close(&fd[0]);
@@ -398,12 +409,12 @@ void	exec_cmd(t_shell *shell)
 				flag = true;
 			continue;
 		}
-		if (!flag)
+		if (!flag && valid_redirs)
 		{
 			fd = first_cmd(step, fd, shell, out_fd);
 			flag = true;
 		}
-		else
+		else if (valid_redirs)
 			fd = mid_cmd(step, fd, shell, out_fd);
 		steps = steps->next;
 	}

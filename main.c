@@ -6,7 +6,7 @@
 /*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:43:26 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/12 15:44:59 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/14 13:00:35 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -163,27 +163,13 @@ int	main(int argc, char **argv, char **env)
 		while (shell.steps != NULL)
 		{
 			// print_exec_step(shell.steps);
+			run_here_docs(shell.steps->content);
 			shell.steps = shell.steps->next;
 		}
 		shell.steps = exec_steps_start;
 		if (exec_steps_start != NULL)
 		{
-			// t_exec_step	*step;
-			// step = exec_steps_start->content;
-			// if (step->cmd->arg_arr[0] != NULL
-			// 	&& ft_strncmp(step->cmd->arg_arr[0], "env", ft_strlen("env")) == 0)
-			// {
-			// 	ft_env(&shell, step);
-			// }
-			// if (step->cmd->arg_arr[0] != NULL
-			// 	&& ft_strncmp(step->cmd->arg_arr[0], "export", ft_strlen("export")) == 0)
-			// {
-			// 	ft_export(&shell, step);
-			// }
-			// printf("%s\n", (char *)((t_exec_step *)shell.steps->content)->cmd->arg_arr[0]);
-			// if (!run_builtin(step, &shell))
-				exec_cmd(&shell);
-			
+			exec_cmd(&shell);
 		}
 		ft_lstclear(&shell.tokens, free_token);
 		ft_lstclear(&exec_steps_start, free_exec_step);
