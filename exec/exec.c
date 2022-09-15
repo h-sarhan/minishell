@@ -6,7 +6,7 @@
 /*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/01 18:16:54 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/15 12:51:32 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/15 13:30:29 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -260,7 +260,8 @@ int	*first_cmd(t_exec_step *step, int *fd, t_shell *shell, int out_fd)
 			ft_close(&hd_fd[0]);
 			ft_close(&hd_fd[1]);
 			// ! Only close 1 if it is going to be piped
-			// close(1);
+			// if (step->pipe_next)
+				// close(1);
 			// ! Only close 0 if it has been piped
 			// close(0);
 			ft_close(&g_dupstdin);
@@ -349,13 +350,16 @@ int	*mid_cmd(t_exec_step *step, int *fd, t_shell *shell, int out_fd)
 			run_builtin(step, shell, true);
 			ft_close(&fd[1]);
 			ft_close(&fd[0]);
-			ft_close(&fdtmp);
 			ft_close(&hd_fd[0]);
 			ft_close(&hd_fd[1]);
 			// ! Only close 1 if it is going to be piped
-			// close(1);
+			// if (step->pipe_next)
+				// close(1);
 			// ! Only close 0 if it has been piped
-			// close(0);
+			// if (fdtmp != -1)
+				// close(0);
+			ft_close(&g_dupstdin);
+			ft_close(&fdtmp);
 			int	exit_code = step->exit_code;
 			ft_lstclear(&shell->tokens, free_token);
 			ft_lstclear(&shell->steps, free_exec_step);
@@ -417,18 +421,32 @@ void	exec_cmd(t_shell *shell)
 		
 		if (step->cmd->arg_arr[0] && ((access(step->cmd->arg_arr[0], X_OK) == -1 && !is_builtin(step)) || is_dir(step->cmd->arg_arr[0]) || !valid_redirs))
 		{
-			if (is_dir(step->cmd->arg_arr[0]) && valid_redirs)
+			if (((access(step->cmd->arg_arr[0], F_OK) == -1 && !is_builtin(step)) || is_dir(step->cmd->arg_arr[0])) && valid_redirs && !ft_strchr(step->cmd->arg_arr[0], '/'))
+			{
+				ft_stderr("minishell: %s: command not found\n", step->cmd->arg_arr[0]);
+				exit_flag = true;
+				step->exit_code = 127;
+				shell->last_exit_code = step->exit_code;
+			}
+			else if (is_dir(step->cmd->arg_arr[0]) && valid_redirs)
 			{	
 				ft_stderr("minishell: %s: is a directory\n", step->cmd->arg_arr[0]);
 				exit_flag = true;
 				step->exit_code = 126;
 				shell->last_exit_code = step->exit_code;
 			}
-			else if ((access(step->cmd->arg_arr[0], X_OK) == -1 && !is_builtin(step)) && valid_redirs)
+			else if ((access(step->cmd->arg_arr[0], F_OK) == -1 && !is_builtin(step)) && valid_redirs && ft_strchr(step->cmd->arg_arr[0], '/'))
 			{
-				ft_stderr("minishell: %s: command not found\n", step->cmd->arg_arr[0]);
+				ft_stderr("minishell: %s: No such file or directory\n", step->cmd->arg_arr[0]);
 				exit_flag = true;
 				step->exit_code = 127;
+				shell->last_exit_code = step->exit_code;
+			}
+			else if ((access(step->cmd->arg_arr[0], X_OK) == -1 && !is_builtin(step)) && valid_redirs)
+			{
+				ft_stderr("minishell: %s: Permission denied\n", step->cmd->arg_arr[0]);
+				exit_flag = true;
+				step->exit_code = 126;
 				shell->last_exit_code = step->exit_code;
 			}
 			steps = steps->next;
