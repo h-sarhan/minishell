@@ -6,7 +6,7 @@
 /*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:43:26 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/15 12:22:18 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/15 13:35:35 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -166,11 +166,15 @@ int	main(int argc, char **argv, char **env)
 		shell.tokens = tokenize_line(&shell, line, &success);
 		// print_tokens(shell.tokens);
 		if (success == false)
+		{
+			shell.last_exit_code = 258;
 			continue;
+		}
 		shell.steps = parse_tokens(shell.tokens, &success);
 		t_list *exec_steps_start = shell.steps;
 		if (success == false)
 		{
+			shell.last_exit_code = 258;
 			write_to_stderr("Parse error\n");
 			ft_lstclear(&shell.tokens, free_token);
 			ft_lstclear(&exec_steps_start, free_exec_step);
