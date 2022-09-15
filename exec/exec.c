@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/01 18:16:54 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/14 20:42:31 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/15 12:51:32 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -208,6 +208,7 @@ int	*first_cmd(t_exec_step *step, int *fd, t_shell *shell, int out_fd)
 				ft_free(&fd);
 				// ft_free(&line);
 			}
+			// shell->last_exit_code = exitcode;
 			exit(exitcode);
 		}
 		return fd;
@@ -385,20 +386,31 @@ void	exec_cmd(t_shell *shell)
 	t_list		*steps;
 	int			*fd;
 	bool		flag;
+	bool		exit_flag;
 	int			out_fd;
+	int			w_status;
 
 	fd = ft_calloc(2, sizeof(int));
 	fd[0] = -1;
 	fd[1] = -1;
 	out_fd = -1;
+	w_status = 0;
 	steps = shell->steps;
 	flag = false;
+	exit_flag = false;
 	while (steps)
 	{
 		step = steps->content;
 
 		// run_here_docs(step);
+		exit_flag = false;
 		bool valid_redirs = check_valid_redir(step);
+		if (valid_redirs == false)
+		{
+			exit_flag = true;
+			step->exit_code = 1;
+			shell->last_exit_code = step->exit_code;
+		}
 		out_fd = exec_outredir(step);
 		if (step->cmd->arg_arr[0] &&  (access(step->cmd->arg_arr[0], X_OK) == -1 && !is_builtin(step) && !is_dir(step->cmd->arg_arr[0])))
 			step->cmd->arg_arr[0] = get_full_path(step->cmd->arg_arr[0], shell->env);
@@ -406,9 +418,19 @@ void	exec_cmd(t_shell *shell)
 		if (step->cmd->arg_arr[0] && ((access(step->cmd->arg_arr[0], X_OK) == -1 && !is_builtin(step)) || is_dir(step->cmd->arg_arr[0]) || !valid_redirs))
 		{
 			if (is_dir(step->cmd->arg_arr[0]) && valid_redirs)
+			{	
 				ft_stderr("minishell: %s: is a directory\n", step->cmd->arg_arr[0]);
+				exit_flag = true;
+				step->exit_code = 126;
+				shell->last_exit_code = step->exit_code;
+			}
 			else if ((access(step->cmd->arg_arr[0], X_OK) == -1 && !is_builtin(step)) && valid_redirs)
+			{
 				ft_stderr("minishell: %s: command not found\n", step->cmd->arg_arr[0]);
+				exit_flag = true;
+				step->exit_code = 127;
+				shell->last_exit_code = step->exit_code;
+			}
 			steps = steps->next;
 			ft_close(&fd[0]);
 			fd[0] = open("/dev/null", O_RDWR);
@@ -435,8 +457,13 @@ void	exec_cmd(t_shell *shell)
 		if (step->cmd->arg_arr[0] && (access(step->cmd->arg_arr[0], X_OK) != -1 || is_builtin(step)) && !is_dir(step->cmd->arg_arr[0]))
 		{
 			// printf("WAITING FOR %s\n", step->cmd->arg_arr[0]);
-			waitpid(step->cmd->pid, 0, 0);
+			waitpid(step->cmd->pid, &w_status, 0);
 		}
 		steps = steps->next;
+	}
+	if (!(fork_builtin(step) && !step->pipe_next) && !exit_flag)
+	{
+		step->exit_code = WEXITSTATUS(w_status);
+		shell->last_exit_code = step->exit_code;
 	}
 }
