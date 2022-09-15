@@ -6,7 +6,7 @@
 /*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/23 17:45:38 by mkhan             #+#    #+#             */
-/*   Updated: 2022/08/30 16:27:42 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/15 12:14:11 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ bool ft_check(char *s1)
 	return (true);
 }
 
-void ft_echo(t_exec_step *step)
+void ft_echo(t_exec_step *step, t_shell *shell)
 {
 	int	i;
 	int n;
@@ -65,4 +65,5 @@ void ft_echo(t_exec_step *step)
 	if (n == 0)
 		printf("\n");
 	step->exit_code = 0;
+	shell->last_exit_code = step->exit_code;
 }

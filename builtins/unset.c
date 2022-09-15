@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   unset.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/01 19:01:46 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/14 20:30:16 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/15 12:12:55 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,5 +110,6 @@ void	ft_unset(t_shell *shell, t_exec_step *step)
 		step->exit_code = 1;
 	else
 		step->exit_code = 0;
+	shell->last_exit_code = step->exit_code;
 }
 

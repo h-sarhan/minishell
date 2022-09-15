@@ -6,7 +6,7 @@
 /*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/30 13:47:43 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/12 13:53:05 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/15 12:14:56 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,11 +50,11 @@ bool	fork_builtin(t_exec_step *step)
 bool 	run_builtin(t_exec_step *step, t_shell *shell, bool child)
 {
 	if (ft_strcmp(step->cmd->arg_arr[0], "echo") == 0)
-		ft_echo(step);
+		ft_echo(step, shell);
 	if (ft_strcmp(step->cmd->arg_arr[0], "cd") == 0)
-		ft_cd(step, shell->env);
+		ft_cd(step, shell->env, shell);
 	if (ft_strcmp(step->cmd->arg_arr[0], "pwd") == 0)
-		ft_pwd(step);
+		ft_pwd(step, shell);
 	if (ft_strcmp(step->cmd->arg_arr[0], "env") == 0)
 		ft_env(shell, step);
 	if (ft_strcmp(step->cmd->arg_arr[0], "export") == 0)

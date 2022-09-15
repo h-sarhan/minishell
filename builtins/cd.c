@@ -6,7 +6,7 @@
 /*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/30 15:41:46 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/14 14:51:08 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/15 12:15:08 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -94,7 +94,7 @@ void	cd_to_home(t_exec_step *step, char **env, char *home)
 	}
 }
 
-void	ft_cd(t_exec_step *step, char **env)
+void	ft_cd(t_exec_step *step, char **env, t_shell *shell)
 {
 	char	*home;
 	
@@ -105,4 +105,5 @@ void	ft_cd(t_exec_step *step, char **env)
 		home = NULL;
 		cd_to_home(step, env, home);
 	}
+	shell->last_exit_code = step->exit_code;
 }

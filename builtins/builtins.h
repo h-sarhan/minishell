@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtins.h                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/23 17:46:50 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/14 20:30:07 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/15 12:15:50 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,10 +19,10 @@ typedef struct s_shell	t_shell;
 
 bool 	run_builtin(t_exec_step *step, t_shell *shell, bool child);
 int		ft_strcmp(char *s1, char *s2);
-void	ft_echo(t_exec_step *command);
-void	ft_pwd(t_exec_step *command);
-void	ft_cd(t_exec_step *step, char **env);
-void	ft_env(const t_shell *shell, t_exec_step *step);
+void	ft_echo(t_exec_step *command, t_shell *shell);
+void	ft_pwd(t_exec_step *command, t_shell *shell);
+void	ft_cd(t_exec_step *step, char **env, t_shell *shell);
+void	ft_env(t_shell *shell, t_exec_step *step);
 void	ft_export(t_shell *shell, t_exec_step *step);
 void	ft_unset(t_shell *shell, t_exec_step *step);
 void	ft_exit(t_exec_step *step, t_shell *shell, bool child);

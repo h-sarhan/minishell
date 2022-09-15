@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exit.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/01 13:43:52 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/14 21:13:24 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/15 12:09:57 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,10 +17,12 @@ void	ft_exit(t_exec_step *step, t_shell *shell, bool child)
 	int	i;
 	int j;
 	int exitcode;
+	bool	check;
 	(void)shell;
 	i = 0;
 	j = 0;
 	exitcode = 0;
+	check = true;
 	if (step->cmd->arg_arr[1] && (step->cmd->arg_arr[1][i] == '-' || step->cmd->arg_arr[1][i] == '+'))
 		++i;
 	while (step->cmd->arg_arr[1] && step->cmd->arg_arr[1][i] >= '0' && step->cmd->arg_arr[1][i] <= '9')
@@ -38,8 +40,16 @@ void	ft_exit(t_exec_step *step, t_shell *shell, bool child)
 		j = 1;
 	}
 	if (!j && step->cmd->arg_arr[1] != NULL)
-		step->exit_code =  ft_atoi(step->cmd->arg_arr[1]);
-	exitcode = step->exit_code;
+		step->exit_code =  ft_atol(step->cmd->arg_arr[1], &check);
+	if (!child)
+		printf("exit\n");
+	if (check == false)
+	{
+		step->exit_code = 255;
+		ft_stderr("minishell: exit: %s: numeric argument required\n", step->cmd->arg_arr[1]);
+	}
+	shell->last_exit_code = step->exit_code;
+	// exitcode = step->exit_code;
 	// if (step->cmd->arg_arr)
 	// {
 	// 	ft_lstclear(&shell->tokens, free_token);
@@ -47,9 +57,7 @@ void	ft_exit(t_exec_step *step, t_shell *shell, bool child)
 	// 	free_split_array(shell->env);
 	// 	// ft_free(&line);
 	// }
-	if (!child)
-		printf("exit\n");
 	// printf("exit\n");
-	step->exit_code = exitcode;
+	// step->exit_code = exitcode;
 	// exit(exitcode);
 }
