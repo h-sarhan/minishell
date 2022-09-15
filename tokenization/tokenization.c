@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 14:46:52 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/14 21:11:20 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/15 14:10:46 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -179,6 +179,8 @@ t_list	*tokenize_env_variable(const t_shell *shell, const char *line, size_t *id
 	}
 	while (contains_env_var(tkn->substr))
 		tkn->substr = expand_double_quote(shell, tkn->substr);
+	// printf("substr after expanding is |%s|\n", tkn->substr);
+	
 	tkn->type = NORMAL;
 	tkn->substr = eat_dollars(tkn->substr);
 	tkn->substr = eat_quotes(tkn->substr);

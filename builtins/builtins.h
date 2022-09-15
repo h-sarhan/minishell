@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtins.h                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/23 17:46:50 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/15 12:15:50 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/15 14:45:54 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,4 +30,8 @@ char	*get_env(const t_shell *shell, const char *name);
 size_t	env_len(char **env);
 bool	is_builtin(t_exec_step *step);
 bool	fork_builtin(t_exec_step *step);
+void	find_and_update_oldpwd(t_shell *shell, char **env, char *oldpwd);
+void	unset_var(t_shell *shell, const char *var);
+void	update_env(t_shell *shell, const char *str);
+
 #endif

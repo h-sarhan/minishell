@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:43:26 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/15 13:39:14 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/15 14:57:04 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -135,6 +135,11 @@ int	main(int argc, char **argv, char **env)
 	(void)argv;
 	success = true;
 	shell.env = copy_str_arr(env);
+	// find_and_update_oldpwd(shell.env, "");
+	// ft_unset(&shell, );
+	unset_var(&shell, "OLDPWD");
+
+	
 	// sa.sa_sigaction = reciever;
 	// sigemptyset(&sa.sa_mask);
 	// sa.sa_flags = SA_SIGINFO;
@@ -147,7 +152,7 @@ int	main(int argc, char **argv, char **env)
 	{
 		g_dupstdin = dup(0);
 		g_interactive = true;
-		line = readline("GIGASHELL$ ");
+		line = readline("\001\033[1;34m\002GIGASHELL$ \001\033[0m\002");
 		g_interactive = false;
 		if (line == NULL)
 		{

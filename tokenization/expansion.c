@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 21:30:28 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/14 21:08:53 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/15 14:09:13 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,6 @@ static char	*create_env_var_str(const t_shell *shell, char *str, const size_t st
 	return (str);
 }
 
-// TODO: Expand LAST_EXIT command
 char	*expand_double_quote(const t_shell *shell, char *str)
 {
 	size_t	i;
@@ -106,8 +105,12 @@ bool	contains_env_var(const char *str)
 				return (false);
 			else if (str[i] == '?')
 				return (true);
-			else if (str[i] == '\"' || str[i] == '\'')
+			else if ((str[i] == '\"' || str[i] == '\''))
+			{
+				if (str[i + 1] == '\0' || (!ft_isalnum(str[i + 1]) && str[i + 1] != '_'))
+					return (false);
 				return (true);
+			}
 			else if (!ft_isalnum(str[i]) && str[i] != '_')
 				i++;
 			else

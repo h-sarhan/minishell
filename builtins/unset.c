@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   unset.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/01 19:01:46 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/15 12:12:55 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/15 14:40:26 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ static bool	check_unset_arg(const char *arg)
 	return (true);
 }
 
-static void	unset_var(t_shell *shell, const char *var)
+void	unset_var(t_shell *shell, const char *var)
 {
 	size_t	i;
 	size_t	j;

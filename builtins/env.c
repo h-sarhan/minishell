@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   env.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/29 17:43:57 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/15 12:17:02 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/15 13:53:47 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,6 @@ char	*get_env(const t_shell *shell, const char *name)
 	vars = shell->env;
 	if (name[0] == '?')
 	{
-		// ! Hardcoded for now
 		return (ft_itoa(shell->last_exit_code));
 	}
 	while (vars[i] != NULL)

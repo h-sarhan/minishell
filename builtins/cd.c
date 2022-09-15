@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cd.c                                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/30 15:41:46 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/15 12:15:08 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/15 15:05:30 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ void	find_and_update_pwd(char **env)
 	ft_free(&pwd);
 }
 
-void	find_and_update_oldpwd(char **env, char *oldpwd)
+void	find_and_update_oldpwd(t_shell *shell, char **env, char *oldpwd)
 {
 	int	i;
 
@@ -45,9 +45,16 @@ void	find_and_update_oldpwd(char **env, char *oldpwd)
 			break ;
 		}
 	}
+	if (env[i] == NULL)
+	{
+		char *create_oldpwd = ft_strjoin("OLDPWD=", oldpwd);
+		update_env(shell, create_oldpwd);
+		ft_free(&create_oldpwd);
+		
+	}
 }
 
-void	cd_to_path(t_exec_step *step, char **env)
+void	cd_to_path(t_shell *shell, t_exec_step *step, char **env)
 {
 	char	*oldpwd;
 	
@@ -55,7 +62,7 @@ void	cd_to_path(t_exec_step *step, char **env)
 	if (!chdir(step->cmd->arg_arr[1]) && ft_strlen(oldpwd))
 	{
 		find_and_update_pwd(env);
-		find_and_update_oldpwd(env, oldpwd);
+		find_and_update_oldpwd(shell, env, oldpwd);
 		step->exit_code = 0;
 	}
 	else if (chdir(step->cmd->arg_arr[1]) == -1)
@@ -66,7 +73,7 @@ void	cd_to_path(t_exec_step *step, char **env)
 	ft_free(&oldpwd);
 }
 
-void	cd_to_home(t_exec_step *step, char **env, char *home)
+void	cd_to_home(t_shell *shell, t_exec_step *step, char **env, char *home)
 {
 	char	*oldpwd;
 	int		i;
@@ -81,7 +88,7 @@ void	cd_to_home(t_exec_step *step, char **env, char *home)
 		if (!chdir(home) && ft_strlen(oldpwd))
 		{
 			find_and_update_pwd(env);
-			find_and_update_oldpwd(env, oldpwd);
+			find_and_update_oldpwd(shell, env, oldpwd);
 			step->exit_code = 0;
 		}
 		ft_free(&oldpwd);
@@ -99,11 +106,11 @@ void	ft_cd(t_exec_step *step, char **env, t_shell *shell)
 	char	*home;
 	
 	if (step->cmd->arg_arr[1])
-		cd_to_path(step, env);
+		cd_to_path(shell, step, env);
 	else
 	{
 		home = NULL;
-		cd_to_home(step, env, home);
+		cd_to_home(shell, step, env, home);
 	}
 	shell->last_exit_code = step->exit_code;
 }

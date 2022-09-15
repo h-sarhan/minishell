@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   export.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/30 21:25:48 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/15 12:12:20 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/15 15:03:21 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,6 +102,38 @@ static bool	check_export_arg(const char *arg)
 	return (true);
 }
 
+
+static void export_no_args(t_shell *shell, t_exec_step *step)
+{
+	size_t	i;
+
+	i = 0;
+	while (shell->env[i] != NULL)
+	{
+		int j = 0;
+		while (shell->env[i][j] != '=')
+			j++;
+		char *key = ft_substr(shell->env[i], 0, j);
+		char *val = ft_substr(shell->env[i], j + 1, ft_strlen(shell->env[i]));
+		if (val[0] == '\0')
+		{
+			ft_free(&val);
+			printf("declare -x %s\n", key);
+		}
+		else
+		{
+			val = strjoin_free("=\"", val, 2);
+			val = strjoin_free(val, "\"", 1);
+			key = strjoin_free(key, val, 3);
+			printf("declare -x %s\n", key);
+		}
+		ft_free(&key);
+		i++;
+	}
+	step->exit_code = 0;
+	shell->last_exit_code = step->exit_code;
+}
+
 // * Case 1: exported variable doesnt exist. Add new line
 // * Case 2: exported variable exists. Update variable
 // * Case 3: no equal sign. Do nothing
@@ -118,6 +150,8 @@ void	ft_export(t_shell *shell, t_exec_step *step)
 
 	args = step->cmd->arg_arr;
 	error = false;
+	if (args[1] == NULL)
+		export_no_args(shell, step);
 	i = 1;
 	while (args[i] != NULL)
 	{
