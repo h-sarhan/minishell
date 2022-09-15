@@ -6,7 +6,7 @@
 /*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/01 13:43:52 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/15 12:09:57 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/15 12:21:02 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,14 +14,13 @@
 
 void	ft_exit(t_exec_step *step, t_shell *shell, bool child)
 {
-	int	i;
-	int j;
-	int exitcode;
+	int		i;
+	int		j;
 	bool	check;
+	
 	(void)shell;
 	i = 0;
 	j = 0;
-	exitcode = 0;
 	check = true;
 	if (step->cmd->arg_arr[1] && (step->cmd->arg_arr[1][i] == '-' || step->cmd->arg_arr[1][i] == '+'))
 		++i;
