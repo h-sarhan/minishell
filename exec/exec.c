@@ -6,7 +6,7 @@
 /*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/01 18:16:54 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/15 13:30:29 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/16 16:10:04 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -238,7 +238,6 @@ int	*first_cmd(t_exec_step *step, int *fd, t_shell *shell, int out_fd)
 	{
 		if (inredir && inredir->type == HEREDOC)
 		{
-			// if (!step->pipe_next)
 			ft_close(&hd_fd[1]);
 			dup2(hd_fd[0], 0);
 		}
@@ -248,9 +247,15 @@ int	*first_cmd(t_exec_step *step, int *fd, t_shell *shell, int out_fd)
 			dup2(fd[1], 1);
 		}
 		if (in_fd != -1)
+		{
+
 			dup2(in_fd, 0);
+		}
 		if (out_fd != -1)
+		{
+
 			dup2(out_fd, 1);
+		}
 		if (is_builtin(step))
 		{
 			// ft_stderr("GOING IN BUILTIN\n");
@@ -275,7 +280,6 @@ int	*first_cmd(t_exec_step *step, int *fd, t_shell *shell, int out_fd)
 			exit(exit_code);
 		}
 		execve(step->cmd->arg_arr[0], step->cmd->arg_arr, shell->env);
-		printf("FAIL AT Start\n");
 	}
 	ft_close(&in_fd);
 	ft_close(&out_fd);
@@ -338,11 +342,17 @@ int	*mid_cmd(t_exec_step *step, int *fd, t_shell *shell, int out_fd)
 		{	
 			ft_close(&fd[0]);
 			dup2(fd[1], 1);
+			
 		}
 		if (in_fd != -1)
+		{
+
 			dup2(in_fd, 0);
+		}
 		if (out_fd != -1)
+		{
 			dup2(out_fd, 1);
+		}
 		if (is_builtin(step))
 		{
 			// ft_stderr("GOING IN BUILTIN\n");
@@ -370,7 +380,6 @@ int	*mid_cmd(t_exec_step *step, int *fd, t_shell *shell, int out_fd)
 			exit(exit_code);
 		}
 		execve(step->cmd->arg_arr[0], step->cmd->arg_arr, shell->env);
-		printf("FAIL\n");
 	}
 	if (!step->pipe_next)
 		ft_close(&fd[0]);
@@ -426,6 +435,8 @@ void	exec_cmd(t_shell *shell)
 				ft_stderr("minishell: %s: command not found\n", step->cmd->arg_arr[0]);
 				exit_flag = true;
 				step->exit_code = 127;
+				// ft_close(&fd[0];)
+				// ft_close(&fd[1];)
 				shell->last_exit_code = step->exit_code;
 			}
 			else if (is_dir(step->cmd->arg_arr[0]) && valid_redirs)
@@ -449,11 +460,15 @@ void	exec_cmd(t_shell *shell)
 				step->exit_code = 126;
 				shell->last_exit_code = step->exit_code;
 			}
-			steps = steps->next;
 			ft_close(&fd[0]);
-			fd[0] = open("/dev/null", O_RDWR);
+			// ft_close(&fd[1]);
+			fd[0] = open("/dev/null", O_RDONLY);
+			// fd[1] = open("/dev/null", O_WRONLY);
 			if (!flag)
 				flag = true;
+			if (step->and_next || step->or_next)
+				break;
+			steps = steps->next;
 			continue;
 		}
 		if (!flag && valid_redirs)
@@ -463,12 +478,14 @@ void	exec_cmd(t_shell *shell)
 		}
 		else if (valid_redirs)
 			fd = mid_cmd(step, fd, shell, out_fd);
+		if (step->and_next || step->or_next)
+			break;
 		steps = steps->next;
 	}
 	ft_close(&fd[0]);
 	ft_close(&out_fd);
 	ft_free(&fd);
-	steps = shell->steps;
+	steps = shell->steps;		
 	while (steps)
 	{
 		step = steps->content;
@@ -477,11 +494,53 @@ void	exec_cmd(t_shell *shell)
 			// printf("WAITING FOR %s\n", step->cmd->arg_arr[0]);
 			waitpid(step->cmd->pid, &w_status, 0);
 		}
+		if (step->and_next || step->or_next)
+			break;
 		steps = steps->next;
 	}
+	// printf("%s\n", step->cmd->arg_arr[0]);
 	if (!(fork_builtin(step) && !step->pipe_next) && !exit_flag)
 	{
 		step->exit_code = WEXITSTATUS(w_status);
 		shell->last_exit_code = step->exit_code;
+		// printf("%d\n", step->exit_code);
+	}
+	// printf("%d\n", shell->last_exit_code);
+	if ((step->and_next && shell->last_exit_code == 0))
+	{
+		// printf("GOING IN AND\n");
+		t_list *initial_steps = shell->steps;
+		if (shell->last_exit_code == 0)
+		{	
+			shell->steps = steps->next;
+			if (shell->steps == NULL)
+				return ;
+		}
+		else
+		{
+			shell->steps = steps->next->next;
+			if (shell->steps == NULL)
+				return ;
+		}
+		exec_cmd(shell);
+		shell->steps = initial_steps;
+	}
+	else if (step->or_next)
+	{
+		t_list *initial_steps = shell->steps;
+		if (shell->last_exit_code == 0)
+		{
+			shell->steps = steps->next->next;
+			if (shell->steps == NULL)
+				return ;
+		}
+		else
+		{
+			shell->steps = steps->next;
+			if (shell->steps == NULL)
+				return ;
+		}
+		exec_cmd(shell);
+		shell->steps = initial_steps;
 	}
 }

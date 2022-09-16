@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:43:26 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/15 15:12:10 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/16 15:50:00 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -113,8 +113,7 @@ void	handler(int	sig)
 		// return ;
 	}
 }
-
-void test(int sig)
+void hd_sig_handler(int sig)
 {
 	if (sig == SIGINT)
 	{
@@ -149,7 +148,7 @@ int	main(int argc, char **argv, char **env)
 	shell.last_exit_code = 0;
 	signal(SIGINT, handler);
 	signal(SIGQUIT, handler);
-	// signal(SIGQUIT, test);
+	// signal(SIGQUIT, hd_sig_handler);
 	// sigaction(SIGKILL, &sa, NULL);
 	while (1)
 	{
@@ -191,8 +190,8 @@ int	main(int argc, char **argv, char **env)
 			free(line);
 			continue;
 		}
-		signal(SIGINT, test);
-		signal(SIGQUIT, test);
+		signal(SIGINT, hd_sig_handler);
+		signal(SIGQUIT, hd_sig_handler);
 		while (shell.steps != NULL)
 		{
 			// print_exec_step(shell.steps);

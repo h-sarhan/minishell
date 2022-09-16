@@ -1,5 +1,10 @@
 {
 	"files.associations": {
-		"__locale": "c"
+		"__locale": "c",
+		"__config": "c",
+		"atomic": "c",
+		"bitset": "c",
+		"locale": "c",
+		"algorithm": "c"
 	}
 }
