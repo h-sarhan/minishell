@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/21 09:39:31 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/14 14:19:20 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/16 16:45:19 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,7 @@ struct s_shell
 	t_list	*tokens;
 	char	**env;
 	int		last_exit_code;
+	char	*line;
 };
 
 struct signal

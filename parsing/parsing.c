@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/21 12:03:03 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/11 13:46:51 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/16 16:48:49 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,8 +126,10 @@ t_list	*parse_tokens(t_list *tokens, bool *success)
 	t_exec_step	*step;
 	t_list		*cmd_start;
 	t_list		*cmd_end;
+	size_t		step_number;
 
 	steps = NULL;
+	step_number = 0;
 	if (check_for_errors(tokens) == false)
 	{
 		*success = false;
@@ -210,6 +212,8 @@ t_list	*parse_tokens(t_list *tokens, bool *success)
 					return (steps);
 				}
 			}
+			step->step_number = step_number;
+			step_number++;
 			ft_lstadd_back(&steps, ft_lstnew(step));
 		}
 		tokens = tokens->next;

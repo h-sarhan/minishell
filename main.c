@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:43:26 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/16 15:50:00 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/16 18:27:55 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -154,7 +154,9 @@ int	main(int argc, char **argv, char **env)
 	{
 		g_dupstdin = dup(0);
 		g_interactive = true;
-		line = readline("\001\033[1;34m\002GIGASHELL$ \001\033[0m\002");
+		// line = readline("\001\033[1;34m\002GIGASHELL$ \001\033[0m\002");
+		line = readline("GIGASHELL$ ");
+		shell.line = line;
 		g_interactive = false;
 		if (line == NULL)
 		{
@@ -213,7 +215,8 @@ int	main(int argc, char **argv, char **env)
 		shell.steps = exec_steps_start;
 		if (exec_steps_start != NULL)
 		{
-			exec_cmd(&shell);
+			shell.line = line;
+			exec_cmd(&shell, 0);
 		}
 		ft_lstclear(&shell.tokens, free_token);
 		ft_lstclear(&exec_steps_start, free_exec_step);

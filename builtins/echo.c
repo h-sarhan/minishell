@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   echo.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/23 17:45:38 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/16 15:23:25 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/16 17:49:22 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,21 +49,26 @@ void ft_echo(t_exec_step *step, t_shell *shell)
 	{
 		if (seen)
 		{
-			printf("%s", step->cmd->arg_arr[i]);
+			// printf("%s", step->cmd->arg_arr[i]);
+			ft_putstr_fd(step->cmd->arg_arr[i], 1);
 				if (step->cmd->arg_arr[i + 1])
-					printf(" ");
+					ft_putstr_fd(" ", 1);
+					// printf(" ");
 		}
 		if (ft_check(step->cmd->arg_arr[i]) != true && !seen)
 		{
 			seen = 1;
-			printf("%s", step->cmd->arg_arr[i]);
+			ft_putstr_fd(step->cmd->arg_arr[i], 1);
+			// printf("%s", step->cmd->arg_arr[i]);
 			if (step->cmd->arg_arr[i + 1])
-				printf(" ");
+				ft_putstr_fd(" ", 1);
+				// printf(" ");
 		}
 		i++;
 	}
 	if (n == 0)
-		printf("\n");
+		// printf("\n");
+		ft_putstr_fd("\n", 1);
 	step->exit_code = 0;
 	shell->last_exit_code = step->exit_code;
 }
