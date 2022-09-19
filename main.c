@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:43:26 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/19 12:21:10 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/19 12:42:02 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,40 +79,51 @@ void	print_exec_step(t_list *exec_steps)
 // }
 
 
-bool	g_interactive;
 int 	g_dupstdin;
 
 // bool	g_interactive;
 // int		stdin_dup;
 
-void	handler(int	sig)
+void	sigint_interactive(int sig)
 {
 	if (sig == SIGINT)
 	{
 		write(2, "\n", 1);
 		rl_replace_line("", 0);
 		rl_on_new_line();
-		if (g_interactive == true)
-			rl_redisplay();
-	}
-	else if (sig == SIGQUIT)
-	{
-		if (g_interactive == false)
-		{
-
-			write(2, "QUIT\n", ft_strlen("QUIT\n"));
-			rl_replace_line("", 0);
-			rl_redisplay();
-		}
-		else
-		{
-			// rl_replace_line("", 0);
-			rl_on_new_line();
-			rl_redisplay();
-		}
-		// return ;
+		rl_redisplay();
 	}
 }
+
+void	sigint_command(int sig)
+{
+	if (sig == SIGINT)
+	{
+		write(2, "\n", 1);
+		rl_replace_line("", 0);
+		rl_on_new_line();
+	}
+}
+
+void	sigquit_command(int sig)
+{
+	if (sig == SIGQUIT)
+	{
+		write(2, "QUIT\n", ft_strlen("QUIT\n"));
+		rl_replace_line("", 0);
+		rl_redisplay();
+	}
+}
+
+void	sigquit_interactive(int sig)
+{
+	if (sig == SIGQUIT)
+	{
+		rl_on_new_line();
+		rl_redisplay();
+	}
+}
+
 void hd_sig_handler(int sig)
 {
 	if (sig == SIGINT)
@@ -128,15 +139,12 @@ int	main(int argc, char **argv, char **env)
 	char	*line;
 	bool	success;
 	t_shell	shell;
-	// sigaction struct sa;
-	
+
 	(void)argc;
 	(void)argv;
 	success = true;
 	shell.env = copy_str_arr(env);
 	shell.declared_env = NULL;
-	// find_and_update_oldpwd(shell.env, "");
-	// ft_unset(&shell, );
 	unset_var(&shell, "OLDPWD");
 	update_declared_env(&shell, "OLDPWD");
 	char *shell_lvl_env = get_env(&shell, "SHLVL");
@@ -144,22 +152,17 @@ int	main(int argc, char **argv, char **env)
 	update_env(&shell, shell_lvl_str);
 	ft_free(&shell_lvl_str);
 	ft_free(&shell_lvl_env);
-	// sa.sa_sigaction = reciever;
-	// sigemptyset(&sa.sa_mask);
-	// sa.sa_flags = SA_SIGINFO;
 	shell.last_exit_code = 0;
-	signal(SIGINT, handler);
-	signal(SIGQUIT, handler);
-	// signal(SIGQUIT, hd_sig_handler);
-	// sigaction(SIGKILL, &sa, NULL);
 	while (1)
 	{
 		g_dupstdin = dup(0);
-		g_interactive = true;
-		// line = readline("\001\033[1;34m\002GIGASHELL$ \001\033[0m\002");
-		line = readline("GIGASHELL$ ");
+		signal(SIGINT, sigint_interactive);
+		signal(SIGQUIT, sigquit_interactive);
+		line = readline("\001\033[1;34m\002GIGASHELL$ \001\033[0m\002");
+		// line = readline("GIGASHELL$ ");
 		shell.line = line;
-		g_interactive = false;
+		signal(SIGQUIT, sigquit_command);
+		signal(SIGINT, sigint_command);
 		if (line == NULL)
 		{
 			printf("\n");
@@ -203,8 +206,8 @@ int	main(int argc, char **argv, char **env)
 			run_here_docs(shell.steps->content);
 			shell.steps = shell.steps->next;
 		}
-		signal(SIGINT, handler);
-		signal(SIGQUIT, handler);
+		signal(SIGINT, sigint_command);
+		signal(SIGQUIT, sigquit_command);
 		if (g_dupstdin == -1)
 		{
 			shell.last_exit_code = 1;
