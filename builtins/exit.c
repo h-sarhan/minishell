@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exit.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/01 13:43:52 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/15 12:21:02 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/19 10:18:12 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ void	ft_exit(t_exec_step *step, t_shell *shell, bool child)
 	// 	free_split_array(shell->env);
 	// 	// ft_free(&line);
 	// }
-	// printf("exit\n");
+	// printf("exiting with %d\n", step->exit_code);
 	// step->exit_code = exitcode;
 	// exit(exitcode);
 }

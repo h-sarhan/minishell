@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/01 18:16:54 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/16 18:37:28 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/19 10:18:19 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -195,6 +195,7 @@ int	*first_cmd(t_exec_step *step, int *fd, t_shell *shell, int out_fd)
 	hd_fd[1] = -1;
 	if (fork_builtin(step) && !step->pipe_next)
 	{
+		// ! We dont dup2 input/output/heredoc redirections here
 		run_builtin(step, shell, false);
 		if (ft_strcmp(step->cmd->arg_arr[0], "exit") == 0)
 		{
@@ -342,11 +343,9 @@ int	*mid_cmd(t_exec_step *step, int *fd, t_shell *shell, int out_fd)
 		{	
 			ft_close(&fd[0]);
 			dup2(fd[1], 1);
-			
 		}
 		if (in_fd != -1)
 		{
-
 			dup2(in_fd, 0);
 		}
 		if (out_fd != -1)
@@ -402,7 +401,7 @@ void	exec_cmd(t_shell *shell, int step_number)
 	bool		exit_flag;
 	int			out_fd;
 	int			w_status;
-	
+
 
 	// printf("Starting exec_cmd with step number equal to  %d\n", step_number);
 	fd = ft_calloc(2, sizeof(int));
@@ -530,7 +529,10 @@ void	exec_cmd(t_shell *shell, int step_number)
 		i++;
 	}
 	// printf("%s\n", step->cmd->arg_arr[0]);
-	if (!(fork_builtin(step) && !step->pipe_next) && !exit_flag)
+	
+	// ? Why did we write the below line of code
+	// if (!(fork_builtin(step) && !step->pipe_next) && !exit_flag)
+	if (!exit_flag)
 	{
 		step->exit_code = WEXITSTATUS(w_status);
 		shell->last_exit_code = step->exit_code;
