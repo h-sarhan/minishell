@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/01 19:01:46 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/15 14:40:26 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/19 11:44:38 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,6 +84,56 @@ void	unset_var(t_shell *shell, const char *var)
 	
 }
 
+void	unset_declared_var(t_shell *shell, const char *var)
+{
+	size_t	i;
+	size_t	j;
+	size_t	len;
+	bool	found;
+	char	*to_look;
+	char	**env_copy;
+
+	i = 0;
+	found = false;
+	if (shell->declared_env == NULL)
+	{
+		return ;
+	}
+	to_look = ft_strdup(var);
+	while (shell->declared_env[i] != NULL)
+	{
+		if (ft_strncmp(shell->declared_env[i], to_look, ft_strlen(to_look)) == 0)
+			found = true;
+		i++;
+	}
+	if (found == false)
+	{
+		ft_free(&to_look);
+		return ;
+	}
+	len = env_len(shell->declared_env) - 1;
+	i = 0;
+	j = 0;
+	env_copy = ft_calloc(len + 1, sizeof(char *));
+	while (shell->declared_env[i] != NULL)
+	{
+		if (ft_strncmp(shell->declared_env[i], to_look, ft_strlen(to_look)) != 0)
+		{
+			env_copy[j] = shell->declared_env[i];
+			i++;
+			j++;
+		}
+		else
+		{
+			ft_free(&shell->declared_env[i]);
+			i++;
+		}
+	}
+	ft_free(&shell->declared_env);
+	ft_free(&to_look);
+	shell->declared_env = env_copy;
+}
+
 
 void	ft_unset(t_shell *shell, t_exec_step *step)
 {
@@ -103,7 +153,10 @@ void	ft_unset(t_shell *shell, t_exec_step *step)
 			error = true;
 		}
 		else
+		{
+			unset_declared_var(shell, args[i]);
 			unset_var(shell, args[i]);
+		}
 		i++;
 	}
 	if (error)

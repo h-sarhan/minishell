@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/21 09:39:31 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/14 14:19:20 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/19 12:45:25 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,14 +28,18 @@
 #include <sys/stat.h>
 #include <signal.h>
 
-typedef struct s_shell	t_shell;
+# define SIGQUIT_FLAG 130999999
+# define SIGINT_FLAG 131999999
 
+typedef struct s_shell	t_shell;
 struct s_shell
 {
 	t_list	*steps;
 	t_list	*tokens;
 	char	**env;
+	char	**declared_env;
 	int		last_exit_code;
+	char	*line;
 };
 
 struct signal
@@ -47,6 +51,5 @@ struct signal
 
 void	ft_close(int *fd);
 char	**copy_str_arr(char **arr);
-// void	rl_replace_line(const char *text, int clear_undo);
 
 #endif

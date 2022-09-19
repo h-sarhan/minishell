@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/19 16:04:38 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/24 11:05:02 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/19 12:07:47 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,8 @@ void	free_split_array(char **split)
 {
 	size_t	i;
 
+	if (split == NULL)
+		return ;
 	i = 0;
 	while (split[i] != NULL)
 	{

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/01 18:16:54 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/16 16:10:04 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/19 14:27:24 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -195,6 +195,7 @@ int	*first_cmd(t_exec_step *step, int *fd, t_shell *shell, int out_fd)
 	hd_fd[1] = -1;
 	if (fork_builtin(step) && !step->pipe_next)
 	{
+		// ! We dont dup2 input/output/heredoc redirections here
 		run_builtin(step, shell, false);
 		if (ft_strcmp(step->cmd->arg_arr[0], "exit") == 0)
 		{
@@ -276,6 +277,7 @@ int	*first_cmd(t_exec_step *step, int *fd, t_shell *shell, int out_fd)
 			ft_close(&out_fd);
 			ft_close(&in_fd);
 			free_split_array(shell->env);
+			free_split_array(shell->declared_env);
 			ft_free(&fd);
 			exit(exit_code);
 		}
@@ -342,11 +344,9 @@ int	*mid_cmd(t_exec_step *step, int *fd, t_shell *shell, int out_fd)
 		{	
 			ft_close(&fd[0]);
 			dup2(fd[1], 1);
-			
 		}
 		if (in_fd != -1)
 		{
-
 			dup2(in_fd, 0);
 		}
 		if (out_fd != -1)
@@ -374,6 +374,7 @@ int	*mid_cmd(t_exec_step *step, int *fd, t_shell *shell, int out_fd)
 			ft_lstclear(&shell->tokens, free_token);
 			ft_lstclear(&shell->steps, free_exec_step);
 			free_split_array(shell->env);
+			free_split_array(shell->declared_env);
 			ft_close(&out_fd);
 			ft_close(&in_fd);
 			ft_free(&fd);
@@ -393,7 +394,7 @@ int	*mid_cmd(t_exec_step *step, int *fd, t_shell *shell, int out_fd)
 }
 
 
-void	exec_cmd(t_shell *shell)
+void	exec_cmd(t_shell *shell, int step_number)
 {
 	t_exec_step *step;
 	t_list		*steps;
@@ -403,18 +404,33 @@ void	exec_cmd(t_shell *shell)
 	int			out_fd;
 	int			w_status;
 
+
+	// printf("Starting exec_cmd with step number equal to  %d\n", step_number);
 	fd = ft_calloc(2, sizeof(int));
 	fd[0] = -1;
 	fd[1] = -1;
 	out_fd = -1;
 	w_status = 0;
+	int i = 0;
 	steps = shell->steps;
+	while (i < step_number  && steps != NULL) 
+	{
+		steps = steps->next;
+		i++;
+	}
+	// printf("Starting command |%s|\n", step->cmd->arg_arr[0]);
+	if (steps == NULL)
+	{
+		ft_free(&fd);
+		return ;
+	}
+	step = steps->content;
 	flag = false;
 	exit_flag = false;
 	while (steps)
 	{
+		step_number++;
 		step = steps->content;
-
 		// run_here_docs(step);
 		exit_flag = false;
 		bool valid_redirs = check_valid_redir(step);
@@ -428,6 +444,7 @@ void	exec_cmd(t_shell *shell)
 		if (step->cmd->arg_arr[0] &&  (access(step->cmd->arg_arr[0], X_OK) == -1 && !is_builtin(step) && !is_dir(step->cmd->arg_arr[0])))
 			step->cmd->arg_arr[0] = get_full_path(step->cmd->arg_arr[0], shell->env);
 		
+		// printf("Running command |%s|\n", step->cmd->arg_arr[0]);
 		if (step->cmd->arg_arr[0] && ((access(step->cmd->arg_arr[0], X_OK) == -1 && !is_builtin(step)) || is_dir(step->cmd->arg_arr[0]) || !valid_redirs))
 		{
 			if (((access(step->cmd->arg_arr[0], F_OK) == -1 && !is_builtin(step)) || is_dir(step->cmd->arg_arr[0])) && valid_redirs && !ft_strchr(step->cmd->arg_arr[0], '/'))
@@ -468,6 +485,8 @@ void	exec_cmd(t_shell *shell)
 				flag = true;
 			if (step->and_next || step->or_next)
 				break;
+			// printf("Step number is %ld IN IF\n", step_number);
+			// step_number++;
 			steps = steps->next;
 			continue;
 		}
@@ -483,10 +502,25 @@ void	exec_cmd(t_shell *shell)
 		steps = steps->next;
 	}
 	ft_close(&fd[0]);
+	// ft_close(&fd[1]);
 	ft_close(&out_fd);
 	ft_free(&fd);
-	steps = shell->steps;		
-	while (steps)
+	// // i = 0;
+	// while (i < step_number  && steps != NULL) 
+	// {
+	// 	steps = steps->next;
+	// 	i++;
+	// }
+	// int wait_idx = step_number;
+	steps = shell->steps;	
+	int wait_idx = 0;	
+	while (steps && wait_idx < i)
+	{
+		steps = steps->next;
+		wait_idx++;
+	}
+	// printf("i is %d\nstep_number is %d\n", i , step_number);
+	while (steps && i < step_number)
 	{
 		step = steps->content;
 		if (step->cmd->arg_arr[0] && (access(step->cmd->arg_arr[0], X_OK) != -1 || is_builtin(step)) && !is_dir(step->cmd->arg_arr[0]))
@@ -497,50 +531,109 @@ void	exec_cmd(t_shell *shell)
 		if (step->and_next || step->or_next)
 			break;
 		steps = steps->next;
+		i++;
 	}
 	// printf("%s\n", step->cmd->arg_arr[0]);
-	if (!(fork_builtin(step) && !step->pipe_next) && !exit_flag)
+	
+	// ? Why did we write the below line of code
+	if (!(fork_builtin(step) && !step->pipe_next && ft_strcmp(step->cmd->arg_arr[0], "exit") != 0) && !exit_flag)
+	// if (!exit_flag)
 	{
 		step->exit_code = WEXITSTATUS(w_status);
 		shell->last_exit_code = step->exit_code;
 		// printf("%d\n", step->exit_code);
 	}
+	if (step == NULL)
+		return ;
 	// printf("%d\n", shell->last_exit_code);
+	// step_number++;
+	// printf("Step number is %d\n", step_number);
+	// step_number++;
 	if ((step->and_next && shell->last_exit_code == 0))
 	{
 		// printf("GOING IN AND\n");
-		t_list *initial_steps = shell->steps;
+		// t_list *initial_steps = shell->steps;
 		if (shell->last_exit_code == 0)
 		{	
-			shell->steps = steps->next;
-			if (shell->steps == NULL)
-				return ;
+			// success = true;
+			// shell->steps = steps->next;
+			// if (shell->steps == NULL)
+			// 	return ;
 		}
 		else
 		{
-			shell->steps = steps->next->next;
-			if (shell->steps == NULL)
+			// success = false;
+			if (steps != NULL)
+			{
+				steps = steps->next;
+				step_number++;
+			}
+			while (steps && (!step->and_next && !step->or_next))
+			{
+				step = steps->content;
+				steps = steps->next;
+				step_number++;
+			}
+			if (steps == NULL)
 				return ;
+			// step_number += 2;
+			// shell->steps = steps->next->next;
+			// if (shell->steps == NULL)
+			// 	return ;
 		}
-		exec_cmd(shell);
-		shell->steps = initial_steps;
+		// step = shell->steps->content;
+		bool success;
+		ft_lstclear(&shell->tokens, free_token);
+		ft_lstclear(&shell->steps, free_exec_step);
+		// shell->tokens = ft_calloc()
+		t_list *tokens = tokenize_line(shell, shell->line, &success);
+		t_list *  new_steps = parse_tokens(tokens, &success);
+		shell->tokens = tokens;
+		shell->steps = new_steps;
+		exec_cmd(shell, step_number);
+		// shell->steps = initial_steps;
 	}
 	else if (step->or_next)
 	{
-		t_list *initial_steps = shell->steps;
+		// step_number++;
+		// t_list *initial_steps = shell->steps;
 		if (shell->last_exit_code == 0)
 		{
-			shell->steps = steps->next->next;
-			if (shell->steps == NULL)
+			// success = true;
+			// step_number += 2;
+			if (steps != NULL)
+			{
+				steps = steps->next;
+				step_number++;
+			}
+			while (steps && (!step->and_next && !step->or_next))
+			{
+				step = steps->content;
+				steps = steps->next;
+				step_number++;
+			}
+			if (steps == NULL)
 				return ;
+			// shell->steps = steps->next->next;
+			// if (shell->steps == NULL)
+			// 	return ;
 		}
 		else
 		{
-			shell->steps = steps->next;
-			if (shell->steps == NULL)
-				return ;
+			// success = false;
+			// shell->steps = steps->next;
+			// if (shell->steps == NULL)
+			// 	return ;
 		}
-		exec_cmd(shell);
-		shell->steps = initial_steps;
+		// step = shell->steps->content;
+		bool success;
+		ft_lstclear(&shell->tokens, free_token);
+		ft_lstclear(&shell->steps, free_exec_step);
+		t_list *tokens = tokenize_line(shell, shell->line, &success);
+		t_list *  new_steps = parse_tokens(tokens, &success);
+		shell->tokens = tokens;
+		shell->steps = new_steps;
+		exec_cmd(shell, step_number);
+		// shell->steps = initial_steps;
 	}
 }
