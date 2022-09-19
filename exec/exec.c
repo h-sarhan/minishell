@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/01 18:16:54 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/19 11:53:23 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/19 12:25:04 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -272,6 +272,7 @@ int	*first_cmd(t_exec_step *step, int *fd, t_shell *shell, int out_fd)
 			// close(0);
 			ft_close(&g_dupstdin);
 			int	exit_code = step->exit_code;
+			printf("GOING HERE\n");
 			ft_lstclear(&shell->tokens, free_token);
 			ft_lstclear(&shell->steps, free_exec_step);
 			ft_close(&out_fd);
@@ -420,7 +421,10 @@ void	exec_cmd(t_shell *shell, int step_number)
 	}
 	// printf("Starting command |%s|\n", step->cmd->arg_arr[0]);
 	if (steps == NULL)
+	{
+		ft_free(&fd);
 		return ;
+	}
 	step = steps->content;
 	flag = false;
 	exit_flag = false;
@@ -580,8 +584,12 @@ void	exec_cmd(t_shell *shell, int step_number)
 		}
 		// step = shell->steps->content;
 		bool success;
+		ft_lstclear(&shell->tokens, free_token);
+		ft_lstclear(&shell->steps, free_exec_step);
+		// shell->tokens = ft_calloc()
 		t_list *tokens = tokenize_line(shell, shell->line, &success);
 		t_list *  new_steps = parse_tokens(tokens, &success);
+		shell->tokens = tokens;
 		shell->steps = new_steps;
 		exec_cmd(shell, step_number);
 		// shell->steps = initial_steps;
@@ -620,8 +628,11 @@ void	exec_cmd(t_shell *shell, int step_number)
 		}
 		// step = shell->steps->content;
 		bool success;
+		ft_lstclear(&shell->tokens, free_token);
+		ft_lstclear(&shell->steps, free_exec_step);
 		t_list *tokens = tokenize_line(shell, shell->line, &success);
 		t_list *  new_steps = parse_tokens(tokens, &success);
+		shell->tokens = tokens;
 		shell->steps = new_steps;
 		exec_cmd(shell, step_number);
 		// shell->steps = initial_steps;

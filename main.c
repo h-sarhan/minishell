@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:43:26 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/19 11:57:07 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/19 12:21:10 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -222,15 +222,13 @@ int	main(int argc, char **argv, char **env)
 			exec_cmd(&shell, 0);
 		}
 		ft_lstclear(&shell.tokens, free_token);
-		ft_lstclear(&exec_steps_start, free_exec_step);
+		ft_lstclear(&shell.steps, free_exec_step);
 		rl_on_new_line();
 		ft_free(&line);
 		ft_close(&g_dupstdin);
 	}
 	ft_close(&g_dupstdin);
 	free_split_array(shell.env);
-	// printf("FREEING DECLARED\n");
 	free_split_array(shell.declared_env);
-	// ft_free(&shell.declared_env);
 	clear_history();
 }
