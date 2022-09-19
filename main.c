@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:43:26 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/16 18:27:55 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/19 10:48:07 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -134,6 +134,7 @@ int	main(int argc, char **argv, char **env)
 	(void)argv;
 	success = true;
 	shell.env = copy_str_arr(env);
+	shell.declared_env = ft_calloc(1, sizeof(char *));
 	// find_and_update_oldpwd(shell.env, "");
 	// ft_unset(&shell, );
 	unset_var(&shell, "OLDPWD");

@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/30 21:25:48 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/15 15:03:21 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/19 10:56:58 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,6 +54,7 @@ void	update_env(t_shell *shell, const char *str)
 	while (str[i] != '=')
 		i++;
 	key = ft_substr(str, 0, i);
+	unset_declared_var(shell, key);
 	val = ft_substr(str, i + 1, ft_strlen(str));
 	key_val = ft_strjoin(key, "=");
 	to_look = ft_strjoin(key, "=");
@@ -132,6 +133,41 @@ static void export_no_args(t_shell *shell, t_exec_step *step)
 	}
 	step->exit_code = 0;
 	shell->last_exit_code = step->exit_code;
+	i = 0;
+	while (shell->declared_env[i] != NULL)
+	{
+		printf("declare -x %s\n", shell->declared_env[i]);
+		i++;
+	}
+}
+
+static void	update_declared_env(t_shell *shell, char *str)
+{
+	size_t	i;
+	char	*to_look;
+
+	i = 0;
+	to_look = ft_strjoin(str, "=");
+	while (shell->env[i] != NULL)
+	{
+		if (ft_strncmp(shell->env[i], to_look, ft_strlen(to_look)) == 0)
+		{
+			ft_free(&to_look);
+			return ;
+		}
+		i++;
+	}
+	ft_free(&to_look);
+	if (shell->declared_env == NULL)
+	{
+		shell->declared_env = ft_calloc(1, sizeof(char *));
+		if (shell->declared_env == NULL)
+			exit(EXIT_FAILURE);
+		shell->declared_env[0] = ft_strdup(str);
+		return ;
+	}
+	shell->declared_env = resize_str_arr(shell->declared_env, env_len(shell->declared_env) + 1);
+	shell->declared_env[env_len(shell->declared_env)] = ft_strdup(str);
 }
 
 // * Case 1: exported variable doesnt exist. Add new line
@@ -155,7 +191,6 @@ void	ft_export(t_shell *shell, t_exec_step *step)
 	i = 1;
 	while (args[i] != NULL)
 	{
-		// if the argument includes an equal sign
 		if (check_export_arg(args[i]) == false)
 		{
 			error = true;
@@ -164,6 +199,12 @@ void	ft_export(t_shell *shell, t_exec_step *step)
 		else if (ft_strchr(args[i], '=') != NULL)
 		{
 			update_env(shell, args[i]);
+		}
+		else
+		{
+			unset_declared_var(shell, args[i]);
+			
+			update_declared_env(shell, args[i]);
 		}
 		i++;
 	}

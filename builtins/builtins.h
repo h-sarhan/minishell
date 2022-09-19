@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/23 17:46:50 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/15 14:45:54 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/19 10:44:15 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,5 +33,6 @@ bool	fork_builtin(t_exec_step *step);
 void	find_and_update_oldpwd(t_shell *shell, char **env, char *oldpwd);
 void	unset_var(t_shell *shell, const char *var);
 void	update_env(t_shell *shell, const char *str);
+void	unset_declared_var(t_shell *shell, const char *var);
 
 #endif

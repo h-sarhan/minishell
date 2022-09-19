@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/21 09:39:31 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/16 16:45:19 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/19 10:59:43 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@ struct s_shell
 	t_list	*steps;
 	t_list	*tokens;
 	char	**env;
+	char	**declared_env;
 	int		last_exit_code;
 	char	*line;
 };
@@ -48,6 +49,5 @@ struct signal
 
 void	ft_close(int *fd);
 char	**copy_str_arr(char **arr);
-// void	rl_replace_line(const char *text, int clear_undo);
 
 #endif
