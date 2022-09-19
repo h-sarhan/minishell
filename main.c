@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:43:26 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/19 14:28:03 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/20 00:14:20 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,22 +86,29 @@ int 	g_dupstdin; // ! RENAME THIS
 
 void	sigint_interactive(int sig)
 {
-	if (sig == SIGINT)
+	int ret = waitpid(-1, NULL, WNOHANG);
+	if (sig == SIGINT && ret == -1)
 	{
+		// printf("isatty return %d", isatty(0));
 		write(2, "\n", 1);
-		rl_replace_line("", 0);
+		// // printf("\n");
 		rl_on_new_line();
+		rl_replace_line("", 0);
 		rl_redisplay();
 	}
 }
 
 void	sigint_command(int sig)
 {
-	if (sig == SIGINT)
+	int ret = waitpid(-1, NULL, WNOHANG);
+	if (sig == SIGINT && ret == -1)
 	{
+		// printf("isatty return %d", isatty(0));
 		write(2, "\n", 1);
-		rl_replace_line("", 0);
+		// printf("\n");
 		rl_on_new_line();
+		rl_replace_line("", 0);
+		rl_redisplay();
 		ft_close(&g_dupstdin);
 		g_dupstdin = SIGINT_FLAG;
 	}
@@ -109,9 +116,11 @@ void	sigint_command(int sig)
 
 void	sigquit_command(int sig)
 {
-	if (sig == SIGQUIT)
+	int ret = waitpid(-1, NULL, WNOHANG);
+	if (sig == SIGQUIT && ret == -1)
 	{
 		write(2, "QUIT\n", ft_strlen("QUIT\n"));
+		rl_on_new_line();
 		rl_replace_line("", 0);
 		rl_redisplay();
 		ft_close(&g_dupstdin);
@@ -121,9 +130,11 @@ void	sigquit_command(int sig)
 
 void	sigquit_interactive(int sig)
 {
-	if (sig == SIGQUIT)
+	int ret = waitpid(-1, NULL, WNOHANG);
+	if (sig == SIGQUIT && ret == -1)
 	{
-		rl_on_new_line();
+		// rl_on_new_line();
+		rl_replace_line("", 0);
 		rl_redisplay();
 	}
 }
@@ -133,10 +144,15 @@ void hd_sig_handler(int sig)
 	if (sig == SIGINT)
 	{
 		ft_close(&g_dupstdin);
+		rl_on_new_line();
 		printf("\n");
 	}
 }
 
+// void child_handler(int sig)
+// {
+// 	if (sig == )
+// }
 // ? I dont know what rl_on_new_line() does
 int	main(int argc, char **argv, char **env)
 {
@@ -144,6 +160,7 @@ int	main(int argc, char **argv, char **env)
 	bool	success;
 	t_shell	shell;
 
+	rl_outstream = stderr;
 	(void)argc;
 	(void)argv;
 	success = true;
@@ -167,6 +184,8 @@ int	main(int argc, char **argv, char **env)
 		shell.line = line;
 		signal(SIGQUIT, sigquit_command);
 		signal(SIGINT, sigint_command);
+		// signal(SIGQUIT, SIG_IGN);
+		// signal(SIGINT, SIG_IGN);
 		if (line == NULL)
 		{
 			printf("\n");
@@ -210,8 +229,10 @@ int	main(int argc, char **argv, char **env)
 			run_here_docs(shell.steps->content);
 			shell.steps = shell.steps->next;
 		}
-		signal(SIGINT, sigint_command);
-		signal(SIGQUIT, sigquit_command);
+		signal(SIGINT, sigint_interactive);
+		signal(SIGQUIT, sigquit_interactive);
+		// signal(SIGQUIT, SIG_IGN);
+		// signal(SIGINT, SIG_IGN);
 		if (g_dupstdin == -1)
 		{
 			shell.last_exit_code = 1;
