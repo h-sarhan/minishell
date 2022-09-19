@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/01 18:16:54 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/19 12:25:04 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/19 14:27:24 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -272,7 +272,6 @@ int	*first_cmd(t_exec_step *step, int *fd, t_shell *shell, int out_fd)
 			// close(0);
 			ft_close(&g_dupstdin);
 			int	exit_code = step->exit_code;
-			printf("GOING HERE\n");
 			ft_lstclear(&shell->tokens, free_token);
 			ft_lstclear(&shell->steps, free_exec_step);
 			ft_close(&out_fd);

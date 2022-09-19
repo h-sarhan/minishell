@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:43:26 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/19 12:42:02 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/19 14:28:03 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,7 +79,7 @@ void	print_exec_step(t_list *exec_steps)
 // }
 
 
-int 	g_dupstdin;
+int 	g_dupstdin; // ! RENAME THIS
 
 // bool	g_interactive;
 // int		stdin_dup;
@@ -102,6 +102,8 @@ void	sigint_command(int sig)
 		write(2, "\n", 1);
 		rl_replace_line("", 0);
 		rl_on_new_line();
+		ft_close(&g_dupstdin);
+		g_dupstdin = SIGINT_FLAG;
 	}
 }
 
@@ -112,6 +114,8 @@ void	sigquit_command(int sig)
 		write(2, "QUIT\n", ft_strlen("QUIT\n"));
 		rl_replace_line("", 0);
 		rl_redisplay();
+		ft_close(&g_dupstdin);
+		g_dupstdin = SIGQUIT_FLAG;
 	}
 }
 
@@ -223,6 +227,14 @@ int	main(int argc, char **argv, char **env)
 		{
 			shell.line = line;
 			exec_cmd(&shell, 0);
+		}
+		if (g_dupstdin == SIGQUIT_FLAG)
+		{
+			shell.last_exit_code = 131;
+		}
+		if (g_dupstdin == SIGINT_FLAG)
+		{
+			shell.last_exit_code = 130;
 		}
 		ft_lstclear(&shell.tokens, free_token);
 		ft_lstclear(&shell.steps, free_exec_step);
