@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/01 18:16:54 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/19 14:27:24 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/19 16:49:19 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -445,9 +445,39 @@ void	exec_cmd(t_shell *shell, int step_number)
 			step->cmd->arg_arr[0] = get_full_path(step->cmd->arg_arr[0], shell->env);
 		
 		// printf("Running command |%s|\n", step->cmd->arg_arr[0]);
+		if (access(step->cmd->arg_arr[0], X_OK) != -1 && !ft_strchr(step->cmd->arg_arr[0], '/'))
+		{
+			ft_stderr("minishell: %s: command not found\n", step->cmd->arg_arr[0]);
+			exit_flag = true;
+			step->exit_code = 127;
+			// ft_close(&fd[0];)
+			// ft_close(&fd[1];)
+			shell->last_exit_code = step->exit_code;
+			ft_close(&fd[0]);
+			// ft_close(&fd[1]);
+			fd[0] = open("/dev/null", O_RDONLY);
+			// fd[1] = open("/dev/null", O_WRONLY);
+			if (!flag)
+				flag = true;
+			if (step->and_next || step->or_next)
+				break;
+			// printf("Step number is %ld IN IF\n", step_number);
+			// step_number++;
+			steps = steps->next;
+			continue;
+		}
 		if (step->cmd->arg_arr[0] && ((access(step->cmd->arg_arr[0], X_OK) == -1 && !is_builtin(step)) || is_dir(step->cmd->arg_arr[0]) || !valid_redirs))
 		{
 			if (((access(step->cmd->arg_arr[0], F_OK) == -1 && !is_builtin(step)) || is_dir(step->cmd->arg_arr[0])) && valid_redirs && !ft_strchr(step->cmd->arg_arr[0], '/'))
+			{
+				ft_stderr("minishell: %s: command not found\n", step->cmd->arg_arr[0]);
+				exit_flag = true;
+				step->exit_code = 127;
+				// ft_close(&fd[0];)
+				// ft_close(&fd[1];)
+				shell->last_exit_code = step->exit_code;
+			}
+			else if (access(step->cmd->arg_arr[0], F_OK) != -1 && access(step->cmd->arg_arr[0], X_OK) == -1 && !ft_strchr(step->cmd->arg_arr[0], '/') && valid_redirs)
 			{
 				ft_stderr("minishell: %s: command not found\n", step->cmd->arg_arr[0]);
 				exit_flag = true;
