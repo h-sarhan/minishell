@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:43:26 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/19 10:48:07 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/19 11:57:07 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -134,10 +134,11 @@ int	main(int argc, char **argv, char **env)
 	(void)argv;
 	success = true;
 	shell.env = copy_str_arr(env);
-	shell.declared_env = ft_calloc(1, sizeof(char *));
+	shell.declared_env = NULL;
 	// find_and_update_oldpwd(shell.env, "");
 	// ft_unset(&shell, );
 	unset_var(&shell, "OLDPWD");
+	update_declared_env(&shell, "OLDPWD");
 	char *shell_lvl_env = get_env(&shell, "SHLVL");
 	char	*shell_lvl_str = strjoin_free("SHLVL=", ft_itoa(ft_atoi(shell_lvl_env) + 1), 2);
 	update_env(&shell, shell_lvl_str);
@@ -163,6 +164,7 @@ int	main(int argc, char **argv, char **env)
 		{
 			printf("\n");
 			free_split_array(shell.env);
+			free_split_array(shell.declared_env);
 			ft_close(&g_dupstdin);
 			return (EXIT_SUCCESS);
 		}
@@ -227,5 +229,8 @@ int	main(int argc, char **argv, char **env)
 	}
 	ft_close(&g_dupstdin);
 	free_split_array(shell.env);
+	// printf("FREEING DECLARED\n");
+	free_split_array(shell.declared_env);
+	// ft_free(&shell.declared_env);
 	clear_history();
 }

@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/01 19:01:46 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/19 11:02:56 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/19 11:44:38 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,6 +95,10 @@ void	unset_declared_var(t_shell *shell, const char *var)
 
 	i = 0;
 	found = false;
+	if (shell->declared_env == NULL)
+	{
+		return ;
+	}
 	to_look = ft_strdup(var);
 	while (shell->declared_env[i] != NULL)
 	{

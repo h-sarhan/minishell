@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/30 21:25:48 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/19 10:56:58 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/19 11:57:24 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@ char	**resize_str_arr(char **old, size_t new_size)
 	new_arr = ft_calloc(new_size + 1, sizeof(char *));
 	if (new_arr == NULL)
 	{
+		exit(1);
 		// ! Handle error here
 	}
 	i = 0;
@@ -28,6 +29,7 @@ char	**resize_str_arr(char **old, size_t new_size)
 		new_arr[i] = old[i];
 		i++;
 	}
+	// free_split_array(old);
 	ft_free(&old);
 	return (new_arr);
 }
@@ -134,14 +136,14 @@ static void export_no_args(t_shell *shell, t_exec_step *step)
 	step->exit_code = 0;
 	shell->last_exit_code = step->exit_code;
 	i = 0;
-	while (shell->declared_env[i] != NULL)
+	while (shell->declared_env != NULL && shell->declared_env[i] != NULL)
 	{
 		printf("declare -x %s\n", shell->declared_env[i]);
 		i++;
 	}
 }
 
-static void	update_declared_env(t_shell *shell, char *str)
+void	update_declared_env(t_shell *shell, char *str)
 {
 	size_t	i;
 	char	*to_look;
@@ -160,12 +162,13 @@ static void	update_declared_env(t_shell *shell, char *str)
 	ft_free(&to_look);
 	if (shell->declared_env == NULL)
 	{
-		shell->declared_env = ft_calloc(1, sizeof(char *));
+		shell->declared_env = ft_calloc(2, sizeof(char *));
 		if (shell->declared_env == NULL)
 			exit(EXIT_FAILURE);
 		shell->declared_env[0] = ft_strdup(str);
 		return ;
 	}
+	
 	shell->declared_env = resize_str_arr(shell->declared_env, env_len(shell->declared_env) + 1);
 	shell->declared_env[env_len(shell->declared_env)] = ft_strdup(str);
 }
@@ -203,7 +206,6 @@ void	ft_export(t_shell *shell, t_exec_step *step)
 		else
 		{
 			unset_declared_var(shell, args[i]);
-			
 			update_declared_env(shell, args[i]);
 		}
 		i++;

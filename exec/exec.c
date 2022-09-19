@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/01 18:16:54 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/19 10:18:19 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/19 11:53:23 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -277,6 +277,7 @@ int	*first_cmd(t_exec_step *step, int *fd, t_shell *shell, int out_fd)
 			ft_close(&out_fd);
 			ft_close(&in_fd);
 			free_split_array(shell->env);
+			free_split_array(shell->declared_env);
 			ft_free(&fd);
 			exit(exit_code);
 		}
@@ -373,6 +374,7 @@ int	*mid_cmd(t_exec_step *step, int *fd, t_shell *shell, int out_fd)
 			ft_lstclear(&shell->tokens, free_token);
 			ft_lstclear(&shell->steps, free_exec_step);
 			free_split_array(shell->env);
+			free_split_array(shell->declared_env);
 			ft_close(&out_fd);
 			ft_close(&in_fd);
 			ft_free(&fd);
@@ -531,8 +533,8 @@ void	exec_cmd(t_shell *shell, int step_number)
 	// printf("%s\n", step->cmd->arg_arr[0]);
 	
 	// ? Why did we write the below line of code
-	// if (!(fork_builtin(step) && !step->pipe_next) && !exit_flag)
-	if (!exit_flag)
+	if (!(fork_builtin(step) && !step->pipe_next && ft_strcmp(step->cmd->arg_arr[0], "exit") != 0) && !exit_flag)
+	// if (!exit_flag)
 	{
 		step->exit_code = WEXITSTATUS(w_status);
 		shell->last_exit_code = step->exit_code;
