@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/01 19:01:46 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/19 10:44:01 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/19 11:02:56 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -149,7 +149,10 @@ void	ft_unset(t_shell *shell, t_exec_step *step)
 			error = true;
 		}
 		else
+		{
+			unset_declared_var(shell, args[i]);
 			unset_var(shell, args[i]);
+		}
 		i++;
 	}
 	if (error)
