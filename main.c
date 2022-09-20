@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:43:26 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/20 10:13:54 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/20 11:05:39 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -89,7 +89,6 @@ void	sigint_interactive(int sig)
 	int ret = waitpid(-1, NULL, WNOHANG);
 	if (sig == SIGINT && ret == -1)
 	{
-		// printf("isatty return %d", isatty(0));
 		write(2, "\n", 1);
 		// // printf("\n");
 		rl_on_new_line();
@@ -103,7 +102,6 @@ void	sigint_command(int sig)
 	int ret = waitpid(-1, NULL, WNOHANG);
 	if (sig == SIGINT)
 	{
-		// printf("isatty return %d", isatty(0));
 		if (ret == -1)
 		{
 			write(2, "\n", 1);
@@ -121,12 +119,16 @@ void	sigint_command(int sig)
 void	sigquit_command(int sig)
 {
 	int ret = waitpid(-1, NULL, WNOHANG);
-	if (sig == SIGQUIT && ret == -1)
+	if (sig == SIGQUIT)
 	{
-		write(2, "QUIT\n", ft_strlen("QUIT\n"));
-		rl_on_new_line();
-		rl_replace_line("", 0);
-		rl_redisplay();
+		// ! better way to print this message
+		if (ret == -1)
+		{
+			write(2, "QUIT\n", ft_strlen("QUIT\n"));
+			rl_on_new_line();
+			rl_replace_line("", 0);
+			rl_redisplay();
+		}
 		ft_close(&g_dupstdin);
 		g_dupstdin = SIGQUIT_FLAG;
 	}
@@ -235,7 +237,7 @@ int	main(int argc, char **argv, char **env)
 			shell.steps = shell.steps->next;
 		}
 		signal(SIGINT, sigint_command);
-		signal(SIGQUIT, SIG_IGN);
+		signal(SIGQUIT, sigquit_command);
 		if (g_dupstdin == -1)
 		{
 			shell.last_exit_code = 1;
