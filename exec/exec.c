@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/01 18:16:54 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/20 15:56:45 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/20 19:12:18 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -441,9 +441,14 @@ void	exec_cmd(t_shell *shell, int step_number)
 			shell->last_exit_code = step->exit_code;
 		}
 		out_fd = exec_outredir(step);
-		char	*cmd_cpy = ft_strdup(step->cmd->arg_arr[0]);
+		// char	*cmd_cpy = ft_strdup(step->cmd->arg_arr[0]);
+		char	*cmd_copy;
 		if (step->cmd->arg_arr[0] &&  (access(step->cmd->arg_arr[0], X_OK) == -1 && !is_builtin(step) && !is_dir(step->cmd->arg_arr[0])))
-			step->cmd->arg_arr[0] = get_full_path(step->cmd->arg_arr[0], shell->env);
+		{
+			cmd_copy = get_full_path(step->cmd->arg_arr[0], shell->env);
+			if (cmd_copy != NULL)
+				step->cmd->arg_arr[0] = cmd_copy;
+		}
 		// if (step->cmd->arg_arr[0] == NULL)
 		// {
 		// 	int q = 1;
@@ -456,8 +461,8 @@ void	exec_cmd(t_shell *shell, int step_number)
 		// printf("Running command |%s|\n", step->cmd->arg_arr[0]);
 		if (step->cmd->arg_arr[0] == NULL || (access(step->cmd->arg_arr[0], X_OK) != -1 && !ft_strchr(step->cmd->arg_arr[0], '/')))
 		{
-			ft_stderr("minishell: %s: command not found\n", cmd_cpy);
-		ft_free(&cmd_cpy);
+			ft_stderr("minishell: %s: command not found\n", step->cmd->arg_arr[0]);
+		// ft_free(&cmd_cpy);
 			exit_flag = true;
 			step->exit_code = 127;
 			// ft_close(&fd[0];)
@@ -476,7 +481,7 @@ void	exec_cmd(t_shell *shell, int step_number)
 			steps = steps->next;
 			continue;
 		}
-		ft_free(&cmd_cpy);
+		// ft_free(&cmd_cpy);
 		if (step->cmd->arg_arr[0] && ((access(step->cmd->arg_arr[0], X_OK) == -1 && !is_builtin(step)) || is_dir(step->cmd->arg_arr[0]) || !valid_redirs))
 		{
 			if (((access(step->cmd->arg_arr[0], F_OK) == -1 && !is_builtin(step)) || is_dir(step->cmd->arg_arr[0])) && valid_redirs && !ft_strchr(step->cmd->arg_arr[0], '/'))
