@@ -3,21 +3,23 @@
 /*                                                        :::      ::::::::   */
 /*   cd.c                                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/30 15:41:46 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/15 15:05:30 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/20 11:23:58 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-void	find_and_update_pwd(char **env)
+void	find_and_update_pwd(char **env, t_shell *shell)
 {
 	char	*pwd;
 	int		i;
 	
 	pwd = getcwd(NULL, 0);
+	if (!pwd)
+		pwd = get_env(shell, "PWD");
 	i = -1;
 	while (env[++i])
 	{
@@ -59,9 +61,11 @@ void	cd_to_path(t_shell *shell, t_exec_step *step, char **env)
 	char	*oldpwd;
 	
 	oldpwd = getcwd(NULL, 0);
+	if (!oldpwd)
+		oldpwd = get_env(shell, "PWD");
 	if (!chdir(step->cmd->arg_arr[1]) && ft_strlen(oldpwd))
 	{
-		find_and_update_pwd(env);
+		find_and_update_pwd(env, shell);
 		find_and_update_oldpwd(shell, env, oldpwd);
 		step->exit_code = 0;
 	}
@@ -85,9 +89,11 @@ void	cd_to_home(t_shell *shell, t_exec_step *step, char **env, char *home)
 	if (home)
 	{
 		oldpwd = getcwd(NULL, 0);
+		if (!oldpwd)
+			oldpwd = get_env(shell, "PWD");	
 		if (!chdir(home) && ft_strlen(oldpwd))
 		{
-			find_and_update_pwd(env);
+			find_and_update_pwd(env, shell);
 			find_and_update_oldpwd(shell, env, oldpwd);
 			step->exit_code = 0;
 		}
