@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:43:26 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/20 11:36:29 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/20 11:55:01 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -166,7 +166,7 @@ int	main(int argc, char **argv, char **env)
 	bool	success;
 	t_shell	shell;
 
-	rl_outstream = stderr;
+	// rl_outstream = stderr;
 	(void)argc;
 	(void)argv;
 	success = true;
