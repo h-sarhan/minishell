@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parsing_utils.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/21 21:38:27 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/12 14:01:46 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/21 00:38:28 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,11 +39,11 @@ void	free_exec_step(void *exec_step_ptr)
 			i++;
 		}
 		ft_free(&exec_step->cmd->arg_arr);
+		ft_free(&exec_step->cmd->heredoc_contents);
+		ft_free(&exec_step->cmd);
 	}
 	if (exec_step->subexpr_steps != NULL)
 		ft_lstclear(&exec_step->subexpr_steps, free_exec_step);
-	ft_free(&exec_step->cmd->heredoc_contents);
-	ft_free(&exec_step->cmd);
 	ft_free(&exec_step);
 }
 
@@ -55,6 +55,8 @@ void	list_to_str_arr(void *step_ptr)
 	t_exec_step	*step;
 
 	step = step_ptr;
+	if (step->cmd == NULL)
+		return ;
 	arg_list = step->cmd->args;
 	list_size = ft_lstsize(arg_list);
 	step->cmd->arg_arr = ft_calloc(list_size + 1, sizeof(char *));

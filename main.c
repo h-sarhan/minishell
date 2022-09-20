@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:43:26 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/20 20:29:30 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/21 00:40:17 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,6 +71,7 @@ void	print_exec_step(t_list *exec_steps)
 			printf("Heredoc redir. Limiter is %s\n", redir->limiter);
 		redirs = redirs->next;
 	}
+	printf("===================EXPR END===================\n");
 }
 
 // void	reciever(int sig, siginfo_t *siginfo, void *context)
@@ -243,19 +244,19 @@ int	main(int argc, char **argv, char **env)
 			continue;
 		}
 		shell.steps = exec_steps_start;
-		if (exec_steps_start != NULL)
-		{
-			shell.line = line;
-			exec_cmd(&shell, 0);
-		}
-		if (g_dupstdin == SIGQUIT_FLAG)
-		{
-			shell.last_exit_code = 131;
-		}
-		if (g_dupstdin == SIGINT_FLAG)
-		{
-			shell.last_exit_code = 130;
-		}
+		// if (exec_steps_start != NULL)
+		// {
+		// 	shell.line = line;
+		// 	exec_cmd(&shell, 0);
+		// }
+		// if (g_dupstdin == SIGQUIT_FLAG)
+		// {
+		// 	shell.last_exit_code = 131;
+		// }
+		// if (g_dupstdin == SIGINT_FLAG)
+		// {
+		// 	shell.last_exit_code = 130;
+		// }
 		ft_lstclear(&shell.tokens, free_token);
 		ft_lstclear(&shell.steps, free_exec_step);
 		rl_on_new_line();
