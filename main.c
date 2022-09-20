@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:43:26 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/20 19:17:35 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/20 20:29:30 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,17 +118,8 @@ void	sigint_command(int sig)
 
 void	sigquit_command(int sig)
 {
-	int ret = waitpid(-1, NULL, WNOHANG);
 	if (sig == SIGQUIT)
 	{
-		// ! better way to print this message
-		if (ret == -1)
-		{
-			write(2, "QUIT\n", ft_strlen("QUIT\n"));
-			rl_on_new_line();
-			rl_replace_line("", 0);
-			rl_redisplay();
-		}
 		ft_close(&g_dupstdin);
 		g_dupstdin = SIGQUIT_FLAG;
 	}

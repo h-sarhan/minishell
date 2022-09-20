@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/01 18:16:54 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/20 20:02:09 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/20 20:26:17 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -578,6 +578,21 @@ void	exec_cmd(t_shell *shell, int step_number)
 			break;
 		steps = steps->next;
 		i++;
+	}
+	if (WIFSIGNALED(w_status))
+	{
+		if (WTERMSIG(w_status) == SIGINT)
+		{
+			step->exit_code = 130;
+			shell->last_exit_code = step->exit_code;
+		}
+		if (WTERMSIG(w_status) == SIGQUIT)
+		{
+			printf("Quit\n");
+			step->exit_code = 131;
+			shell->last_exit_code = step->exit_code;
+		}
+		return ;
 	}
 	// printf("%s\n", step->cmd->arg_arr[0]);
 	
