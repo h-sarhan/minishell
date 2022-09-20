@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   cd.c                                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/30 15:41:46 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/20 11:23:58 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/20 19:32:27 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,8 @@ void	find_and_update_pwd(char **env, t_shell *shell)
 	pwd = getcwd(NULL, 0);
 	if (!pwd)
 		pwd = get_env(shell, "PWD");
+	if (!pwd)
+		return ;
 	i = -1;
 	while (env[++i])
 	{
@@ -63,6 +65,8 @@ void	cd_to_path(t_shell *shell, t_exec_step *step, char **env)
 	oldpwd = getcwd(NULL, 0);
 	if (!oldpwd)
 		oldpwd = get_env(shell, "PWD");
+	if (!oldpwd)
+		return ;
 	if (!chdir(step->cmd->arg_arr[1]) && ft_strlen(oldpwd))
 	{
 		find_and_update_pwd(env, shell);
@@ -91,6 +95,11 @@ void	cd_to_home(t_shell *shell, t_exec_step *step, char **env, char *home)
 		oldpwd = getcwd(NULL, 0);
 		if (!oldpwd)
 			oldpwd = get_env(shell, "PWD");	
+		if (!oldpwd)
+		{
+			ft_free(&home);
+			return ;
+		}
 		if (!chdir(home) && ft_strlen(oldpwd))
 		{
 			find_and_update_pwd(env, shell);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pwd.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/29 21:56:29 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/19 18:17:00 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/20 19:36:17 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,9 @@ void	ft_pwd(t_exec_step *step, t_shell *shell)
 	dir = getcwd(NULL, 0);
 	if (!dir)
 		dir = get_env(shell, "PWD");
+	// Doesnt really replicate bash but whatever
+	if (!dir)
+		return ;
 	printf("%s\n", dir);
 	ft_free(&dir);
 	step->exit_code = 0;
