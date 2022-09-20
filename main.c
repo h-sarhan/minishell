@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:43:26 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/20 11:55:01 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/20 19:17:35 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -175,10 +175,13 @@ int	main(int argc, char **argv, char **env)
 	unset_var(&shell, "OLDPWD");
 	update_declared_env(&shell, "OLDPWD");
 	char *shell_lvl_env = get_env(&shell, "SHLVL");
-	char	*shell_lvl_str = strjoin_free("SHLVL=", ft_itoa(ft_atoi(shell_lvl_env) + 1), 2);
-	update_env(&shell, shell_lvl_str);
-	ft_free(&shell_lvl_str);
-	ft_free(&shell_lvl_env);
+	if (shell_lvl_env != NULL)
+	{
+		char	*shell_lvl_str = strjoin_free("SHLVL=", ft_itoa(ft_atoi(shell_lvl_env) + 1), 2);
+		update_env(&shell, shell_lvl_str);
+		ft_free(&shell_lvl_str);
+		ft_free(&shell_lvl_env);
+	}
 	shell.last_exit_code = 0;
 	while (1)
 	{
