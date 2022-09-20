@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   wildcard.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/18 07:59:27 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/19 18:24:53 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/20 11:42:27 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,8 +20,8 @@ char	*get_dir_contents(void)
 	char			*cwd;
 
 	cwd = getcwd(NULL, 0);
-	// if (!cwd)
-	// 	cwd = get_env(shell, "PWD");
+	if (!cwd)
+		return (ft_strdup(""));
 	dp = opendir(cwd);
 	ft_free(&cwd);
 	contents = ft_strdup("");
