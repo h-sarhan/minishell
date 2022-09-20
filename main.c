@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:43:26 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/20 00:14:20 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/20 10:13:54 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,14 +101,18 @@ void	sigint_interactive(int sig)
 void	sigint_command(int sig)
 {
 	int ret = waitpid(-1, NULL, WNOHANG);
-	if (sig == SIGINT && ret == -1)
+	if (sig == SIGINT)
 	{
 		// printf("isatty return %d", isatty(0));
-		write(2, "\n", 1);
-		// printf("\n");
-		rl_on_new_line();
-		rl_replace_line("", 0);
-		rl_redisplay();
+		if (ret == -1)
+		{
+			write(2, "\n", 1);
+			// printf("\n");
+			rl_on_new_line();
+			rl_replace_line("", 0);
+			rl_redisplay();
+		}
+		// ! better way to do this
 		ft_close(&g_dupstdin);
 		g_dupstdin = SIGINT_FLAG;
 	}
@@ -178,7 +182,8 @@ int	main(int argc, char **argv, char **env)
 	{
 		g_dupstdin = dup(0);
 		signal(SIGINT, sigint_interactive);
-		signal(SIGQUIT, sigquit_interactive);
+		// signal(SIGQUIT, sigquit_interactive);
+		signal(SIGQUIT, SIG_IGN);
 		line = readline("\001\033[1;34m\002GIGASHELL$ \001\033[0m\002");
 		// line = readline("GIGASHELL$ ");
 		shell.line = line;
@@ -188,7 +193,7 @@ int	main(int argc, char **argv, char **env)
 		// signal(SIGINT, SIG_IGN);
 		if (line == NULL)
 		{
-			printf("\n");
+			// write(2, "\n", 1);
 			free_split_array(shell.env);
 			free_split_array(shell.declared_env);
 			ft_close(&g_dupstdin);
@@ -229,10 +234,8 @@ int	main(int argc, char **argv, char **env)
 			run_here_docs(shell.steps->content);
 			shell.steps = shell.steps->next;
 		}
-		signal(SIGINT, sigint_interactive);
-		signal(SIGQUIT, sigquit_interactive);
-		// signal(SIGQUIT, SIG_IGN);
-		// signal(SIGINT, SIG_IGN);
+		signal(SIGINT, sigint_command);
+		signal(SIGQUIT, SIG_IGN);
 		if (g_dupstdin == -1)
 		{
 			shell.last_exit_code = 1;
