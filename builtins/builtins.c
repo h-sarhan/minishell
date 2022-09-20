@@ -6,7 +6,7 @@
 /*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/30 13:47:43 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/15 12:14:56 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/19 17:04:46 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,13 +35,13 @@ bool	is_builtin(t_exec_step *step)
 	return (false);
 }
 
-bool	fork_builtin(t_exec_step *step)
+bool	parent_builtin(t_exec_step *step)
 {
 	if (step->cmd->arg_arr[0] == NULL)
 		return (false);
 	if (ft_strcmp(step->cmd->arg_arr[0], "unset") == 0
 		|| ft_strcmp(step->cmd->arg_arr[0], "cd") == 0
-		|| ft_strcmp(step->cmd->arg_arr[0], "export") == 0
+		|| (ft_strcmp(step->cmd->arg_arr[0], "export") == 0 && step->cmd->arg_arr[1] != NULL)
 		|| ft_strcmp(step->cmd->arg_arr[0], "exit") == 0)
 		return (true);
 	return (false);

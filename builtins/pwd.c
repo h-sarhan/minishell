@@ -6,7 +6,7 @@
 /*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/29 21:56:29 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/15 12:12:46 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/19 18:17:00 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,8 @@ void	ft_pwd(t_exec_step *step, t_shell *shell)
 	char	*dir;
 	
 	dir = getcwd(NULL, 0);
+	if (!dir)
+		dir = get_env(shell, "PWD");
 	printf("%s\n", dir);
 	ft_free(&dir);
 	step->exit_code = 0;

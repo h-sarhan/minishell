@@ -6,7 +6,7 @@
 /*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/01 18:16:54 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/19 16:49:19 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/19 17:04:46 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -193,7 +193,7 @@ int	*first_cmd(t_exec_step *step, int *fd, t_shell *shell, int out_fd)
 	in_fd = -1;
 	hd_fd[0] = -1;
 	hd_fd[1] = -1;
-	if (fork_builtin(step) && !step->pipe_next)
+	if (parent_builtin(step) && !step->pipe_next)
 	{
 		// ! We dont dup2 input/output/heredoc redirections here
 		run_builtin(step, shell, false);
@@ -304,7 +304,7 @@ int	*mid_cmd(t_exec_step *step, int *fd, t_shell *shell, int out_fd)
 	inredir = NULL;
 	hd_fd[0] = -1;
 	hd_fd[1] = -1;
-	// if (fork_builtin(step) && !step->pipe_next)
+	// if (parent_builtin(step) && !step->pipe_next)
 	// {
 	// 	run_builtin(step, shell);
 	// 	return fd;
@@ -566,7 +566,7 @@ void	exec_cmd(t_shell *shell, int step_number)
 	// printf("%s\n", step->cmd->arg_arr[0]);
 	
 	// ? Why did we write the below line of code
-	if (!(fork_builtin(step) && !step->pipe_next && ft_strcmp(step->cmd->arg_arr[0], "exit") != 0) && !exit_flag)
+	if (!(parent_builtin(step) && !step->pipe_next && ft_strcmp(step->cmd->arg_arr[0], "exit") != 0) && !exit_flag)
 	// if (!exit_flag)
 	{
 		step->exit_code = WEXITSTATUS(w_status);
