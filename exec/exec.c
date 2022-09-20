@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/01 18:16:54 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/20 19:12:18 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/20 20:02:09 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -443,7 +443,7 @@ void	exec_cmd(t_shell *shell, int step_number)
 		out_fd = exec_outredir(step);
 		// char	*cmd_cpy = ft_strdup(step->cmd->arg_arr[0]);
 		char	*cmd_copy;
-		if (step->cmd->arg_arr[0] &&  (access(step->cmd->arg_arr[0], X_OK) == -1 && !is_builtin(step) && !is_dir(step->cmd->arg_arr[0])))
+		if (step->cmd->arg_arr[0] && step->cmd->arg_arr[0][0] != '\0' && (access(step->cmd->arg_arr[0], X_OK) == -1 && !is_builtin(step) && !is_dir(step->cmd->arg_arr[0])))
 		{
 			cmd_copy = get_full_path(step->cmd->arg_arr[0], shell->env);
 			if (cmd_copy != NULL)
@@ -459,7 +459,7 @@ void	exec_cmd(t_shell *shell, int step_number)
 		// 	}
 		// }
 		// printf("Running command |%s|\n", step->cmd->arg_arr[0]);
-		if (step->cmd->arg_arr[0] == NULL || (access(step->cmd->arg_arr[0], X_OK) != -1 && !ft_strchr(step->cmd->arg_arr[0], '/')))
+		if (step->cmd->arg_arr[0] != NULL && (access(step->cmd->arg_arr[0], X_OK) != -1 && !ft_strchr(step->cmd->arg_arr[0], '/')))
 		{
 			ft_stderr("minishell: %s: command not found\n", step->cmd->arg_arr[0]);
 		// ft_free(&cmd_cpy);
