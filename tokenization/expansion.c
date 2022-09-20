@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 21:30:28 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/15 14:09:13 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/20 19:07:25 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,6 +115,8 @@ bool	contains_env_var(const char *str)
 				i++;
 			else
 				return (true);
+			if (str[i] == '\0')
+				return (false);
 			i++;
 		}
 		else
