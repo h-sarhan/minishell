@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/01 18:16:54 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/21 14:13:02 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/21 15:08:43 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,6 +76,8 @@ bool	check_valid_redir(t_exec_step *step)
 	t_list	*redir;
 	t_redir	*redir_file;
 	
+	if (step->cmd == NULL)
+		return (true);
 	redir = step->cmd->redirs;
 	while (redir)
 	{
@@ -394,7 +396,7 @@ int	*mid_cmd(t_exec_step *step, int *fd, t_shell *shell, int out_fd)
 }
 
 
-void	exec_cmd(t_shell *shell, int step_number)
+void	exec_cmd(t_shell *shell, t_list *exec_steps, int step_number)
 {
 	t_exec_step *step;
 	t_list		*steps;
@@ -412,7 +414,7 @@ void	exec_cmd(t_shell *shell, int step_number)
 	out_fd = -1;
 	w_status = 0;
 	int i = 0;
-	steps = shell->steps;
+	steps = exec_steps;
 	while (i < step_number  && steps != NULL) 
 	{
 		steps = steps->next;
@@ -431,6 +433,18 @@ void	exec_cmd(t_shell *shell, int step_number)
 	{
 		step_number++;
 		step = steps->content;
+		if (step->subexpr_steps != NULL)
+		{
+			exec_cmd(shell, step->subexpr_steps, 0);
+			if (!flag)
+				flag = true;
+			if (step->and_next || step->or_next)
+				break;
+			// printf("Step number is %ld IN IF\n", step_number);
+			// step_number++;
+			steps = steps->next;
+			continue;
+		}
 		// run_here_docs(step);
 		exit_flag = false;
 		bool valid_redirs = check_valid_redir(step);
@@ -558,48 +572,53 @@ void	exec_cmd(t_shell *shell, int step_number)
 	// 	i++;
 	// }
 	// int wait_idx = step_number;
-	steps = shell->steps;	
-	int wait_idx = 0;	
-	while (steps && wait_idx < i)
-	{
-		steps = steps->next;
-		wait_idx++;
-	}
-	// printf("i is %d\nstep_number is %d\n", i , step_number);
-	while (steps && i < step_number)
-	{
-		step = steps->content;
-		if (step->cmd->arg_arr[0] && (access(step->cmd->arg_arr[0], X_OK) != -1 || is_builtin(step)) && !is_dir(step->cmd->arg_arr[0]))
-		{
-			// printf("WAITING FOR %s\n", step->cmd->arg_arr[0]);
-			waitpid(step->cmd->pid, &w_status, 0);
-		}
-		if (step->and_next || step->or_next)
-			break;
-		steps = steps->next;
-		i++;
-	}
-	if (WIFSIGNALED(w_status))
-	{
-		if (WTERMSIG(w_status) == SIGINT)
-		{
-			step->exit_code = 130;
-			shell->last_exit_code = step->exit_code;
-		}
-		if (WTERMSIG(w_status) == SIGQUIT)
-		{
-			printf("Quit\n");
-			step->exit_code = 131;
-			shell->last_exit_code = step->exit_code;
-		}
-		return ;
-	}
 	
-	// ? Why did we write the below line of code
-	if (!(parent_builtin(step) && !step->pipe_next && ft_strcmp(step->cmd->arg_arr[0], "exit") != 0) && !exit_flag)
+	// ! Do not wait for subexpressions
+	if (step->cmd)
 	{
-		step->exit_code = WEXITSTATUS(w_status);
-		shell->last_exit_code = step->exit_code;
+		steps = exec_steps;	
+		int wait_idx = 0;	
+		while (steps && wait_idx < i)
+		{
+			steps = steps->next;
+			wait_idx++;
+		}
+		// printf("i is %d\nstep_number is %d\n", i , step_number);
+		while (steps && i < step_number)
+		{
+			step = steps->content;
+			if (step->cmd->arg_arr[0] && (access(step->cmd->arg_arr[0], X_OK) != -1 || is_builtin(step)) && !is_dir(step->cmd->arg_arr[0]))
+			{
+				// printf("WAITING FOR %s\n", step->cmd->arg_arr[0]);
+				waitpid(step->cmd->pid, &w_status, 0);
+			}
+			if (step->and_next || step->or_next)
+				break;
+			steps = steps->next;
+			i++;
+		}
+		if (WIFSIGNALED(w_status))
+		{
+			if (WTERMSIG(w_status) == SIGINT)
+			{
+				step->exit_code = 130;
+				shell->last_exit_code = step->exit_code;
+			}
+			if (WTERMSIG(w_status) == SIGQUIT)
+			{
+				printf("Quit\n");
+				step->exit_code = 131;
+				shell->last_exit_code = step->exit_code;
+			}
+			return ;
+		}
+	
+		// ? Why did we write the below line of code
+		if (!(parent_builtin(step) && !step->pipe_next && ft_strcmp(step->cmd->arg_arr[0], "exit") != 0) && !exit_flag)
+		{
+			step->exit_code = WEXITSTATUS(w_status);
+			shell->last_exit_code = step->exit_code;
+		}
 	}
 	if (step == NULL)
 		return ;
@@ -631,14 +650,17 @@ void	exec_cmd(t_shell *shell, int step_number)
 			if (steps == NULL)
 				return ;
 		}
-		bool success;
-		ft_lstclear(&shell->tokens, free_token);
-		ft_lstclear(&shell->steps, free_exec_step);
-		t_list *tokens = tokenize_line(shell, shell->line, &success);
-		t_list *  new_steps = parse_tokens(tokens, &success);
-		shell->tokens = tokens;
-		shell->steps = new_steps;
-		exec_cmd(shell, step_number);
+		
+		// ! FIX THIS
+		// bool success;
+		// ft_lstclear(&shell->tokens, free_token);
+		// // if (exec)
+		// ft_lstclear(&exec_steps, free_exec_step);
+		// t_list *tokens = tokenize_line(shell, shell->line, &success);
+		// t_list *  new_steps = parse_tokens(tokens, &success);
+		// shell->tokens = tokens;
+		// shell->steps = new_steps;
+		exec_cmd(shell, exec_steps, step_number);
 	}
 	else if (step->or_next)
 	{
@@ -669,13 +691,14 @@ void	exec_cmd(t_shell *shell, int step_number)
 		else
 		{
 		}
-		bool success;
-		ft_lstclear(&shell->tokens, free_token);
-		ft_lstclear(&shell->steps, free_exec_step);
-		t_list *tokens = tokenize_line(shell, shell->line, &success);
-		t_list *  new_steps = parse_tokens(tokens, &success);
-		shell->tokens = tokens;
-		shell->steps = new_steps;
-		exec_cmd(shell, step_number);
+		// ! FIX THIS
+		// bool success;
+		// ft_lstclear(&shell->tokens, free_token);
+		// ft_lstclear(&exec_steps, free_exec_step);
+		// t_list *tokens = tokenize_line(shell, shell->line, &success);
+		// t_list *  new_steps = parse_tokens(tokens, &success);
+		// shell->tokens = tokens;
+		// shell->steps = new_steps;
+		exec_cmd(shell, exec_steps, step_number);
 	}
 }
