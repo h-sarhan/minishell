@@ -6,7 +6,7 @@
 /*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/01 18:16:54 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/20 20:26:17 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/21 14:13:02 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -594,40 +594,33 @@ void	exec_cmd(t_shell *shell, int step_number)
 		}
 		return ;
 	}
-	// printf("%s\n", step->cmd->arg_arr[0]);
 	
 	// ? Why did we write the below line of code
 	if (!(parent_builtin(step) && !step->pipe_next && ft_strcmp(step->cmd->arg_arr[0], "exit") != 0) && !exit_flag)
-	// if (!exit_flag)
 	{
 		step->exit_code = WEXITSTATUS(w_status);
 		shell->last_exit_code = step->exit_code;
-		// printf("%d\n", step->exit_code);
 	}
 	if (step == NULL)
 		return ;
-	// printf("%d\n", shell->last_exit_code);
-	// step_number++;
-	// printf("Step number is %d\n", step_number);
-	// step_number++;
 	if ((step->and_next && shell->last_exit_code == 0))
 	{
-		// printf("GOING IN AND\n");
-		// t_list *initial_steps = shell->steps;
 		if (shell->last_exit_code == 0)
 		{	
-			// success = true;
-			// shell->steps = steps->next;
-			// if (shell->steps == NULL)
-			// 	return ;
+			
 		}
 		else
 		{
-			// success = false;
-			if (steps != NULL)
+			while (steps != NULL && step->and_next)
+			// if (steps != NULL)
 			{
+				step = steps->content;
 				steps = steps->next;
 				step_number++;
+			}
+			if (step->or_next)
+			{
+				step_number--;
 			}
 			while (steps && (!step->and_next && !step->or_next))
 			{
@@ -637,35 +630,32 @@ void	exec_cmd(t_shell *shell, int step_number)
 			}
 			if (steps == NULL)
 				return ;
-			// step_number += 2;
-			// shell->steps = steps->next->next;
-			// if (shell->steps == NULL)
-			// 	return ;
 		}
-		// step = shell->steps->content;
 		bool success;
 		ft_lstclear(&shell->tokens, free_token);
 		ft_lstclear(&shell->steps, free_exec_step);
-		// shell->tokens = ft_calloc()
 		t_list *tokens = tokenize_line(shell, shell->line, &success);
 		t_list *  new_steps = parse_tokens(tokens, &success);
 		shell->tokens = tokens;
 		shell->steps = new_steps;
 		exec_cmd(shell, step_number);
-		// shell->steps = initial_steps;
 	}
 	else if (step->or_next)
 	{
-		// step_number++;
-		// t_list *initial_steps = shell->steps;
 		if (shell->last_exit_code == 0)
 		{
-			// success = true;
-			// step_number += 2;
-			if (steps != NULL)
+			while (steps != NULL && step->or_next)
+			// if (steps != NULL)
 			{
+				// print_exec_step(steps);
+				// printf("%s %s\n", step->cmd->arg_arr[0], step->cmd->arg_arr[1]);
+				step = steps->content;
 				steps = steps->next;
 				step_number++;
+			}
+			if (step->and_next)
+			{
+				step_number--;
 			}
 			while (steps && (!step->and_next && !step->or_next))
 			{
@@ -675,18 +665,10 @@ void	exec_cmd(t_shell *shell, int step_number)
 			}
 			if (steps == NULL)
 				return ;
-			// shell->steps = steps->next->next;
-			// if (shell->steps == NULL)
-			// 	return ;
 		}
 		else
 		{
-			// success = false;
-			// shell->steps = steps->next;
-			// if (shell->steps == NULL)
-			// 	return ;
 		}
-		// step = shell->steps->content;
 		bool success;
 		ft_lstclear(&shell->tokens, free_token);
 		ft_lstclear(&shell->steps, free_exec_step);
@@ -695,6 +677,5 @@ void	exec_cmd(t_shell *shell, int step_number)
 		shell->tokens = tokens;
 		shell->steps = new_steps;
 		exec_cmd(shell, step_number);
-		// shell->steps = initial_steps;
 	}
 }
