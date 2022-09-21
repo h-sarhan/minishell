@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/01 18:16:54 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/21 17:23:38 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/21 18:04:09 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -396,7 +396,7 @@ int	*mid_cmd(t_exec_step *step, int *fd, t_shell *shell, int out_fd)
 }
 
 
-void	exec_cmd(t_shell *shell, t_list *exec_steps, int step_number)
+void	exec_cmd(t_shell *shell, t_list *exec_steps, int step_number, char *current_line)
 {
 	t_exec_step *step;
 	t_list		*steps;
@@ -435,8 +435,21 @@ void	exec_cmd(t_shell *shell, t_list *exec_steps, int step_number)
 		step = steps->content;
 		if (step->subexpr_line != NULL)
 		{
-			// exec_cmd(shell, step->subexpr_steps, 0);
-			printf("RUNNING %s\n", step->subexpr_line);
+			bool success;
+			t_list *sub_tokens = tokenize_line(shell, step->subexpr_line, &success);
+			if (!success)
+			{
+				// ! DO SOMETHING
+			}
+			t_list	*sub_steps = parse_tokens(sub_tokens, &success);
+			if (!success)
+			{
+				// ! DO SOMETHING
+			}
+			exec_cmd(shell, sub_steps, 0, step->subexpr_line);
+			// ft_lstclear(&sub_steps, free_exec_step);
+			ft_lstclear(&sub_tokens, free_token);
+			// printf("RUNNING %s\n", step->subexpr_line);
 			if (!flag)
 				flag = true;
 			if (step->and_next || step->or_next)
@@ -455,7 +468,6 @@ void	exec_cmd(t_shell *shell, t_list *exec_steps, int step_number)
 			shell->last_exit_code = step->exit_code;
 		}
 		out_fd = exec_outredir(step);
-		// char	*cmd_cpy = ft_strdup(step->cmd->arg_arr[0]);
 		char	*cmd_copy;
 		if (step->cmd->arg_arr[0] && step->cmd->arg_arr[0][0] != '\0' && (access(step->cmd->arg_arr[0], X_OK) == -1 && !is_builtin(step) && !is_dir(step->cmd->arg_arr[0])))
 		{
@@ -463,16 +475,6 @@ void	exec_cmd(t_shell *shell, t_list *exec_steps, int step_number)
 			if (cmd_copy != NULL)
 				step->cmd->arg_arr[0] = cmd_copy;
 		}
-		// if (step->cmd->arg_arr[0] == NULL)
-		// {
-		// 	int q = 1;
-		// 	while (step->cmd->arg_arr[q] != NULL)
-		// 	{
-		// 		ft_free(&step->cmd->arg_arr[q]);
-		// 		q++;
-		// 	}
-		// }
-		// printf("Running command |%s|\n", step->cmd->arg_arr[0]);
 		if (step->cmd->arg_arr[0] != NULL && (access(step->cmd->arg_arr[0], X_OK) != -1 && !ft_strchr(step->cmd->arg_arr[0], '/')))
 		{
 			ft_stderr("minishell: %s: command not found\n", step->cmd->arg_arr[0]);
@@ -652,15 +654,15 @@ void	exec_cmd(t_shell *shell, t_list *exec_steps, int step_number)
 		}
 		
 		// ! FIX THIS
-		// bool success;
-		// ft_lstclear(&shell->tokens, free_token);
-		// // if (exec)
-		// ft_lstclear(&exec_steps, free_exec_step);
-		// t_list *tokens = tokenize_line(shell, shell->line, &success);
-		// t_list *  new_steps = parse_tokens(tokens, &success);
-		// shell->tokens = tokens;
-		// shell->steps = new_steps;
-		exec_cmd(shell, exec_steps, step_number);
+		bool success;
+		ft_lstclear(&shell->tokens, free_token);
+		// if (exec)
+		ft_lstclear(&exec_steps, free_exec_step);
+		t_list *tokens = tokenize_line(shell, current_line, &success);
+		t_list *  new_steps = parse_tokens(tokens, &success);
+		shell->tokens = tokens;
+		shell->steps = new_steps;
+		exec_cmd(shell, new_steps, step_number, current_line);
 	}
 	else if (step->or_next)
 	{
@@ -692,13 +694,13 @@ void	exec_cmd(t_shell *shell, t_list *exec_steps, int step_number)
 		{
 		}
 		// ! FIX THIS
-		// bool success;
-		// ft_lstclear(&shell->tokens, free_token);
-		// ft_lstclear(&exec_steps, free_exec_step);
-		// t_list *tokens = tokenize_line(shell, shell->line, &success);
-		// t_list *  new_steps = parse_tokens(tokens, &success);
-		// shell->tokens = tokens;
-		// shell->steps = new_steps;
-		exec_cmd(shell, exec_steps, step_number);
+		bool success;
+		ft_lstclear(&shell->tokens, free_token);
+		ft_lstclear(&exec_steps, free_exec_step);
+		t_list *tokens = tokenize_line(shell, current_line, &success);
+		t_list *  new_steps = parse_tokens(tokens, &success);
+		shell->tokens = tokens;
+		shell->steps = new_steps;
+		exec_cmd(shell, new_steps, step_number, current_line);
 	}
 }

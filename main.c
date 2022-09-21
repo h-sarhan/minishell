@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:43:26 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/21 17:22:31 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/21 17:47:21 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -247,7 +247,7 @@ int	main(int argc, char **argv, char **env)
 		if (exec_steps_start != NULL)
 		{
 			shell.line = line;
-			exec_cmd(&shell, shell.steps, 0);
+			exec_cmd(&shell, shell.steps, 0, shell.line);
 		}
 		// if (g_dupstdin == SIGQUIT_FLAG)
 		// {
