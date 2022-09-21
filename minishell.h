@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/21 09:39:31 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/19 12:45:25 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/21 10:39:03 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,8 +28,6 @@
 #include <sys/stat.h>
 #include <signal.h>
 
-# define SIGQUIT_FLAG 130999999
-# define SIGINT_FLAG 131999999
 
 typedef struct s_shell	t_shell;
 struct s_shell

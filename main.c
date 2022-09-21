@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:43:26 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/21 00:40:17 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/21 10:38:55 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,8 +112,8 @@ void	sigint_command(int sig)
 			rl_redisplay();
 		}
 		// ! better way to do this
-		ft_close(&g_dupstdin);
-		g_dupstdin = SIGINT_FLAG;
+		// ft_close(&g_dupstdin);
+		// g_dupstdin = SIGINT_FLAG;
 	}
 }
 
@@ -121,8 +121,8 @@ void	sigquit_command(int sig)
 {
 	if (sig == SIGQUIT)
 	{
-		ft_close(&g_dupstdin);
-		g_dupstdin = SIGQUIT_FLAG;
+		// ft_close(&g_dupstdin);
+		// g_dupstdin = SIGQUIT_FLAG;
 	}
 }
 
@@ -244,11 +244,11 @@ int	main(int argc, char **argv, char **env)
 			continue;
 		}
 		shell.steps = exec_steps_start;
-		// if (exec_steps_start != NULL)
-		// {
-		// 	shell.line = line;
-		// 	exec_cmd(&shell, 0);
-		// }
+		if (exec_steps_start != NULL)
+		{
+			shell.line = line;
+			exec_cmd(&shell, 0);
+		}
 		// if (g_dupstdin == SIGQUIT_FLAG)
 		// {
 		// 	shell.last_exit_code = 131;
