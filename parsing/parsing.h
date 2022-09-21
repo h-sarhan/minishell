@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/21 11:55:31 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/16 17:11:00 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/21 17:21:11 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,8 @@ struct	s_cmd
 struct	s_exec_step
 {
 	t_cmd	*cmd;
-	t_list	*subexpr_steps;
+	// t_list	*subexpr_steps;
+	char	*subexpr_line;
 	int		step_number;
 	int		exit_code;
 	bool	pipe_next;

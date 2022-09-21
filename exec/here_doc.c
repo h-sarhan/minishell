@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/11 14:52:15 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/21 10:38:34 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/21 17:25:31 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,11 +100,15 @@ void	run_here_docs(t_exec_step *step)
 	t_redir *redir;
 	t_list *redir_lst;
 
-	if (step->subexpr_steps != NULL)
+	// if (step->subexpr_steps != NULL)
+	// {
+	// 	// ! Remove this cast
+	// 	ft_lstiter(step->subexpr_steps, (void (*)(void *))run_here_docs);
+	// 	return;
+	// }
+	if (step->cmd == NULL)
 	{
-		// ! Remove this cast
-		ft_lstiter(step->subexpr_steps, (void (*)(void *))run_here_docs);
-		return;
+		return ;
 	}
 	redir_lst = step->cmd->redirs;
 	while (redir_lst)

@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/01 18:16:54 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/21 15:08:43 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/21 17:23:38 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -433,9 +433,10 @@ void	exec_cmd(t_shell *shell, t_list *exec_steps, int step_number)
 	{
 		step_number++;
 		step = steps->content;
-		if (step->subexpr_steps != NULL)
+		if (step->subexpr_line != NULL)
 		{
-			exec_cmd(shell, step->subexpr_steps, 0);
+			// exec_cmd(shell, step->subexpr_steps, 0);
+			printf("RUNNING %s\n", step->subexpr_line);
 			if (!flag)
 				flag = true;
 			if (step->and_next || step->or_next)
@@ -445,7 +446,6 @@ void	exec_cmd(t_shell *shell, t_list *exec_steps, int step_number)
 			steps = steps->next;
 			continue;
 		}
-		// run_here_docs(step);
 		exit_flag = false;
 		bool valid_redirs = check_valid_redir(step);
 		if (valid_redirs == false)
