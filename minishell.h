@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/21 09:39:31 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/21 10:39:03 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/22 14:31:02 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,12 +40,12 @@ struct s_shell
 	char	*line;
 };
 
-struct signal
-{
-	t_list	*pid;
-	bool	interactive_mode;
+// struct signal
+// {
+// 	t_list	*pid;
+// 	bool	interactive_mode;
 	
-};
+// };
 
 void	ft_close(int *fd);
 char	**copy_str_arr(char **arr);
