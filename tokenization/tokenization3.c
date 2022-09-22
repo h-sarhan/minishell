@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/19 16:25:19 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/22 14:40:40 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/22 15:42:34 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,7 @@ t_list	*tokenize_single_quote(const t_shell *shell, const char *line, size_t *id
 	tkn->end = i - 1;
 	tkn->substr = ft_substr(line, tkn->start, tkn->end - tkn->start + 1);
 	tkn->init_substr = ft_strdup(tkn->substr);
+	// printf("2 INIT SUBSTR IS %s\n", tkn->init_substr);
 	tkn->sub_tokens = NULL;
 	if (tkn->substr == NULL)
 		return (NULL);
@@ -122,6 +123,7 @@ t_list	*tokenize_double_quote(const t_shell *shell, const char *line, size_t *id
 	else
 		tkn->substr = ft_substr(line, tkn->start, tkn->end - tkn->start + 1);
 	tkn->init_substr = ft_strdup(tkn->substr);
+	// printf("3 INIT SUBSTR IS %s\n", tkn->init_substr);
 	if (tkn->substr == NULL)
 	{
 		free_token(tkn);

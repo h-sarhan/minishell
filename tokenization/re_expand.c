@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/22 14:48:29 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/22 15:08:29 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/22 15:31:17 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 void re_expand_tokens(t_shell *shell, t_list *tokens)
 {
 	t_token	*token;
+	// t_list	*el;
 
 	while (tokens != NULL)
 	{
@@ -25,6 +26,7 @@ void re_expand_tokens(t_shell *shell, t_list *tokens)
 			continue;
 		}
 		ft_free(&token->substr);
+		printf("Old substring is |%s|\n", token->init_substr);
 		token->substr = ft_strdup(token->init_substr);
 		if (token->type == QUOTED_STRING || token->type == DOUBLE_QUOTED_STRING)
 		{
@@ -32,7 +34,7 @@ void re_expand_tokens(t_shell *shell, t_list *tokens)
 				token->substr = expand_double_quote(shell, token->substr);
 			token->substr = eat_quotes(token->substr);
 		}
-		if (token->type == ENV_VAR)
+		else if (token->type == ENV_VAR)
 		{
 			while (contains_env_var(token->substr))
 				token->substr = expand_double_quote(shell, token->substr);
@@ -41,7 +43,7 @@ void re_expand_tokens(t_shell *shell, t_list *tokens)
 			token->substr = eat_dollars(token->substr);
 			token->substr = eat_quotes(token->substr);
 		}
-		if (token->type == NORMAL)
+		else if (token->type == NORMAL)
 		{
 			while (contains_env_var(token->substr))
 				token->substr = expand_double_quote(shell, token->substr);
@@ -49,6 +51,29 @@ void re_expand_tokens(t_shell *shell, t_list *tokens)
 			{
 				token->substr = eat_dollars(token->substr);
 				token->substr = eat_quotes(token->substr);
+			}
+		}
+		else if (token->type == DUMMY)
+		{
+			while (contains_env_var(token->substr))
+				token->substr = expand_double_quote(shell, token->substr);
+			// printf("substr after expanding is |%s|\n", token->substr);
+			token->type = NORMAL;
+			token->substr = eat_dollars(token->substr);
+			token->substr = eat_quotes(token->substr);
+			if (ft_strlen(token->substr) != 0)
+			{
+				// char *substr_copy = ft_strdup(token->substr);
+				// printf("%s\n", substr_copy);
+				token->type = NORMAL;
+				// bool success;
+				// el = tokenize_line(shell, substr_copy, &success);
+				// ft_free(&substr_copy);
+				// ft_lstadd_back(&tokens, el);
+			}
+			else
+			{
+				token->type = DUMMY;
 			}
 		}
 		printf("Old substring is |%s|\n", token->init_substr);

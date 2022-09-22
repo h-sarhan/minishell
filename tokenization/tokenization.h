@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:44:00 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/22 14:59:48 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/22 15:13:03 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,8 @@ enum	e_token_type
 	SUB_EXPR,
 	LAST_EXIT,
 	ENV_VAR,
-	WILDCARD
+	WILDCARD,
+	DUMMY
 };
 
 struct s_token

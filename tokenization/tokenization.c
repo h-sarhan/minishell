@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 14:46:52 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/22 14:52:06 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/22 15:43:02 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -172,6 +172,7 @@ t_list	*tokenize_env_variable(const t_shell *shell, const char *line, size_t *id
 	if (tkn->substr == NULL)
 		return (NULL);
 	tkn->init_substr = ft_strdup(tkn->substr);
+	// printf("4 INIT SUBSTR IS %s\n", tkn->init_substr);
 	if (ft_strncmp(tkn->substr, "$\"\"", ft_strlen(tkn->substr)) == 0 && ft_strlen(tkn->substr) == 3)
 	{
 		tkn->type = NORMAL;
@@ -279,6 +280,7 @@ t_list	*tokenize_line(const t_shell *shell, const char *line, bool *success)
 			else if (ft_strlen(envvar_token->substr) != 0)
 			{
 				char *substr_copy = ft_strdup(envvar_token->substr);
+				// char *init_copy = ft_strdup(envvar_token->init_substr);
 				// printf("%s\n", substr_copy);
 				ft_lstclear(&el, free_token);
 				el = tokenize_line(shell, substr_copy, success);
@@ -286,7 +288,12 @@ t_list	*tokenize_line(const t_shell *shell, const char *line, bool *success)
 				ft_lstadd_back(&tokens, el);
 			}
 			else
-				ft_lstclear(&el, free_token);
+			{
+				envvar_token->type = DUMMY;
+				ft_lstadd_back(&tokens, el);
+				// envvar_token->init_substr
+			}
+				// ft_lstclear(&el, free_token);
 		}
 		else if (line[i] == '>' && line[i + 1] != '>')
 		{

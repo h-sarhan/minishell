@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/21 12:03:03 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/22 14:44:52 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/22 15:13:43 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -139,7 +139,12 @@ t_list	*parse_tokens(t_list *tokens, bool *success)
 	while (tokens != NULL)
 	{
 		token = tokens->content;
-		if (token->type == SUB_EXPR)
+		if (token->type == DUMMY)
+		{
+			tokens = tokens->next;
+			continue;
+		}
+		else if (token->type == SUB_EXPR)
 		{
 			step = ft_calloc(1, sizeof(t_exec_step));
 			// step->tokens = tokens;
