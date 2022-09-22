@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/19 16:04:38 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/19 12:07:47 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/22 14:42:45 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ void	free_token(void *mem)
 
 	token = mem;
 	ft_free(&token->substr);
+	ft_free(&token->init_substr);
 	if (token->sub_tokens != NULL)
 		ft_lstclear(&token->sub_tokens, free_token);
 	ft_free(&token);

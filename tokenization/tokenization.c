@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 14:46:52 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/20 19:05:55 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/22 14:52:06 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -171,6 +171,7 @@ t_list	*tokenize_env_variable(const t_shell *shell, const char *line, size_t *id
 	// printf("substr is |%s|\n", tkn->substr);
 	if (tkn->substr == NULL)
 		return (NULL);
+	tkn->init_substr = ft_strdup(tkn->substr);
 	if (ft_strncmp(tkn->substr, "$\"\"", ft_strlen(tkn->substr)) == 0 && ft_strlen(tkn->substr) == 3)
 	{
 		tkn->type = NORMAL;

@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:44:00 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/01 17:43:34 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/22 14:59:48 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,9 +52,12 @@ struct s_token
 	size_t			start;
 	size_t			end;
 	char			*substr;
+	char			*init_substr;
 	t_list			*sub_tokens;
 	bool			expanded;
 };
+void re_expand_tokens(t_shell *shell, t_list *tokens);
+
 char *eat_dollars(const char *str);
 t_list	*tokenize_line(const t_shell *shell, const char *line, bool *success);
 t_list	*tokenize_env_variable(const t_shell *shell, const char *line, size_t *idx);

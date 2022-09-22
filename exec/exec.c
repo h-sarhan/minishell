@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/01 18:16:54 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/22 14:35:42 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/22 15:06:57 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -435,7 +435,7 @@ void	exec_cmd(t_shell *shell, t_list *exec_steps, int step_number, char *current
 	{
 		step_number++;
 		step = steps->content;
-		// if (step->subexpr_line != NULL)
+		// if (step->subexpr_steps != NULL)
 		// {
 		// 	bool success;
 		// 	t_list *sub_tokens = tokenize_line(shell, step->subexpr_line, &success);
@@ -654,17 +654,12 @@ void	exec_cmd(t_shell *shell, t_list *exec_steps, int step_number, char *current
 			if (steps == NULL)
 				return ;
 		}
-		
 		// ! FIX THIS
-		// bool success;
-		// ft_lstclear(&shell->tokens, free_token);
-		// // if (exec)
-		// ft_lstclear(&exec_steps, free_exec_step);
-		// t_list *tokens = tokenize_line(shell, current_line, &success);
-		// t_list *  new_steps = parse_tokens(tokens, &success);
-		// shell->tokens = tokens;
+		bool success;
+		re_expand_tokens(shell, shell->tokens);
+		t_list *  new_steps = parse_tokens(shell->tokens, &success);
 		// shell->steps = new_steps;
-		exec_cmd(shell, exec_steps, step_number, current_line);
+		exec_cmd(shell, new_steps, step_number, current_line);
 	}
 	else if (step->or_next)
 	{
@@ -696,13 +691,13 @@ void	exec_cmd(t_shell *shell, t_list *exec_steps, int step_number, char *current
 		{
 		}
 		// ! FIX THIS
-		// bool success;
+		bool success;
 		// ft_lstclear(&shell->tokens, free_token);
 		// ft_lstclear(&exec_steps, free_exec_step);
 		// t_list *tokens = tokenize_line(shell, current_line, &success);
-		// t_list *  new_steps = parse_tokens(tokens, &success);
-		// shell->tokens = tokens;
+		re_expand_tokens(shell, shell->tokens);
+		t_list *  new_steps = parse_tokens(shell->tokens, &success);
 		// shell->steps = new_steps;
-		exec_cmd(shell, exec_steps, step_number, current_line);
+		exec_cmd(shell, new_steps, step_number, current_line);
 	}
 }

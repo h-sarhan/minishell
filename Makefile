@@ -6,13 +6,14 @@
 #    By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/04/29 21:51:32 by hsarhan           #+#    #+#              #
-#    Updated: 2022/09/20 19:19:33 by hsarhan          ###   ########.fr        #
+#    Updated: 2022/09/22 14:58:40 by hsarhan          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 TOKENIZATION_SRCS = tokenization.c expansion.c \
 					tokenization2.c wildcard.c split_wildcard.c \
-					print_tokens.c free_funcs.c tokenization3.c join_tokens.c
+					print_tokens.c free_funcs.c tokenization3.c join_tokens.c \
+					re_expand.c
 
 TOKENIZATION_SRCS := $(addprefix tokenization/, $(TOKENIZATION_SRCS))
 COLOR=\033[0;34m
