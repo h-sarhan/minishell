@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/13 17:53:29 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/07/30 16:23:43 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/22 23:19:24 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ void	ft_lstclear(t_list **lst, void (*del)(void *))
 	{
 		next_node = node->next;
 		(*del)(node->content);
-		free(node);
+		ft_free(&node);
 		node = next_node;
 	}
 	*lst = NULL;
