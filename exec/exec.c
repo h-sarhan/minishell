@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/01 18:16:54 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/23 07:13:53 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/23 08:01:44 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -405,17 +405,15 @@ void	exec_cmd(t_shell *shell, t_list *exec_steps, int step_number)
 	bool		exit_flag;
 	int			out_fd;
 	int			w_status;
-
-
+	fd = shell->fd;
 	// printf("Starting exec_cmd with step number equal to  %d\n", step_number);
-	fd = ft_calloc(2, sizeof(int));
 	fd[0] = -1;
 	fd[1] = -1;
 	out_fd = -1;
 	w_status = 0;
 	int i = 0;
 	steps = exec_steps;
-	while (i < step_number  && steps != NULL) 
+	while (i < step_number && steps != NULL)
 	{
 		steps = steps->next;
 		i++;
@@ -423,7 +421,7 @@ void	exec_cmd(t_shell *shell, t_list *exec_steps, int step_number)
 	// printf("Starting command |%s|\n", step->cmd->arg_arr[0]);
 	if (steps == NULL)
 	{
-		ft_free(&fd);
+		// ft_free(&fd);
 		return ;
 	}
 	step = steps->content;
@@ -433,32 +431,19 @@ void	exec_cmd(t_shell *shell, t_list *exec_steps, int step_number)
 	{
 		step_number++;
 		step = steps->content;
-		// if (step->subexpr_line != NULL)
-		// {
-		// 	bool success;
-		// 	t_list *sub_tokens = tokenize_line(shell, step->subexpr_line, &success);
-		// 	if (!success)
-		// 	{
-		// 		// ! DO SOMETHING
-		// 	}
-		// 	t_list	*sub_steps = parse_tokens(sub_tokens, &success);
-		// 	if (!success)
-		// 	{
-		// 		// ! DO SOMETHING
-		// 	}
-		// 	exec_cmd(shell, sub_steps, 0, step->subexpr_line);
-		// 	// ft_lstclear(&sub_steps, free_exec_step);
-		// 	ft_lstclear(&sub_tokens, free_token);
-		// 	// printf("RUNNING %s\n", step->subexpr_line);
-		// 	if (!flag)
-		// 		flag = true;
-		// 	if (step->and_next || step->or_next)
-		// 		break;
-		// 	// printf("Step number is %ld IN IF\n", step_number);
-		// 	// step_number++;
-		// 	steps = steps->next;
-		// 	continue;
-		// }
+		if (step->subexpr_steps != NULL)
+		{
+			exec_cmd(shell, step->subexpr_steps, 0);
+			// printf("RUNNING %s\n", step->subexpr_line);
+			if (!flag)
+				flag = true;
+			if (step->and_next || step->or_next)
+				break;
+			// printf("Step number is %ld IN IF\n", step_number);
+			// step_number++;
+			steps = steps->next;
+			continue;
+		}
 		exit_flag = false;
 		bool valid_redirs = check_valid_redir(step);
 		if (valid_redirs == false)
@@ -478,22 +463,15 @@ void	exec_cmd(t_shell *shell, t_list *exec_steps, int step_number)
 		if (step->cmd->arg_arr[0] != NULL && (access(step->cmd->arg_arr[0], X_OK) != -1 && !ft_strchr(step->cmd->arg_arr[0], '/')))
 		{
 			ft_stderr("minishell: %s: command not found\n", step->cmd->arg_arr[0]);
-		// ft_free(&cmd_cpy);
 			exit_flag = true;
 			step->exit_code = 127;
-			// ft_close(&fd[0];)
-			// ft_close(&fd[1];)
 			shell->last_exit_code = step->exit_code;
 			ft_close(&fd[0]);
-			// ft_close(&fd[1]);
 			fd[0] = open("/dev/null", O_RDONLY);
-			// fd[1] = open("/dev/null", O_WRONLY);
 			if (!flag)
 				flag = true;
 			if (step->and_next || step->or_next)
 				break;
-			// printf("Step number is %ld IN IF\n", step_number);
-			// step_number++;
 			steps = steps->next;
 			continue;
 		}
@@ -505,8 +483,6 @@ void	exec_cmd(t_shell *shell, t_list *exec_steps, int step_number)
 				ft_stderr("minishell: %s: command not found\n", step->cmd->arg_arr[0]);
 				exit_flag = true;
 				step->exit_code = 127;
-				// ft_close(&fd[0];)
-				// ft_close(&fd[1];)
 				shell->last_exit_code = step->exit_code;
 			}
 			else if (access(step->cmd->arg_arr[0], F_OK) != -1 && access(step->cmd->arg_arr[0], X_OK) == -1 && !ft_strchr(step->cmd->arg_arr[0], '/') && valid_redirs)
@@ -514,8 +490,6 @@ void	exec_cmd(t_shell *shell, t_list *exec_steps, int step_number)
 				ft_stderr("minishell: %s: command not found\n", step->cmd->arg_arr[0]);
 				exit_flag = true;
 				step->exit_code = 127;
-				// ft_close(&fd[0];)
-				// ft_close(&fd[1];)
 				shell->last_exit_code = step->exit_code;
 			}
 			else if (is_dir(step->cmd->arg_arr[0]) && valid_redirs)
@@ -540,15 +514,11 @@ void	exec_cmd(t_shell *shell, t_list *exec_steps, int step_number)
 				shell->last_exit_code = step->exit_code;
 			}
 			ft_close(&fd[0]);
-			// ft_close(&fd[1]);
 			fd[0] = open("/dev/null", O_RDONLY);
-			// fd[1] = open("/dev/null", O_WRONLY);
 			if (!flag)
 				flag = true;
 			if (step->and_next || step->or_next)
 				break;
-			// printf("Step number is %ld IN IF\n", step_number);
-			// step_number++;
 			steps = steps->next;
 			continue;
 		}
@@ -564,16 +534,8 @@ void	exec_cmd(t_shell *shell, t_list *exec_steps, int step_number)
 		steps = steps->next;
 	}
 	ft_close(&fd[0]);
-	// ft_close(&fd[1]);
 	ft_close(&out_fd);
-	ft_free(&fd);
-	// // i = 0;
-	// while (i < step_number  && steps != NULL) 
-	// {
-	// 	steps = steps->next;
-	// 	i++;
-	// }
-	// int wait_idx = step_number;
+	// ft_free(&fd);
 	
 	// ! Do not wait for subexpressions
 	if (step->cmd)
@@ -585,7 +547,6 @@ void	exec_cmd(t_shell *shell, t_list *exec_steps, int step_number)
 			steps = steps->next;
 			wait_idx++;
 		}
-		// printf("i is %d\nstep_number is %d\n", i , step_number);
 		while (steps && i < step_number)
 		{
 			step = steps->content;
@@ -624,83 +585,83 @@ void	exec_cmd(t_shell *shell, t_list *exec_steps, int step_number)
 	}
 	if (step == NULL)
 		return ;
-	// if ((step->and_next && shell->last_exit_code == 0))
-	// {
-	// 	if (shell->last_exit_code == 0)
-	// 	{	
+	if ((step->and_next && shell->last_exit_code == 0))
+	{
+		if (shell->last_exit_code == 0)
+		{	
 			
-	// 	}
-	// 	else
-	// 	{
-	// 		while (steps != NULL && step->and_next)
-	// 		// if (steps != NULL)
-	// 		{
-	// 			step = steps->content;
-	// 			steps = steps->next;
-	// 			step_number++;
-	// 		}
-	// 		if (step->or_next)
-	// 		{
-	// 			step_number--;
-	// 		}
-	// 		while (steps && (!step->and_next && !step->or_next))
-	// 		{
-	// 			step = steps->content;
-	// 			steps = steps->next;
-	// 			step_number++;
-	// 		}
-	// 		if (steps == NULL)
-	// 			return ;
-	// 	}
+		}
+		else
+		{
+			while (steps != NULL && step->and_next)
+			// if (steps != NULL)
+			{
+				step = steps->content;
+				steps = steps->next;
+				step_number++;
+			}
+			if (step->or_next)
+			{
+				step_number--;
+			}
+			while (steps && (!step->and_next && !step->or_next))
+			{
+				step = steps->content;
+				steps = steps->next;
+				step_number++;
+			}
+			if (steps == NULL)
+				return ;
+		}
 		
-	// 	// ! FIX THIS
-	// 	bool success;
-	// 	ft_lstclear(&shell->tokens, free_token);
-	// 	// if (exec)
-	// 	ft_lstclear(&exec_steps, free_exec_step);
-	// 	t_list *tokens = tokenize_line(shell, current_line, &success);
-	// 	t_list *  new_steps = parse_tokens(tokens, &success);
-	// 	shell->tokens = tokens;
-	// 	shell->steps = new_steps;
-	// 	exec_cmd(shell, new_steps, step_number, current_line);
-	// }
-	// else if (step->or_next)
-	// {
-	// 	if (shell->last_exit_code == 0)
-	// 	{
-	// 		while (steps != NULL && step->or_next)
-	// 		// if (steps != NULL)
-	// 		{
-	// 			// print_exec_step(steps);
-	// 			// printf("%s %s\n", step->cmd->arg_arr[0], step->cmd->arg_arr[1]);
-	// 			step = steps->content;
-	// 			steps = steps->next;
-	// 			step_number++;
-	// 		}
-	// 		if (step->and_next)
-	// 		{
-	// 			step_number--;
-	// 		}
-	// 		while (steps && (!step->and_next && !step->or_next))
-	// 		{
-	// 			step = steps->content;
-	// 			steps = steps->next;
-	// 			step_number++;
-	// 		}
-	// 		if (steps == NULL)
-	// 			return ;
-	// 	}
-	// 	else
-	// 	{
-	// 	}
-	// 	// ! FIX THIS
-	// 	bool success;
-	// 	ft_lstclear(&shell->tokens, free_token);
-	// 	ft_lstclear(&exec_steps, free_exec_step);
-	// 	t_list *tokens = tokenize_line(shell, current_line, &success);
-	// 	t_list *  new_steps = parse_tokens(tokens, &success);
-	// 	shell->tokens = tokens;
-	// 	shell->steps = new_steps;
-	// 	exec_cmd(shell, new_steps, step_number, current_line);
-	// }
+		// ! FIX THIS
+		// bool success;
+		// ft_lstclear(&shell->tokens, free_token);
+		// if (exec)
+		// ft_lstclear(&exec_steps, free_exec_step);
+		// t_list *tokens = tokenize_line(shell, current_line, &success);
+		// t_list *  new_steps = parse_tokens(tokens, &success);
+		// shell->tokens = tokens;
+		// shell->steps = new_steps;
+		exec_cmd(shell, exec_steps, step_number);
+	}
+	else if (step->or_next)
+	{
+		if (shell->last_exit_code == 0)
+		{
+			while (steps != NULL && step->or_next)
+			// if (steps != NULL)
+			{
+				// print_exec_step(steps);
+				// printf("%s %s\n", step->cmd->arg_arr[0], step->cmd->arg_arr[1]);
+				step = steps->content;
+				steps = steps->next;
+				step_number++;
+			}
+			if (step->and_next)
+			{
+				step_number--;
+			}
+			while (steps && (!step->and_next && !step->or_next))
+			{
+				step = steps->content;
+				steps = steps->next;
+				step_number++;
+			}
+			if (steps == NULL)
+				return ;
+		}
+		else
+		{
+		}
+		// ! FIX THIS
+		// bool success;
+		// ft_lstclear(&shell->tokens, free_token);
+		// ft_lstclear(&exec_steps, free_exec_step);
+		// t_list *tokens = tokenize_line(shell, current_line, &success);
+		// t_list *  new_steps = parse_tokens(tokens, &success);
+		// shell->tokens = tokens;
+		// shell->steps = new_steps;
+		exec_cmd(shell, exec_steps, step_number);
+	}
 }

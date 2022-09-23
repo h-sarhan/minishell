@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/21 09:39:31 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/21 10:39:03 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/23 07:54:48 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,6 +38,7 @@ struct s_shell
 	char	**declared_env;
 	int		last_exit_code;
 	char	*line;
+	int		*fd;
 };
 
 struct signal

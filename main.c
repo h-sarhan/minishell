@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:43:26 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/23 07:14:38 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/23 07:56:00 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -167,6 +167,7 @@ int	main(int argc, char **argv, char **env)
 	unset_var(&shell, "OLDPWD");
 	update_declared_env(&shell, "OLDPWD");
 	char *shell_lvl_env = get_env(&shell, "SHLVL");
+	shell.fd = ft_calloc(2, sizeof(int));
 	if (shell_lvl_env != NULL)
 	{
 		char	*shell_lvl_str = strjoin_free("SHLVL=", ft_itoa(ft_atoi(shell_lvl_env) + 1), 2);
@@ -193,6 +194,7 @@ int	main(int argc, char **argv, char **env)
 			// write(2, "\n", 1);
 			free_split_array(shell.env);
 			free_split_array(shell.declared_env);
+			ft_free(&shell.fd);
 			ft_close(&g_dupstdin);
 			return (EXIT_SUCCESS);
 		}
@@ -249,20 +251,13 @@ int	main(int argc, char **argv, char **env)
 			shell.line = line;
 			exec_cmd(&shell, shell.steps, 0);
 		}
-		// if (g_dupstdin == SIGQUIT_FLAG)
-		// {
-		// 	shell.last_exit_code = 131;
-		// }
-		// if (g_dupstdin == SIGINT_FLAG)
-		// {
-		// 	shell.last_exit_code = 130;
-		// }
 		ft_lstclear(&shell.tokens, free_token);
 		ft_lstclear(&shell.steps, free_exec_step);
 		rl_on_new_line();
 		ft_free(&line);
 		ft_close(&g_dupstdin);
 	}
+	ft_free(&shell.fd);
 	ft_close(&g_dupstdin);
 	free_split_array(shell.env);
 	free_split_array(shell.declared_env);
