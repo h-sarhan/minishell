@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:43:26 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/21 17:47:21 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/23 07:14:38 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,29 +21,29 @@ void	print_exec_step(t_list *exec_steps)
 	char	**args;
 	t_list	*redirs = NULL;
 	
-	// if (step->cmd != NULL)
-	// {
+	if (step->cmd != NULL)
+	{
 		args = step->cmd->arg_arr;
 		redirs = step->cmd->redirs;
-	// }
-	// if (step->subexpr_steps != NULL)
-	// {
-	// 	printf("===================SUB EXPR START===================\n\n");
-	// 	exec_steps = step->subexpr_steps;
-	// 	while (exec_steps != NULL)
-	// 	{
-	// 		print_exec_step(exec_steps);
-	// 		exec_steps = exec_steps->next;
-	// 	}
-	// 	if (step->pipe_next == true)
-	// 		printf("Pipe subexpr  into next command\n");
-	// 	if (step->and_next == true)
-	// 		printf("AND  subexpr into next command\n");
-	// 	if (step->or_next == true)
-	// 		printf("OR   subexpr into next command\n");
-	// 	printf("===================SUB EXPR END===================\n\n");
-	// 	return ;
-	// }
+	}
+	if (step->subexpr_steps != NULL)
+	{
+		printf("===================SUB EXPR START===================\n\n");
+		exec_steps = step->subexpr_steps;
+		while (exec_steps != NULL)
+		{
+			print_exec_step(exec_steps);
+			exec_steps = exec_steps->next;
+		}
+		if (step->pipe_next == true)
+			printf("Pipe subexpr  into next command\n");
+		if (step->and_next == true)
+			printf("AND  subexpr into next command\n");
+		if (step->or_next == true)
+			printf("OR   subexpr into next command\n");
+		printf("===================SUB EXPR END===================\n\n");
+		return ;
+	}
 	printf("===================EXPR START===================\n");
 	while (args[i] != NULL)
 	{
@@ -247,7 +247,7 @@ int	main(int argc, char **argv, char **env)
 		if (exec_steps_start != NULL)
 		{
 			shell.line = line;
-			exec_cmd(&shell, shell.steps, 0, shell.line);
+			exec_cmd(&shell, shell.steps, 0);
 		}
 		// if (g_dupstdin == SIGQUIT_FLAG)
 		// {
