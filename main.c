@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:43:26 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/23 13:29:55 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/23 17:29:05 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -221,7 +221,8 @@ int	main(int argc, char **argv, char **env)
 			shell.last_exit_code = 258;
 			write_to_stderr("Parse error\n");
 			ft_lstclear(&shell.tokens, free_token);
-			ft_lstclear(&exec_steps_start, free_exec_step);
+			// ft_lstclear(&exec_steps_start, free_exec_step);
+			free_steps(&shell.steps_to_free);
 			rl_on_new_line();
 			ft_close(&g_dupstdin);
 			free(line);
@@ -241,7 +242,7 @@ int	main(int argc, char **argv, char **env)
 		{
 			shell.last_exit_code = 1;
 			ft_lstclear(&shell.tokens, free_token);
-			ft_lstclear(&exec_steps_start, free_exec_step);
+			free_steps(&shell.steps_to_free);
 			rl_on_new_line();
 			ft_free(&line);
 			ft_close(&g_dupstdin);

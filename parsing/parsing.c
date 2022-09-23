@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parsing.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/21 12:03:03 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/23 17:12:48 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/23 17:27:41 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,9 @@ bool	check_for_errors(t_list *tokens)
 {
 	t_token	*token;
 	t_token	*next_token;
+	// t_list	*start;
 
+	// start = tokens;
 	if (tokens == NULL)
 		return (true);
 	token = tokens->content;
@@ -55,6 +57,12 @@ bool	check_for_errors(t_list *tokens)
 			return (false);
 		}
 		if (is_redirection(token) && next_token->expanded == true)
+			return (false);
+		if (is_redirection(token) && next_token->type == SUB_EXPR)
+			return (false);
+		if (token->type == SUB_EXPR && is_redirection(next_token))
+			return (false);
+		if (token->type == PIPE && next_token->type == SUB_EXPR)
 			return (false);
 		tokens = tokens->next;
 	}
