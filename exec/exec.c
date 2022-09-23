@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/01 18:16:54 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/21 18:04:09 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/23 13:31:36 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -168,21 +168,21 @@ int	exec_outredir(t_exec_step *step)
 	return (out_fd);
 }
 
-  t_redir *last_inredir(t_list *in_redir)
-  {
-	t_redir *last;
-	t_redir *current_redir;
+t_redir *last_inredir(t_list *in_redir)
+{
+t_redir *last;
+t_redir *current_redir;
 
-	last = NULL;
-	while (in_redir)
-	{
-		current_redir = in_redir->content;
-		if (current_redir->type == INPUT_REDIR || current_redir->type == HEREDOC)
-			last = current_redir;
-		in_redir = in_redir->next;
-	}
-	return(last);
-  }
+last = NULL;
+while (in_redir)
+{
+	current_redir = in_redir->content;
+	if (current_redir->type == INPUT_REDIR || current_redir->type == HEREDOC)
+		last = current_redir;
+	in_redir = in_redir->next;
+}
+return(last);
+}
 
 int	*first_cmd(t_exec_step *step, int *fd, t_shell *shell, int out_fd)
 {
@@ -275,7 +275,7 @@ int	*first_cmd(t_exec_step *step, int *fd, t_shell *shell, int out_fd)
 			ft_close(&g_dupstdin);
 			int	exit_code = step->exit_code;
 			ft_lstclear(&shell->tokens, free_token);
-			ft_lstclear(&shell->steps, free_exec_step);
+			free_steps(&shell->steps_to_free);
 			ft_close(&out_fd);
 			ft_close(&in_fd);
 			free_split_array(shell->env);
@@ -374,7 +374,8 @@ int	*mid_cmd(t_exec_step *step, int *fd, t_shell *shell, int out_fd)
 			ft_close(&fdtmp);
 			int	exit_code = step->exit_code;
 			ft_lstclear(&shell->tokens, free_token);
-			ft_lstclear(&shell->steps, free_exec_step);
+			// ft_lstclear(&shell->steps, free_exec_step);
+			free_steps(&shell->steps_to_free);
 			free_split_array(shell->env);
 			free_split_array(shell->declared_env);
 			ft_close(&out_fd);
@@ -400,15 +401,14 @@ void	exec_cmd(t_shell *shell, t_list *exec_steps, int step_number, char *current
 {
 	t_exec_step *step;
 	t_list		*steps;
-	int			*fd;
 	bool		flag;
 	bool		exit_flag;
 	int			out_fd;
 	int			w_status;
-
-
+	int			*fd;
 	// printf("Starting exec_cmd with step number equal to  %d\n", step_number);
-	fd = ft_calloc(2, sizeof(int));
+
+	fd = shell->fd;
 	fd[0] = -1;
 	fd[1] = -1;
 	out_fd = -1;
@@ -446,9 +446,10 @@ void	exec_cmd(t_shell *shell, t_list *exec_steps, int step_number, char *current
 			{
 				// ! DO SOMETHING
 			}
+			ft_lstclear(&sub_tokens, free_token);
+			ft_lstadd_back(&shell->steps_to_free, ft_lstnew(sub_steps));
 			exec_cmd(shell, sub_steps, 0, step->subexpr_line);
 			// ft_lstclear(&sub_steps, free_exec_step);
-			ft_lstclear(&sub_tokens, free_token);
 			// printf("RUNNING %s\n", step->subexpr_line);
 			if (!flag)
 				flag = true;
@@ -563,10 +564,11 @@ void	exec_cmd(t_shell *shell, t_list *exec_steps, int step_number, char *current
 			break;
 		steps = steps->next;
 	}
+
 	ft_close(&fd[0]);
 	// ft_close(&fd[1]);
 	ft_close(&out_fd);
-	ft_free(&fd);
+	// ft_free(&fd);
 	// // i = 0;
 	// while (i < step_number  && steps != NULL) 
 	// {
@@ -624,7 +626,7 @@ void	exec_cmd(t_shell *shell, t_list *exec_steps, int step_number, char *current
 	}
 	if (step == NULL)
 		return ;
-	if ((step->and_next && shell->last_exit_code == 0))
+	if (step->and_next)
 	{
 		if (shell->last_exit_code == 0)
 		{	
@@ -653,13 +655,13 @@ void	exec_cmd(t_shell *shell, t_list *exec_steps, int step_number, char *current
 				return ;
 		}
 		
-		// ! FIX THIS
 		bool success;
 		ft_lstclear(&shell->tokens, free_token);
 		// if (exec)
-		ft_lstclear(&exec_steps, free_exec_step);
+		// ft_lstclear(&exec_steps, free_exec_step);
 		t_list *tokens = tokenize_line(shell, current_line, &success);
 		t_list *  new_steps = parse_tokens(tokens, &success);
+		ft_lstadd_back(&shell->steps_to_free, ft_lstnew(new_steps));
 		shell->tokens = tokens;
 		shell->steps = new_steps;
 		exec_cmd(shell, new_steps, step_number, current_line);
@@ -693,12 +695,12 @@ void	exec_cmd(t_shell *shell, t_list *exec_steps, int step_number, char *current
 		else
 		{
 		}
-		// ! FIX THIS
 		bool success;
 		ft_lstclear(&shell->tokens, free_token);
-		ft_lstclear(&exec_steps, free_exec_step);
+		// ft_lstclear(&exec_steps, free_exec_step);
 		t_list *tokens = tokenize_line(shell, current_line, &success);
 		t_list *  new_steps = parse_tokens(tokens, &success);
+		ft_lstadd_back(&shell->steps_to_free, ft_lstnew(new_steps));
 		shell->tokens = tokens;
 		shell->steps = new_steps;
 		exec_cmd(shell, new_steps, step_number, current_line);

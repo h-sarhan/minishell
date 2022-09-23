@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 14:49:04 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/08/30 16:38:41 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/23 16:07:36 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,4 +90,21 @@ char	**copy_str_arr(char **arr)
 	}
 	arr_cpy[i] = NULL;
 	return (arr_cpy);
+}
+
+void	free_steps(t_list **step_lists)
+{
+	t_list	*steps;
+	t_list	*temp;
+
+	while ((*step_lists) != NULL)
+	{
+		steps = (*step_lists)->content;
+		temp = (*step_lists)->next;
+		ft_lstclear(&steps, free_exec_step);
+		ft_free(step_lists);
+		(*step_lists) = temp;
+	}
+	// ft_lstclear(step_lists, );
+	*step_lists = NULL;
 }
