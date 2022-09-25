@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/19 16:25:19 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/25 19:44:51 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/25 22:37:10 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,8 @@ static void	*parse_error(const char *msg)
 	return (NULL);
 }
 
-t_list	*tokenize_single_quote(const t_shell *shell, const char *line, size_t *idx)
+t_list	*tokenize_single_quote(const t_shell *shell, const char *line,
+	size_t *idx)
 {
 	size_t	i;
 	t_token	*tkn;
@@ -85,7 +86,8 @@ t_list	*tokenize_single_quote(const t_shell *shell, const char *line, size_t *id
 	return (el);
 }
 
-t_list	*tokenize_double_quote(const t_shell *shell, const char *line, size_t *idx)
+t_list	*tokenize_double_quote(const t_shell *shell, const char *line,
+	size_t *idx)
 {
 	size_t	i;
 	t_token	*tkn;

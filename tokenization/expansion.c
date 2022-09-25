@@ -6,14 +6,14 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 21:30:28 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/25 19:52:05 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/25 22:36:32 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-// TODO: Protect substr and strjoin
-static char	*create_env_var_str(const t_shell *shell, char *str, const size_t start, const size_t end)
+static char	*create_env_var_str(const t_shell *shell, char *str,
+	const size_t start, const size_t end)
 {
 	char	*before;
 	char	*env_var;

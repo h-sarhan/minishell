@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 22:19:29 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/25 19:45:13 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/25 22:38:11 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,8 @@ char	*eat_quotes(const char *str)
 	return (trimmed_str);
 }
 
-t_list	*tokenize_normal(const t_shell *shell, const char *line, size_t *idx, bool expand_var)
+t_list	*tokenize_normal(const t_shell *shell, const char *line, size_t *idx,
+	bool expand_var)
 {
 	size_t	i;
 	t_token	*tkn;
@@ -130,8 +131,8 @@ t_list	*tokenize_normal(const t_shell *shell, const char *line, size_t *idx, boo
 	return (el);
 }
 
-static t_list	*tokenize_subexpr_helper(const t_shell *shell, t_token *tkn, const size_t i,
-					const char *line, size_t *idx)
+static t_list	*tokenize_subexpr_helper(const t_shell *shell, t_token *tkn,
+	const size_t i, const char *line, size_t *idx)
 {
 	bool	success;
 	t_list	*el;
