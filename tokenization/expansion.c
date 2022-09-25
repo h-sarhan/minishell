@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 21:30:28 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/25 22:36:32 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/25 23:14:56 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,27 @@ static char	*create_env_var_str(const t_shell *shell, char *str,
 	return (str);
 }
 
+static void	set_in_quotes(const char *str, const size_t i, bool *in_single,
+	bool *in_double)
+{
+	if (str[i] == '\'' && *in_double == false)
+		*in_single = !(*in_single);
+	if (str[i] == '\"' && *in_single == false)
+		*in_double = !(*in_double);
+}
+
+static bool	skip_to_end(const char *str, size_t *i, size_t *start, size_t *end)
+{
+	*i += 1;
+	*start = *i;
+	while (str[*i] != '\0' && (ft_isalnum(str[*i]) || str[*i] == '_'))
+		*i += 1;
+	*end = *i - 1;
+	if (start < end)
+		return (false);
+	return (true);
+}
+
 char	*expand_double_quote(const t_shell *shell, char *str)
 {
 	size_t	i;
@@ -47,31 +68,16 @@ char	*expand_double_quote(const t_shell *shell, char *str)
 	in_d_quotes = false;
 	while (str[i] != '\0')
 	{
-		if (str[i] == '\'' && in_d_quotes == false)
-			in_s_quotes = !in_s_quotes;
-		if (str[i] == '\"' && in_s_quotes == false)
-			in_d_quotes = !in_d_quotes;
+		set_in_quotes(str, i, &in_s_quotes, &in_d_quotes);
 		if (str[i] == '$' && str[i + 1] != '?' && in_s_quotes == false)
 		{
-			i++;
-			start = i;
-			if (ft_isdigit(str[i]))
-			{
-				end = i;
-				break ;
-			}
-			while (str[i] != '\0' && (ft_isalnum(str[i]) || str[i] == '_'))
-				i++;
-			end = i - 1;
-			if (start < end)
+			if (ft_isdigit(str[i + 1]))
+				return (create_env_var_str(shell, str, i + 1, i + 1));
+			if (skip_to_end(str, &i, &start, &end) == false)
 				break ;
 		}
 		else if (str[i] == '$' && str[i + 1] == '?' && in_s_quotes == false)
-		{
-			start = i + 1;
-			end = i + 1;
-			break ;
-		}
+			return (create_env_var_str(shell, str, i + 1, i + 1));
 		else
 			i++;
 	}

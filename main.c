@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:43:26 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/25 19:42:17 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/25 23:17:54 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,7 +126,7 @@ int	main(int argc, char **argv, char **env)
 		// }
 		signal(SIGINT, sigint_command);
 		signal(SIGQUIT, sigquit_command);
-		if (handle_heredoc_ctrlc(&shell, line) == false)
+		if (handle_heredoc_ctrl_c(&shell, line) == false)
 			continue ;
 		if (shell.steps != NULL)
 			exec_cmd(&shell, shell.steps, 0, shell.line);

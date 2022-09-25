@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/25 19:39:40 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/25 19:40:06 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/25 23:17:54 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,7 @@ void	handle_eof(const char *line, t_shell *shell)
 {
 	if (line == NULL)
 	{
+		printf("exit\n");
 		free_split_array(shell->env);
 		free_split_array(shell->declared_env);
 		ft_close(&g_dupstdin);
@@ -34,7 +35,7 @@ void	handle_ctrl_c(t_shell *shell)
 	}
 }
 
-bool	handle_heredoc_ctrlc(t_shell *shell, char *line)
+bool	handle_heredoc_ctrl_c(t_shell *shell, char *line)
 {
 	if (g_dupstdin == -1)
 	{
