@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:43:26 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/23 17:29:05 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/25 12:21:32 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,13 +80,14 @@ void	print_exec_step(t_list *exec_steps)
 // }
 
 
-int 	g_dupstdin; // ! RENAME THIS
+int 	g_dupstdin;
 
 // bool	g_interactive;
 // int		stdin_dup;
 
 void	sigint_interactive(int sig)
 {
+	// Need to make this set the exit code to 1 somehow
 	int ret = waitpid(-1, NULL, WNOHANG);
 	if (sig == SIGINT && ret == -1)
 	{
@@ -147,10 +148,43 @@ void hd_sig_handler(int sig)
 	}
 }
 
-// void child_handler(int sig)
-// {
-// 	if (sig == )
-// }
+bool	check_subexprs_for_parse_errors(t_shell *shell, t_list *shell_steps)
+{
+	t_exec_step *step;
+	t_list		*tokens;
+	t_list		*steps;
+	bool		success;
+
+	while (shell_steps != NULL)
+	{
+		step = shell_steps->content;
+		if (step->subexpr_line != NULL)
+		{
+			tokens = tokenize_line(shell, step->subexpr_line, &success);
+			if (success == false)
+			{
+				ft_lstclear(&tokens, free_token);
+				return (false);
+			}
+			steps = parse_tokens(tokens, &success);
+			ft_lstclear(&tokens, free_token);
+			if (success == false)
+			{
+				ft_lstclear(&steps, free_exec_step);
+				return (false);
+			}
+			if (check_subexprs_for_parse_errors(shell, steps) == false)
+			{
+				ft_lstclear(&steps, free_exec_step);
+				return (false);
+			}
+			ft_lstclear(&steps, free_exec_step);
+		}
+		shell_steps = shell_steps->next;
+	}
+	return (true);
+}
+
 // ? I dont know what rl_on_new_line() does
 int	main(int argc, char **argv, char **env)
 {
@@ -193,11 +227,12 @@ int	main(int argc, char **argv, char **env)
 		if (line == NULL)
 		{
 			// write(2, "\n", 1);
+			printf("\nexit\n");
 			free_split_array(shell.env);
 			free_split_array(shell.declared_env);
 			ft_close(&g_dupstdin);
 			ft_free(&shell.fd);
-			return (EXIT_SUCCESS);
+			return (shell.last_exit_code);
 		}
 		if (line[0] != '\0')
 			add_history(line);
@@ -217,6 +252,19 @@ int	main(int argc, char **argv, char **env)
 		ft_lstadd_back(&shell.steps_to_free, ft_lstnew(shell.steps));
 		t_list *exec_steps_start = shell.steps;
 		if (success == false)
+		{
+			shell.last_exit_code = 258;
+			write_to_stderr("Parse error\n");
+			ft_lstclear(&shell.tokens, free_token);
+			// ft_lstclear(&exec_steps_start, free_exec_step);
+			free_steps(&shell.steps_to_free);
+			rl_on_new_line();
+			ft_close(&g_dupstdin);
+			free(line);
+			continue;
+		}
+		// shell.steps = exec_steps_start;
+		if (check_subexprs_for_parse_errors(&shell, shell.steps) == false)
 		{
 			shell.last_exit_code = 258;
 			write_to_stderr("Parse error\n");
