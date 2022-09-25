@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:43:26 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/25 14:38:27 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/25 14:46:22 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -96,6 +96,7 @@ void	sigint_interactive(int sig)
 		rl_on_new_line();
 		rl_replace_line("", 0);
 		rl_redisplay();
+		ft_close(&g_dupstdin);
 	}
 }
 
@@ -218,6 +219,11 @@ int	main(int argc, char **argv, char **env)
 		// signal(SIGQUIT, sigquit_interactive);
 		signal(SIGQUIT, SIG_IGN);
 		line = readline("\001\033[1;34m\002GIGASHELL$ \001\033[0m\002");
+		if (g_dupstdin == -1)
+		{
+			g_dupstdin = dup(0);
+			shell.last_exit_code = 1;
+		}
 		// line = readline("GIGASHELL$ ");
 		shell.line = line;
 		signal(SIGQUIT, sigquit_command);
@@ -243,7 +249,7 @@ int	main(int argc, char **argv, char **env)
 			continue;
 		}
 		shell.tokens = tokenize_line(&shell, line, &success);
-		print_tokens(shell.tokens);
+		// print_tokens(shell.tokens);
 		if (success == false)
 		{
 			shell.last_exit_code = 258;

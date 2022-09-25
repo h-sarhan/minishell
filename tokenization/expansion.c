@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 21:30:28 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/20 19:07:25 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/25 14:43:17 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,9 +107,12 @@ bool	contains_env_var(const char *str)
 				return (true);
 			else if ((str[i] == '\"' || str[i] == '\''))
 			{
-				if (str[i + 1] == '\0' || (!ft_isalnum(str[i + 1]) && str[i + 1] != '_'))
+				if (str[i + 1] == '\0')
 					return (false);
-				return (true);
+				else if (!ft_isalnum(str[i + 1]) && str[i + 1] != '_')
+					i++;
+				else
+					return (true);
 			}
 			else if (!ft_isalnum(str[i]) && str[i] != '_')
 				i++;
