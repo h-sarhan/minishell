@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 14:46:52 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/25 12:45:20 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/25 14:29:00 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,7 +68,7 @@ static char	*get_env_string(const char *line, size_t *idx)
 				quote = '\0';
 			}
 		}
-		if ((line[i] == ' ' || ft_strchr("<>|(&", line[i]) != NULL) && in_quote == false)
+		if ((line[i] == ' ' || ft_strchr("<>|(&)", line[i]) != NULL) && in_quote == false)
 			break ;
 		i++;
 	}
@@ -199,7 +199,6 @@ t_list	*tokenize_line(const t_shell *shell, const char *line, bool *success)
 	
 	i = 0;
 	*success = true;
-	// ! Add in quotes check
 	while (line[i] != '\0')
 	{
 		if (line[i] == '\'' || line[i] == '\"')
@@ -405,8 +404,10 @@ t_list	*tokenize_line(const t_shell *shell, const char *line, bool *success)
 				return (NULL);
 			}
 			t_token	*tok = el->content;
-			if (ft_strchr(tok->substr, '*') != NULL && tok->expanded == false)
+			if (ft_strchr(tok->substr, '*') != NULL)
 			{
+				// printf("Goes here\n");
+				// tok->substr = eat_quotes(tok->substr);
 				tok->substr = expand_wildcard(tok->substr);
 				tok->expanded = true;
 				if (ft_strchr(tok->substr, '*') == NULL)

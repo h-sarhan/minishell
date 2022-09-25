@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 22:19:29 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/03 00:51:06 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/25 14:30:44 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,8 +91,13 @@ t_list	*tokenize_normal(const t_shell *shell, const char *line, size_t *idx)
 		return (NULL);
 	tkn->start = i;
 	tkn->type = NORMAL;
-	while (line[i] != '\0' && ft_strchr(" \'\"<>|(&", line[i]) == NULL)
+	while (line[i] != '\0' && ft_strchr(" \'\"<>|(&)", line[i]) == NULL)
 		i++;
+	if (line[i] == ')')
+	{
+		free_token(tkn);
+		return (parse_error("Parse Error: Invalid input\n"));
+	}
 	while ((line[i] == '\'' || line[i] == '\"') && line[i] != '\0')
 	{
 		quote = line[i];
@@ -105,7 +110,7 @@ t_list	*tokenize_normal(const t_shell *shell, const char *line, size_t *idx)
 			return (parse_error("Parse Error: Invalid input\n"));
 		}
 		i++;
-		while (line[i] != '\0' && ft_strchr(" \'\"$<>|(&", line[i]) == NULL)
+		while (line[i] != '\0' && ft_strchr(" \'\"$<>|(&)", line[i]) == NULL)
 			i++;
 		tkn->expanded = true;
 	}
@@ -113,11 +118,11 @@ t_list	*tokenize_normal(const t_shell *shell, const char *line, size_t *idx)
 	tkn->substr = ft_substr(line, tkn->start, tkn->end - tkn->start + 1);
 	while (contains_env_var(tkn->substr))
 		tkn->substr = expand_double_quote(shell, tkn->substr);
-	if (quote != '\0')
-	{
+	// if (quote != '\0')
+	// {
 		tkn->substr = eat_dollars(tkn->substr);
 		tkn->substr = eat_quotes(tkn->substr);
-	}
+	// }
 	if (tkn->substr == NULL)
 		return (NULL);
 	el = ft_lstnew(tkn);

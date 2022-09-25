@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:43:26 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/25 12:46:20 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/25 14:38:27 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -227,7 +227,7 @@ int	main(int argc, char **argv, char **env)
 		if (line == NULL)
 		{
 			// write(2, "\n", 1);
-			printf("\nexit\n");
+			// printf("exit\n");
 			free_split_array(shell.env);
 			free_split_array(shell.declared_env);
 			ft_close(&g_dupstdin);
