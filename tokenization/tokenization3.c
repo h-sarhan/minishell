@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/19 16:25:19 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/25 14:28:31 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/25 19:44:51 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ t_list	*tokenize_single_quote(const t_shell *shell, const char *line, size_t *id
 			i++;
 		}
 		else if (ft_strchr("<>|(&)", line[i]) != NULL)
-			break;
+			break ;
 		else
 			i++;
 	}
@@ -122,7 +122,7 @@ t_list	*tokenize_double_quote(const t_shell *shell, const char *line, size_t *id
 			i++;
 		}
 		else if (ft_strchr("<>|(&)", line[i]) != NULL)
-			break;
+			break ;
 		else
 			i++;
 	}

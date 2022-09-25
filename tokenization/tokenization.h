@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:44:00 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/25 15:36:54 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/25 19:54:54 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,9 +55,11 @@ struct s_token
 	t_list			*sub_tokens;
 	bool			expanded;
 };
-char *eat_dollars(const char *str);
+
+char	*eat_dollars(const char *str);
 t_list	*tokenize_line(const t_shell *shell, const char *line, bool *success);
-t_list	*tokenize_env_variable(const t_shell *shell, const char *line, size_t *idx);
+t_list	*tokenize_env_variable(const t_shell *shell, const char *line,
+			size_t *idx);
 void	write_to_stderr(const char *msg);
 void	print_tokens_detailed(t_list *tokens);
 char	*strjoin_free(char *s1, char *s2, int f);
@@ -73,11 +75,13 @@ char	*expand_wildcard(char *token);
 char	**split_wildcard(const char *wildcard_token);
 void	free_token(void *mem);
 void	free_split_array(char **split);
-t_list	*tokenize_single_quote(const t_shell *shell, const char *line, size_t *idx);
-t_list	*tokenize_double_quote(const t_shell *shell, const char *line, size_t *idx);
+t_list	*tokenize_single_quote(const t_shell *shell, const char *line,
+			size_t *idx);
+t_list	*tokenize_double_quote(const t_shell *shell, const char *line,
+			size_t *idx);
 void	print_tokens_detailed(t_list *tokens);
 void	print_tokens(t_list *tokens);
-char	*join_tokens(t_list *tokens);
 char	*eat_quotes(const char *str);
-t_list	*tokenize_normal(const t_shell *shell, const char *line, size_t *idx, bool expand_var);
+t_list	*tokenize_normal(const t_shell *shell, const char *line, size_t *idx,
+			bool expand_var);
 #endif

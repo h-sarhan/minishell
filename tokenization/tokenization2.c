@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 22:19:29 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/25 15:37:27 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/25 19:45:13 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,7 +83,7 @@ t_list	*tokenize_normal(const t_shell *shell, const char *line, size_t *idx, boo
 	t_token	*tkn;
 	t_list	*el;
 	char	quote;
-	
+
 	quote = '\0';
 	i = *idx;
 	tkn = ft_calloc(1, sizeof(t_token));
@@ -121,11 +121,8 @@ t_list	*tokenize_normal(const t_shell *shell, const char *line, size_t *idx, boo
 		while (contains_env_var(tkn->substr))
 			tkn->substr = expand_double_quote(shell, tkn->substr);
 	}
-	// if (quote != '\0')
-	// {
-		tkn->substr = eat_dollars(tkn->substr);
-		tkn->substr = eat_quotes(tkn->substr);
-	// }
+	tkn->substr = eat_dollars(tkn->substr);
+	tkn->substr = eat_quotes(tkn->substr);
 	if (tkn->substr == NULL)
 		return (NULL);
 	el = ft_lstnew(tkn);

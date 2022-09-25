@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/21 12:03:03 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/23 17:27:41 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/25 19:56:41 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,9 +33,7 @@ bool	check_for_errors(t_list *tokens)
 {
 	t_token	*token;
 	t_token	*next_token;
-	// t_list	*start;
 
-	// start = tokens;
 	if (tokens == NULL)
 		return (true);
 	token = tokens->content;
@@ -88,7 +86,6 @@ bool	fill_exec_step(t_exec_step *step, t_list *start,
 			start = start->next;
 			if (start == NULL)
 			{
-				// ??????
 				ft_free(&redir);
 				ft_lstclear(&step->cmd->args, free);
 				ft_lstclear(&step->cmd->redirs, free_redir);
@@ -97,7 +94,6 @@ bool	fill_exec_step(t_exec_step *step, t_list *start,
 			token = start->content;
 			if (is_redirection(token) == true)
 			{
-				// ??????
 				ft_free(&redir);
 				ft_lstclear(&step->cmd->args, free);
 				ft_lstclear(&step->cmd->redirs, free_redir);
@@ -110,7 +106,7 @@ bool	fill_exec_step(t_exec_step *step, t_list *start,
 			ft_lstadd_back(&step->cmd->redirs, ft_lstnew(redir));
 		}
 		else if (token->type == DOUBLE_QUOTED_STRING
-				|| token->type == QUOTED_STRING || token->type == NORMAL)
+			|| token->type == QUOTED_STRING || token->type == NORMAL)
 		{
 			cmd_arg = ft_strdup(token->substr);
 			ft_lstadd_back(&step->cmd->args, ft_lstnew(cmd_arg));
@@ -149,13 +145,6 @@ t_list	*parse_tokens(t_list *tokens, bool *success)
 		if (token->type == SUB_EXPR)
 		{
 			step = ft_calloc(1, sizeof(t_exec_step));
-			// step->subexpr_steps = parse_tokens(token->sub_tokens, success);
-			// if (*success == false)
-			// {
-			// 	ft_lstclear(&step->subexpr_steps, free_exec_step);
-			// 	ft_free(&step);
-			// 	return (steps);
-			// }
 			step->subexpr_line = ft_strdup(token->substr);
 			ft_lstadd_back(&steps, ft_lstnew(step));
 			if (tokens->next != NULL)
@@ -218,7 +207,8 @@ t_list	*parse_tokens(t_list *tokens, bool *success)
 					return (steps);
 				}
 				token = tokens->next->next->content;
-				if (token->type == AND || token->type == OR || token->type == PIPE)
+				if (token->type == AND || token->type == OR
+					|| token->type == PIPE)
 				{
 					*success = false;
 					return (steps);
@@ -231,7 +221,6 @@ t_list	*parse_tokens(t_list *tokens, bool *success)
 		tokens = tokens->next;
 	}
 	ft_lstiter(steps, list_to_str_arr);
-	
 	*success = true;
 	return (steps);
 }

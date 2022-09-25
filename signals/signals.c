@@ -5,58 +5,46 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/09/25 18:25:23 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/25 18:30:40 by hsarhan          ###   ########.fr       */
+/*   Created: 2022/09/25 19:39:40 by hsarhan           #+#    #+#             */
+/*   Updated: 2022/09/25 19:40:06 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "../minishell.h"
 
-void	sigint_interactive(int sig)
+void	handle_eof(const char *line, t_shell *shell)
 {
-	int	ret;
-
-	ret = waitpid(-1, NULL, WNOHANG);
-	if (sig == SIGINT && ret == -1)
+	if (line == NULL)
 	{
-		write(2, "\n", 1);
-		rl_on_new_line();
-		rl_replace_line("", 0);
-		rl_redisplay();
+		free_split_array(shell->env);
+		free_split_array(shell->declared_env);
 		ft_close(&g_dupstdin);
+		ft_free(&shell->fd);
+		clear_history();
+		exit(shell->last_exit_code);
 	}
 }
 
-void	sigint_command(int sig)
+void	handle_ctrl_c(t_shell *shell)
 {
-	int	ret;
-
-	ret = waitpid(-1, NULL, WNOHANG);
-	if (sig == SIGINT)
+	if (g_dupstdin == -1)
 	{
-		if (ret == -1)
-		{
-			write(2, "\n", 1);
-			rl_on_new_line();
-			rl_replace_line("", 0);
-			rl_redisplay();
-		}
+		g_dupstdin = dup(0);
+		shell->last_exit_code = 1;
 	}
 }
 
-void	sigquit_command(int sig)
+bool	handle_heredoc_ctrlc(t_shell *shell, char *line)
 {
-	if (sig == SIGQUIT)
+	if (g_dupstdin == -1)
 	{
-	}
-}
-
-void	hd_sig_handler(int sig)
-{
-	if (sig == SIGINT)
-	{
-		ft_close(&g_dupstdin);
+		shell->last_exit_code = 1;
+		ft_lstclear(&shell->tokens, free_token);
+		free_steps(&shell->steps_to_free);
 		rl_on_new_line();
-		printf("\n");
+		ft_free(&line);
+		ft_close(&g_dupstdin);
+		return (false);
 	}
+	return (true);
 }

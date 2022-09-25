@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 21:30:28 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/25 14:43:17 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/25 19:52:05 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,18 +19,13 @@ static char	*create_env_var_str(const t_shell *shell, char *str, const size_t st
 	char	*env_var;
 	char	*expansion;
 	char	*after;
-	
-	// printf("%s\n", str);
-	// if (ft_strncmp())
+
 	before = ft_substr(str, 0, start - 1);
 	env_var = ft_substr(str, start, end - start + 1);
-	// if (ft_strncmp(env_var))
 	expansion = get_env(shell, env_var);
 	ft_free(&env_var);
 	after = ft_substr(str, end + 1, ft_strlen(str));
 	ft_free(&str);
-	// if (before == NULL || env_var == NULL || after == NULL)
-	// 	return (str);
 	if (expansion == NULL)
 		str = strjoin_free(before, "", 1);
 	else
@@ -63,7 +58,7 @@ char	*expand_double_quote(const t_shell *shell, char *str)
 			if (ft_isdigit(str[i]))
 			{
 				end = i;
-				break;
+				break ;
 			}
 			while (str[i] != '\0' && (ft_isalnum(str[i]) || str[i] == '_'))
 				i++;
@@ -75,7 +70,7 @@ char	*expand_double_quote(const t_shell *shell, char *str)
 		{
 			start = i + 1;
 			end = i + 1;
-			break;
+			break ;
 		}
 		else
 			i++;

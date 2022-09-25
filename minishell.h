@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/21 09:39:31 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/25 18:40:50 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/25 19:41:49 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 # include "builtins/builtins.h"
 # include "exec/exec.h"
 # include "ft_printf/ft_printf.h"
+# include "signals/signals.h"
 
 # include <readline/readline.h>
 # include <readline/history.h>

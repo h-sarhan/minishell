@@ -6,7 +6,7 @@
 #    By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/04/29 21:51:32 by hsarhan           #+#    #+#              #
-#    Updated: 2022/09/25 18:26:09 by hsarhan          ###   ########.fr        #
+#    Updated: 2022/09/25 19:50:37 by hsarhan          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -57,11 +57,11 @@ GIGASHELL = \
 
 TOKENIZATION_SRCS = tokenization.c expansion.c \
 					tokenization2.c wildcard.c split_wildcard.c \
-					print_tokens.c free_funcs.c tokenization3.c join_tokens.c
+					print_tokens.c free_funcs.c tokenization3.c
 
 TOKENIZATION_SRCS := $(addprefix tokenization/, $(TOKENIZATION_SRCS))
 
-PARSING_SRCS = parsing.c parsing_utils.c
+PARSING_SRCS = parsing.c parsing_utils.c check_subexprs.c
 PARSING_SRCS := $(addprefix parsing/, $(PARSING_SRCS))
 
 BUILTINS_SRCS = echo.c pwd.c builtins.c cd.c env.c export.c exit.c unset.c
@@ -70,9 +70,12 @@ BUILTINS_SRCS := $(addprefix builtins/, $(BUILTINS_SRCS))
 EXEC_SRCS = exec.c here_doc.c
 EXEC_SRCS := $(addprefix exec/, $(EXEC_SRCS))
 
-SRCS = $(TOKENIZATION_SRCS) $(PARSING_SRCS) $(BUILTINS_SRCS) $(EXEC_SRCS)
+SIGNAL_SRCS = signal_handlers.c signals.c
+SIGNAL_SRCS := $(addprefix signals/, $(SIGNAL_SRCS))
 
-SRCS += utils.c main.c signals.c
+SRCS = $(TOKENIZATION_SRCS) $(PARSING_SRCS) $(BUILTINS_SRCS) $(EXEC_SRCS) $(SIGNAL_SRCS)
+
+SRCS += utils.c main.c
 
 OBJS := $(SRCS:%.c=%.o)
 
