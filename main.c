@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:43:26 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/25 12:35:38 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/25 12:46:20 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -243,11 +243,13 @@ int	main(int argc, char **argv, char **env)
 			continue;
 		}
 		shell.tokens = tokenize_line(&shell, line, &success);
-		// print_tokens(shell.tokens);
+		print_tokens(shell.tokens);
 		if (success == false)
 		{
 			shell.last_exit_code = 258;
+			ft_lstclear(&shell.tokens, free_token);
 			ft_close(&g_dupstdin);
+			ft_free(&line);
 			continue;
 		}
 		shell.steps = parse_tokens(shell.tokens, &success);
@@ -262,7 +264,7 @@ int	main(int argc, char **argv, char **env)
 			free_steps(&shell.steps_to_free);
 			rl_on_new_line();
 			ft_close(&g_dupstdin);
-			free(line);
+			ft_free(&line);
 			continue;
 		}
 		// shell.steps = exec_steps_start;

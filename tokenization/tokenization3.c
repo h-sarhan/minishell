@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/19 16:25:19 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/03 00:50:30 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/25 13:28:31 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,10 @@ t_list	*tokenize_single_quote(const t_shell *shell, const char *line, size_t *id
 	while (line[i] != '\0' && line[i] != '\'')
 		i++;
 	if (line[i] == '\0')
+	{
+		free_token(tkn);
 		return (parse_error(("Parse Error: Unterminated string\n")));
+	}
 	i++;
 	while (line[i] != ' ' && line[i] != '\0')
 	{
@@ -61,7 +64,10 @@ t_list	*tokenize_single_quote(const t_shell *shell, const char *line, size_t *id
 	tkn->substr = ft_substr(line, tkn->start, tkn->end - tkn->start + 1);
 	tkn->sub_tokens = NULL;
 	if (tkn->substr == NULL)
+	{
+		free_token(tkn);
 		return (NULL);
+	}
 	while (contains_env_var(tkn->substr))
 		tkn->substr = expand_double_quote(shell, tkn->substr);
 	tkn->substr = eat_quotes(tkn->substr);
@@ -71,8 +77,6 @@ t_list	*tokenize_single_quote(const t_shell *shell, const char *line, size_t *id
 		return (parse_error("Parse error: Invalid Input\n"));
 	}
 	el = ft_lstnew(tkn);
-	if (el == NULL)
-		return (NULL);
 	*idx = tkn->end;
 	return (el);
 }
@@ -93,7 +97,10 @@ t_list	*tokenize_double_quote(const t_shell *shell, const char *line, size_t *id
 	while (line[i] != '\0' && line[i] != '\"')
 		i++;
 	if (line[i] == '\0')
+	{
+		free_token(tkn);
 		return (parse_error(("Parse Error: Unterminated string\n")));
+	}
 	i++;
 	while (line[i] != ' ' && line[i] != '\0')
 	{
@@ -134,8 +141,6 @@ t_list	*tokenize_double_quote(const t_shell *shell, const char *line, size_t *id
 		return (parse_error("Parse error: Invalid Input\n"));
 	}
 	el = ft_lstnew(tkn);
-	if (el == NULL)
-		return (NULL);
 	*idx = tkn->end;
 	return (el);
 }
