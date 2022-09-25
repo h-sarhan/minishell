@@ -6,180 +6,51 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:43:26 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/25 16:20:05 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/25 18:56:17 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-
 #include "minishell.h"
 
-void	print_exec_step(t_list *exec_steps)
+extern int 	g_dupstdin;
+
+static bool	check_subexpr(t_shell *shell, t_exec_step *step)
 {
-	t_exec_step	*step = exec_steps->content;
-	t_redir	*redir;
-	size_t	i = 0;
-	char	**args;
-	t_list	*redirs = NULL;
-	
-	// if (step->cmd != NULL)
-	// {
-		args = step->cmd->arg_arr;
-		redirs = step->cmd->redirs;
-	// }
-	// if (step->subexpr_steps != NULL)
-	// {
-	// 	printf("===================SUB EXPR START===================\n\n");
-	// 	exec_steps = step->subexpr_steps;
-	// 	while (exec_steps != NULL)
-	// 	{
-	// 		print_exec_step(exec_steps);
-	// 		exec_steps = exec_steps->next;
-	// 	}
-	// 	if (step->pipe_next == true)
-	// 		printf("Pipe subexpr  into next command\n");
-	// 	if (step->and_next == true)
-	// 		printf("AND  subexpr into next command\n");
-	// 	if (step->or_next == true)
-	// 		printf("OR   subexpr into next command\n");
-	// 	printf("===================SUB EXPR END===================\n\n");
-	// 	return ;
-	// }
-	printf("===================EXPR START===================\n");
-	while (args[i] != NULL)
+	t_list		*tokens;
+	bool		success;
+	t_list		*steps;
+
+	tokens = tokenize_line(shell, step->subexpr_line, &success);
+	if (success == false)
 	{
-		printf("Arg #%lu == %s\n", i + 1, args[i]);
-		i++;
+		ft_lstclear(&tokens, free_token);
+		return (false);
 	}
-	if (step->pipe_next == true)
-		printf("Pipe expr  into next command\n");
-	if (step->and_next == true)
-		printf("AND  expr into next command\n");
-	if (step->or_next == true)
-		printf("OR   expr into next command\n");
-	printf("\n");
-	
-	while (redirs != NULL)
+	steps = parse_tokens(tokens, &success);
+	ft_lstclear(&tokens, free_token);
+	if (success == false || check_subexprs(shell, steps) == false)
 	{
-		redir = redirs->content;
-		if (redir->type == OUTPUT_REDIR)
-			printf("Output redirection to %s\n", redir->file);
-		if (redir->type == APPEND)
-			printf("Append redirection to %s\n", redir->file);
-		if (redir->type == INPUT_REDIR)
-			printf("Input redirection from %s\n", redir->file);
-		if (redir->type == HEREDOC)
-			printf("Heredoc redir. Limiter is %s\n", redir->limiter);
-		redirs = redirs->next;
+		ft_lstclear(&steps, free_exec_step);
+		return (false);
 	}
-	printf("===================EXPR END===================\n");
+	ft_lstclear(&steps, free_exec_step);
+	return (true);
 }
 
-// void	reciever(int sig, siginfo_t *siginfo, void *context)
-// {
-// 	if (sig == SIGINT)
-// }
 
-
-int 	g_dupstdin;
-
-// bool	g_interactive;
-// int		stdin_dup;
-
-void	sigint_interactive(int sig)
-{
-	// ! Need to make this set the exit code to 1 somehow
-	int ret = waitpid(-1, NULL, WNOHANG);
-	if (sig == SIGINT && ret == -1)
-	{
-		write(2, "\n", 1);
-		// // printf("\n");
-		rl_on_new_line();
-		rl_replace_line("", 0);
-		rl_redisplay();
-		ft_close(&g_dupstdin);
-	}
-}
-
-void	sigint_command(int sig)
-{
-	int ret = waitpid(-1, NULL, WNOHANG);
-	if (sig == SIGINT)
-	{
-		if (ret == -1)
-		{
-			write(2, "\n", 1);
-			// printf("\n");
-			rl_on_new_line();
-			rl_replace_line("", 0);
-			rl_redisplay();
-		}
-		// ! better way to do this
-		// ft_close(&g_dupstdin);
-		// g_dupstdin = SIGINT_FLAG;
-	}
-}
-
-void	sigquit_command(int sig)
-{
-	if (sig == SIGQUIT)
-	{
-		// ft_close(&g_dupstdin);
-		// g_dupstdin = SIGQUIT_FLAG;
-	}
-}
-
-void	sigquit_interactive(int sig)
-{
-	int ret = waitpid(-1, NULL, WNOHANG);
-	if (sig == SIGQUIT && ret == -1)
-	{
-		// rl_on_new_line();
-		rl_replace_line("", 0);
-		rl_redisplay();
-	}
-}
-
-void hd_sig_handler(int sig)
-{
-	if (sig == SIGINT)
-	{
-		ft_close(&g_dupstdin);
-		rl_on_new_line();
-		printf("\n");
-	}
-}
-
-bool	check_subexprs_for_parse_errors(t_shell *shell, t_list *shell_steps)
+bool	check_subexprs(t_shell *shell, t_list *shell_steps)
 {
 	t_exec_step *step;
-	t_list		*tokens;
-	t_list		*steps;
-	bool		success;
 
 	while (shell_steps != NULL)
 	{
 		step = shell_steps->content;
 		if (step->subexpr_line != NULL)
 		{
-			tokens = tokenize_line(shell, step->subexpr_line, &success);
-			if (success == false)
+			if (check_subexpr(shell, step) == false)
 			{
-				ft_lstclear(&tokens, free_token);
 				return (false);
 			}
-			steps = parse_tokens(tokens, &success);
-			ft_lstclear(&tokens, free_token);
-			if (success == false)
-			{
-				ft_lstclear(&steps, free_exec_step);
-				return (false);
-			}
-			if (check_subexprs_for_parse_errors(shell, steps) == false)
-			{
-				ft_lstclear(&steps, free_exec_step);
-				return (false);
-			}
-			ft_lstclear(&steps, free_exec_step);
 		}
 		shell_steps = shell_steps->next;
 	}
@@ -274,7 +145,7 @@ int	main(int argc, char **argv, char **env)
 			continue;
 		}
 		// shell.steps = exec_steps_start;
-		if (check_subexprs_for_parse_errors(&shell, shell.steps) == false)
+		if (check_subexprs(&shell, shell.steps) == false)
 		{
 			shell.last_exit_code = 258;
 			write_to_stderr("Parse error\n");

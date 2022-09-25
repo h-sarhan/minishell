@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/21 09:39:31 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/25 17:56:43 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/25 18:40:50 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,8 @@
 # include <sys/stat.h>
 # include <signal.h>
 
+int						g_dupstdin;
+
 typedef struct s_shell	t_shell;
 struct s_shell
 {
@@ -41,8 +43,13 @@ struct s_shell
 	int		*fd;
 };
 
+bool	check_subexprs(t_shell *shell, t_list *shell_steps);
 void	ft_close(int *fd);
 char	**copy_str_arr(char **arr);
 void	free_steps(t_list **step_lists);
+void	sigint_interactive(int sig);
+void	sigint_command(int sig);
+void	sigquit_command(int sig);
+void	hd_sig_handler(int sig);
 
 #endif

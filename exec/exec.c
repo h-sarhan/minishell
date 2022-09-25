@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/01 18:16:54 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/25 16:21:46 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/25 18:54:15 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -612,30 +612,33 @@ void	exec_cmd(t_shell *shell, t_list *exec_steps, int step_number, char *current
 			if (step->and_next || step->or_next)
 				break;
 			i++;
-			if (WIFSIGNALED(w_status))
+			steps = steps->next;
+		}
+		if (WIFSIGNALED(w_status))
+		{
+			if (WTERMSIG(w_status) == SIGINT)
 			{
-				if (WTERMSIG(w_status) == SIGINT)
-				{
-					step->exit_code = 130;
-					shell->last_exit_code = step->exit_code;
-				}
-				if (WTERMSIG(w_status) == SIGQUIT)
-				{
-					printf("Quit\n");
-					step->exit_code = 131;
-					shell->last_exit_code = step->exit_code;
-				}
-				return ;
+				step->exit_code = 130;
+				shell->last_exit_code = step->exit_code;
 			}
-		
-			// ? Why did we write the below line of code
-			if (!(parent_builtin(step) && !step->pipe_next && ft_strcmp(step->cmd->arg_arr[0], "exit") != 0) && !exit_flag)
-			// if (((parent_builtin(step) && step->pipe_next) || !parent_builtin(step)) && !exit_flag)
+			if (WTERMSIG(w_status) == SIGQUIT)
+			{
+				printf("Quit\n");
+				step->exit_code = 131;
+				shell->last_exit_code = step->exit_code;
+			}
+			return ;
+		}
+	
+		if (!exit_flag)
+		// if (((parent_builtin(step) && step->pipe_next) || !parent_builtin(step)) && !exit_flag)
+		{
+			// Checking the only case where we dont fork
+			if (!(parent_builtin(exec_steps->content) && ((t_exec_step *)exec_steps->content)->pipe_next == false))
 			{
 				step->exit_code = WEXITSTATUS(w_status);
 				shell->last_exit_code = step->exit_code;
 			}
-			steps = steps->next;
 		}
 	}
 	if (step == NULL)

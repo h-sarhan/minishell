@@ -6,15 +6,10 @@
 #    By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/04/29 21:51:32 by hsarhan           #+#    #+#              #
-#    Updated: 2022/09/25 16:05:37 by hsarhan          ###   ########.fr        #
+#    Updated: 2022/09/25 18:26:09 by hsarhan          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-TOKENIZATION_SRCS = tokenization.c expansion.c \
-					tokenization2.c wildcard.c split_wildcard.c \
-					print_tokens.c free_funcs.c tokenization3.c join_tokens.c
-
-TOKENIZATION_SRCS := $(addprefix tokenization/, $(TOKENIZATION_SRCS))
 COLOR=\033[0;34m
 NC=\033[0m
 RED=\033[0;31m
@@ -60,6 +55,12 @@ GIGASHELL = \
 \t\t ╚██████╔╝██║╚██████╔╝██║░░██║██████╔╝██║░░██║███████╗███████╗███████╗ ╚█████╔╝╚█████╔╝██║░╚═╝░██║██║░░░░░██║███████╗███████╗██████╔╝\n \
 \t\t ░╚═════╝░╚═╝░╚═════╝░╚═╝░░╚═╝╚═════╝░╚═╝░░╚═╝╚══════╝╚══════╝╚══════╝ ░╚════╝░░╚════╝░╚═╝░░░░░╚═╝╚═╝░░░░░╚═╝╚══════╝╚══════╝╚═════╝░\n \
 
+TOKENIZATION_SRCS = tokenization.c expansion.c \
+					tokenization2.c wildcard.c split_wildcard.c \
+					print_tokens.c free_funcs.c tokenization3.c join_tokens.c
+
+TOKENIZATION_SRCS := $(addprefix tokenization/, $(TOKENIZATION_SRCS))
+
 PARSING_SRCS = parsing.c parsing_utils.c
 PARSING_SRCS := $(addprefix parsing/, $(PARSING_SRCS))
 
@@ -71,7 +72,7 @@ EXEC_SRCS := $(addprefix exec/, $(EXEC_SRCS))
 
 SRCS = $(TOKENIZATION_SRCS) $(PARSING_SRCS) $(BUILTINS_SRCS) $(EXEC_SRCS)
 
-SRCS += utils.c main.c
+SRCS += utils.c main.c signals.c
 
 OBJS := $(SRCS:%.c=%.o)
 
