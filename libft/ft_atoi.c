@@ -6,7 +6,7 @@
 /*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/12 22:18:16 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/15 12:06:51 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/25 17:09:21 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,8 +68,8 @@ long	ft_atol(const char *str, bool *check)
 	}
 	while (str[i] >= '0' && str[i] <= '9')
 	{
-		num *= 10;
 		temp = num;
+		num *= 10;
 		num += str[i++] - '0';
 		if (temp > num)
 		{
