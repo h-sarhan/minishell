@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/21 09:39:31 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/23 13:28:23 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/25 17:56:43 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,13 +21,12 @@
 
 # include <readline/readline.h>
 # include <readline/history.h>
-#include <sys/errno.h>
-#include <string.h>
-#include <sys/wait.h>
-#include <fcntl.h>
-#include <sys/stat.h>
-#include <signal.h>
-
+# include <sys/errno.h>
+# include <string.h>
+# include <sys/wait.h>
+# include <fcntl.h>
+# include <sys/stat.h>
+# include <signal.h>
 
 typedef struct s_shell	t_shell;
 struct s_shell
@@ -40,12 +39,6 @@ struct s_shell
 	int		last_exit_code;
 	char	*line;
 	int		*fd;
-};
-
-struct signal
-{
-	t_list	*pid;
-	bool	interactive_mode;
 };
 
 void	ft_close(int *fd);
