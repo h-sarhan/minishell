@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/01 18:16:54 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/23 13:31:36 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/25 12:33:40 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -423,7 +423,7 @@ void	exec_cmd(t_shell *shell, t_list *exec_steps, int step_number, char *current
 	// printf("Starting command |%s|\n", step->cmd->arg_arr[0]);
 	if (steps == NULL)
 	{
-		ft_free(&fd);
+		// ft_free(&fd);
 		return ;
 	}
 	step = steps->content;
@@ -629,7 +629,7 @@ void	exec_cmd(t_shell *shell, t_list *exec_steps, int step_number, char *current
 	if (step->and_next)
 	{
 		if (shell->last_exit_code == 0)
-		{	
+		{
 			
 		}
 		else

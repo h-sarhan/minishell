@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:43:26 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/25 12:21:32 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/25 12:35:38 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,7 +87,7 @@ int 	g_dupstdin;
 
 void	sigint_interactive(int sig)
 {
-	// Need to make this set the exit code to 1 somehow
+	// ! Need to make this set the exit code to 1 somehow
 	int ret = waitpid(-1, NULL, WNOHANG);
 	if (sig == SIGINT && ret == -1)
 	{
@@ -238,6 +238,7 @@ int	main(int argc, char **argv, char **env)
 			add_history(line);
 		else
 		{
+			ft_close(&g_dupstdin);
 			ft_free(&line);
 			continue;
 		}
@@ -246,6 +247,7 @@ int	main(int argc, char **argv, char **env)
 		if (success == false)
 		{
 			shell.last_exit_code = 258;
+			ft_close(&g_dupstdin);
 			continue;
 		}
 		shell.steps = parse_tokens(shell.tokens, &success);
