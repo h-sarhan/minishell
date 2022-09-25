@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 14:46:52 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/25 15:29:05 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/25 16:00:20 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -253,8 +253,9 @@ t_list	*tokenize_line(const t_shell *shell, const char *line, bool *success)
 			ft_lstadd_back(&tokens, el);
 		}
 		// else if (line[i] == '$' && line[i + 1] != '?')
-		else if (line[i] == '$')
+		else if (line[i] == '$' && (tokens == NULL || (tokens != NULL && ((t_token *)ft_lstlast(tokens)->content)->type != HEREDOC)))
 		{
+			// printf("GOES HERE\n");
 			el = tokenize_env_variable(shell, line, &i);
 			if (el == NULL)
 			{
@@ -395,7 +396,7 @@ t_list	*tokenize_line(const t_shell *shell, const char *line, bool *success)
 		}
 		else if (line[i] != ' ')
 		{
-			el = tokenize_normal(shell, line, &i);
+			el = tokenize_normal(shell, line, &i, tokens != NULL && ((t_token *)ft_lstlast(tokens)->content)->type != HEREDOC);
 			if (el == NULL)
 			{
 				*success = false;

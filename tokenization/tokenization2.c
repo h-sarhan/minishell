@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 22:19:29 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/25 14:30:44 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/25 15:37:27 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,7 @@ char	*eat_quotes(const char *str)
 	return (trimmed_str);
 }
 
-t_list	*tokenize_normal(const t_shell *shell, const char *line, size_t *idx)
+t_list	*tokenize_normal(const t_shell *shell, const char *line, size_t *idx, bool expand_var)
 {
 	size_t	i;
 	t_token	*tkn;
@@ -116,8 +116,11 @@ t_list	*tokenize_normal(const t_shell *shell, const char *line, size_t *idx)
 	}
 	tkn->end = i - 1;
 	tkn->substr = ft_substr(line, tkn->start, tkn->end - tkn->start + 1);
-	while (contains_env_var(tkn->substr))
-		tkn->substr = expand_double_quote(shell, tkn->substr);
+	if (expand_var == true)
+	{
+		while (contains_env_var(tkn->substr))
+			tkn->substr = expand_double_quote(shell, tkn->substr);
+	}
 	// if (quote != '\0')
 	// {
 		tkn->substr = eat_dollars(tkn->substr);

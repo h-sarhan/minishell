@@ -6,7 +6,7 @@
 #    By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/04/29 21:51:32 by hsarhan           #+#    #+#              #
-#    Updated: 2022/09/20 19:19:33 by hsarhan          ###   ########.fr        #
+#    Updated: 2022/09/25 16:05:37 by hsarhan          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -84,6 +84,9 @@ FT_PRINTF = ft_printf/libftprintf.a
 
 all: $(NAME)
 
+giga:
+	@echo "$(COLOR)$(GIGASHELL)$(NC)"
+	
 $(NAME): $(OBJS) $(LIBFT) $(FT_PRINTF)
 	$(CC) $(CFLAGS)  $(OBJS) -o $(NAME)  $(LIBFT) $(FT_PRINTF)  -I/usr/local/opt/readline/include -L/usr/local/opt/readline/lib -lreadline
 	@echo "$(COLOR)$(GIGASHELL)$(NC)"

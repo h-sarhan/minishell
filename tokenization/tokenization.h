@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:44:00 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/25 15:20:42 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/25 15:36:54 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,7 +67,6 @@ char	*expand_double_quote(const t_shell *shell, char *str);
 void	ft_free(void *memory);
 t_list	*tokenize_operator(const char *line, size_t *idx,
 			const t_token_type type);
-t_list	*tokenize_normal(const t_shell *shell, const char *line, size_t *idx);
 t_list	*tokenize_subexpr(const t_shell *shell, const char *line, size_t *idx);
 char	*get_dir_contents(void);
 char	*expand_wildcard(char *token);
@@ -80,4 +79,5 @@ void	print_tokens_detailed(t_list *tokens);
 void	print_tokens(t_list *tokens);
 char	*join_tokens(t_list *tokens);
 char	*eat_quotes(const char *str);
+t_list	*tokenize_normal(const t_shell *shell, const char *line, size_t *idx, bool expand_var);
 #endif

@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:43:26 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/25 14:46:22 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/25 16:20:05 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -291,7 +291,7 @@ int	main(int argc, char **argv, char **env)
 		while (shell.steps != NULL)
 		{
 			// print_exec_step(shell.steps);
-			run_here_docs(shell.steps->content);
+			run_here_docs(&shell, shell.steps->content);
 			shell.steps = shell.steps->next;
 		}
 		signal(SIGINT, sigint_command);

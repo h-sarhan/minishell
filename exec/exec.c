@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/01 18:16:54 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/25 12:33:40 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/25 16:21:46 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -159,7 +159,10 @@ int	exec_outredir(t_exec_step *step)
 				out_fd = open(redir_file->file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 			// printf("%d", out_fd);
 			if (out_fd == -1)
+			{	
 				ft_stderr("minishell: %s: file failed to create\n", redir_file->file);
+				return (-2);
+			}
 			// ft_close(&out_fd);
 			// return (out_fd);
 		}
@@ -469,6 +472,16 @@ void	exec_cmd(t_shell *shell, t_list *exec_steps, int step_number, char *current
 			shell->last_exit_code = step->exit_code;
 		}
 		out_fd = exec_outredir(step);
+		// printf("%d\n", out_fd);
+		if (out_fd == -2)
+		{
+			// printf("We are here\n");
+			valid_redirs = false;
+			exit_flag = true;
+			step->exit_code = 1;
+			out_fd = -1;
+			shell->last_exit_code = step->exit_code;
+		}
 		char	*cmd_copy;
 		if (step->cmd->arg_arr[0] && step->cmd->arg_arr[0][0] != '\0' && (access(step->cmd->arg_arr[0], X_OK) == -1 && !is_builtin(step) && !is_dir(step->cmd->arg_arr[0])))
 		{
@@ -598,30 +611,31 @@ void	exec_cmd(t_shell *shell, t_list *exec_steps, int step_number, char *current
 			}
 			if (step->and_next || step->or_next)
 				break;
-			steps = steps->next;
 			i++;
-		}
-		if (WIFSIGNALED(w_status))
-		{
-			if (WTERMSIG(w_status) == SIGINT)
+			if (WIFSIGNALED(w_status))
 			{
-				step->exit_code = 130;
+				if (WTERMSIG(w_status) == SIGINT)
+				{
+					step->exit_code = 130;
+					shell->last_exit_code = step->exit_code;
+				}
+				if (WTERMSIG(w_status) == SIGQUIT)
+				{
+					printf("Quit\n");
+					step->exit_code = 131;
+					shell->last_exit_code = step->exit_code;
+				}
+				return ;
+			}
+		
+			// ? Why did we write the below line of code
+			if (!(parent_builtin(step) && !step->pipe_next && ft_strcmp(step->cmd->arg_arr[0], "exit") != 0) && !exit_flag)
+			// if (((parent_builtin(step) && step->pipe_next) || !parent_builtin(step)) && !exit_flag)
+			{
+				step->exit_code = WEXITSTATUS(w_status);
 				shell->last_exit_code = step->exit_code;
 			}
-			if (WTERMSIG(w_status) == SIGQUIT)
-			{
-				printf("Quit\n");
-				step->exit_code = 131;
-				shell->last_exit_code = step->exit_code;
-			}
-			return ;
-		}
-	
-		// ? Why did we write the below line of code
-		if (!(parent_builtin(step) && !step->pipe_next && ft_strcmp(step->cmd->arg_arr[0], "exit") != 0) && !exit_flag)
-		{
-			step->exit_code = WEXITSTATUS(w_status);
-			shell->last_exit_code = step->exit_code;
+			steps = steps->next;
 		}
 	}
 	if (step == NULL)
