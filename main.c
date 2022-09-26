@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:43:26 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/25 23:17:54 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/26 14:24:50 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,6 +91,7 @@ int	main(int argc, char **argv, char **env)
 	char	*line;
 	bool	success;
 	t_shell	shell;
+	t_list	*exec_steps_start;
 
 	(void) argc;
 	(void) argv;
@@ -118,12 +119,14 @@ int	main(int argc, char **argv, char **env)
 			continue ;
 		signal(SIGINT, hd_sig_handler);
 		signal(SIGQUIT, hd_sig_handler);
+		exec_steps_start = shell.steps;
 		// ! THIS NEEDS TO BE FIXED
-		// while (shell.steps != NULL)
-		// {
-		// 	run_here_docs(&shell, shell.steps->content);
-		// 	shell.steps = shell.steps->next;
-		// }
+		while (shell.steps != NULL)
+		{
+			run_here_docs(&shell, shell.steps->content);
+			shell.steps = shell.steps->next;
+		}
+		shell.steps = exec_steps_start;
 		signal(SIGINT, sigint_command);
 		signal(SIGQUIT, sigquit_command);
 		if (handle_heredoc_ctrl_c(&shell, line) == false)
