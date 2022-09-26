@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   tokenization3.c                                    :+:      :+:    :+:   */
+/*   tokenize_quotes.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/19 16:25:19 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/26 11:44:21 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/26 12:21:53 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,13 +14,13 @@
 
 static void	*parse_error(const char *msg, t_token *tkn)
 {
-	ft_free(&tkn);
+	free_token(tkn);
 	if (msg != NULL)
 		write_to_stderr(msg);
 	return (NULL);
 }
 
-static void	*skip_to_end_token(const char *line, size_t *i, t_token *tkn)
+static t_token	*skip_to_end_token(const char *line, size_t *i, t_token *tkn)
 {
 	char	quote;
 
