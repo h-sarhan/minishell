@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:44:00 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/26 08:59:10 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/26 09:25:14 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,6 +85,7 @@ char	*eat_quotes(const char *str);
 t_list	*tokenize_normal(const t_shell *shell, const char *line, size_t *idx,
 			bool expand_var);
 void	set_in_quotes(const char *str, const size_t i, bool *in_single,
-	bool *in_double);
+			bool *in_double);
+bool	match_str_on_wildcard(const char *str, char **wc_segs);
 
 #endif
