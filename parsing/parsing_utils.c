@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/21 21:38:27 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/25 19:53:22 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/26 22:16:58 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,4 +72,21 @@ void	list_to_str_arr(void *step_ptr)
 	}
 	ft_lstclear(&step->cmd->args, free);
 	step->cmd->arg_arr[i] = NULL;
+}
+
+bool	is_terminator(const t_token *token)
+{
+	if (token->type == PIPE
+		|| token->type == AND
+		|| token->type == OR)
+		return (true);
+	return (false);
+}
+
+bool	is_redirection(const t_token *token)
+{
+	if (token->type == INPUT_REDIR || token->type == OUTPUT_REDIR
+		|| token->type == APPEND || token->type == HEREDOC)
+		return (true);
+	return (false);
 }

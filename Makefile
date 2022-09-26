@@ -6,7 +6,7 @@
 #    By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/04/29 21:51:32 by hsarhan           #+#    #+#              #
-#    Updated: 2022/09/26 17:47:35 by hsarhan          ###   ########.fr        #
+#    Updated: 2022/09/26 22:21:34 by hsarhan          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -64,7 +64,7 @@ TOKENIZATION_SRCS = tokenize_line.c expansion.c \
 
 TOKENIZATION_SRCS := $(addprefix tokenization/, $(TOKENIZATION_SRCS))
 
-PARSING_SRCS = parsing.c parsing_utils.c check_subexprs.c
+PARSING_SRCS = parsing.c parsing_utils.c check_subexprs.c error_checking.c parse_step.c
 PARSING_SRCS := $(addprefix parsing/, $(PARSING_SRCS))
 
 BUILTINS_SRCS = echo.c pwd.c builtins.c env.c exit.c export.c export_utils.c \

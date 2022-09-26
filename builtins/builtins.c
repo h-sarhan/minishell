@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtins.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/30 13:47:43 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/26 14:26:43 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/26 18:48:03 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ bool	is_builtin(t_exec_step *step)
 
 bool	parent_builtin(t_exec_step *step)
 {
-	if (step->cmd->arg_arr[0] == NULL)
+	if (step->cmd == NULL || step->cmd->arg_arr[0] == NULL)
 		return (false);
 	if (ft_strcmp(step->cmd->arg_arr[0], "unset") == 0
 		|| ft_strcmp(step->cmd->arg_arr[0], "cd") == 0
