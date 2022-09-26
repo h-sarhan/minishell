@@ -6,7 +6,7 @@
 /*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/01 18:16:54 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/26 17:01:40 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/26 18:37:28 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,12 @@
 
 extern int	g_dupstdin;
 
+/**
+ * @brief Checks if the dir/path to the directory exists.
+ * 
+ * @param path 
+ * @return int 
+ */
 int	is_dir(const char *path)
 {
 	struct stat	statbuf;
@@ -23,6 +29,12 @@ int	is_dir(const char *path)
 	return (S_ISDIR(statbuf.st_mode));
 }
 
+/**
+ * @brief A wrapper functions which calls the clos function.
+ * It closes the fds if its != -1 (Invalid Fds).
+ * 
+ * @param fd 
+ */
 void	ft_close(int *fd)
 {
 	if (*fd != -1)
@@ -32,6 +44,35 @@ void	ft_close(int *fd)
 	}
 }
 
+/**
+ * @brief Joins the path to the command.
+ * 
+ * @param bin 
+ * @param paths 
+ * @param path 
+ */
+void	join_path(char *bin, char **paths, char **path)
+{
+	int	i;
+
+	i = 0;
+	while (bin != NULL && paths != NULL && paths[i] != NULL)
+	{
+		*path = ft_strjoin(paths[i], bin);
+		if (*path == NULL || access(*path, X_OK) != -1)
+			break ;
+		ft_free(path);
+		i++;
+	}
+}
+
+/**
+ * @brief Get the full path of a command.
+ * 
+ * @param bin 
+ * @param env 
+ * @return char* 
+ */
 char	*get_full_path(char *bin, char **env)
 {
 	int		i;
@@ -48,14 +89,7 @@ char	*get_full_path(char *bin, char **env)
 	i = 0;
 	bin_cpy = ft_strdup(bin);
 	bin = strjoin_free("/", bin, 2);
-	while (bin != NULL && paths != NULL && paths[i] != NULL)
-	{
-		path = ft_strjoin(paths[i], bin);
-		if (path == NULL || access(path, X_OK) != -1)
-			break ;
-		ft_free(&path);
-		i++;
-	}
+	join_path(bin, paths, &path);
 	if (bin == NULL || paths == NULL || paths[i] == NULL)
 		path = NULL;
 	ft_free(&bin);
@@ -66,6 +100,66 @@ char	*get_full_path(char *bin, char **env)
 	return (path);
 }
 
+/**
+ * @brief Checks if the file associated with input 
+ * redirection is valid or not.
+ * 
+ * @param redir_file 
+ * @return true 
+ * @return false 
+ */
+bool	check_input_redir(t_redir	*redir_file)
+{
+	if (redir_file->type == INPUT_REDIR)
+	{
+		if (access(redir_file->file, F_OK) == -1)
+		{
+			ft_stderr("minishell: %s: No such file or directory\n",
+				redir_file->file);
+			return (false);
+		}
+		if (access(redir_file->file, R_OK) == -1)
+		{
+			ft_stderr("minishell: %s: Permission denied\n",
+				redir_file->file);
+			return (false);
+		}
+	}
+	return (true);
+}
+
+/**
+ * @brief Checks if the file associated with output 
+ * redirection is valid or not.
+ * 
+ * @param redir_file 
+ * @return true 
+ * @return false 
+ */
+bool	check_output_redir(t_redir	*redir_file)
+{
+	if (redir_file->type == OUTPUT_REDIR || redir_file->type == APPEND)
+	{
+		if ((access(redir_file->file, F_OK) != -1
+				&& access(redir_file->file, W_OK) == -1)
+			|| is_dir(redir_file->file))
+		{
+			ft_stderr("minishell: %s: Permission denied\n",
+				redir_file->file);
+			return (false);
+		}
+	}
+	return (true);
+}
+
+/**
+ * @brief Checks if the file given in the redirection
+ * is valid or not.
+ * 
+ * @param step 
+ * @return true 
+ * @return false 
+ */
 bool	check_valid_redir(t_exec_step *step)
 {
 	t_list	*redir;
@@ -77,35 +171,37 @@ bool	check_valid_redir(t_exec_step *step)
 	while (redir)
 	{
 		redir_file = redir->content;
-		if (redir_file->type == INPUT_REDIR)
-		{
-			if (access(redir_file->file, F_OK) == -1)
-			{
-				ft_stderr("minishell: %s: No such file or directory\n",
-					redir_file->file);
-				return (false);
-			}
-			if (access(redir_file->file, R_OK) == -1)
-			{
-				ft_stderr("minishell: %s: Permission denied\n",
-					redir_file->file);
-				return (false);
-			}
-		}
-		else if (redir_file->type == OUTPUT_REDIR || redir_file->type == APPEND)
-		{
-			if ((access(redir_file->file, F_OK) != -1
-					&& access(redir_file->file, W_OK) == -1)
-				|| is_dir(redir_file->file))
-			{
-				ft_stderr("minishell: %s: Permission denied\n",
-					redir_file->file);
-				return (false);
-			}
-		}
+		if (check_input_redir(redir_file) == false)
+			return (false);
+		else if (check_output_redir(redir_file) == false)
+			return (false);
 		redir = redir->next;
 	}
 	return (true);
+}
+
+/**
+ * @brief Traverse through the list of input redirections,
+ * and return the last input redirection.
+ * 
+ * @param in_redir 
+ * @return t_redir* 
+ */
+t_redir	*last_inredir(t_list *in_redir)
+{
+	t_redir	*last;
+	t_redir	*current_redir;
+
+	last = NULL;
+	while (in_redir)
+	{
+		current_redir = in_redir->content;
+		if (current_redir->type == INPUT_REDIR
+			|| current_redir->type == HEREDOC)
+			last = current_redir;
+		in_redir = in_redir->next;
+	}
+	return (last);
 }
 
 int	exec_outredir(t_exec_step *step)
@@ -136,6 +232,9 @@ int	exec_outredir(t_exec_step *step)
 			redir = redir->next;
 			continue ;
 		}
+		// if ( == false)
+		// 	return (out_fd);
+		
 		if (access(redir_file->file, W_OK) == 0)
 		{
 			ft_close(&out_fd);
@@ -171,22 +270,6 @@ int	exec_outredir(t_exec_step *step)
 	return (out_fd);
 }
 
-t_redir	*last_inredir(t_list *in_redir)
-{
-	t_redir	*last;
-	t_redir	*current_redir;
-
-	last = NULL;
-	while (in_redir)
-	{
-		current_redir = in_redir->content;
-		if (current_redir->type == INPUT_REDIR
-			|| current_redir->type == HEREDOC)
-			last = current_redir;
-		in_redir = in_redir->next;
-	}
-	return (last);
-}
 
 int	*first_cmd(t_exec_step *step, int *fd, t_shell *shell, int out_fd)
 {
