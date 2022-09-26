@@ -6,7 +6,7 @@
 /*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/30 13:47:43 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/19 17:04:46 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/26 14:26:43 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,8 +14,8 @@
 
 int	ft_strcmp(char *s1, char *s2)
 {
-	int i;
-// PROTECT THIS
+	int	i;
+
 	i = 0;
 	while (s1[i] == s2[i] && s1[i] != '\0' && s2[i] != '\0')
 		i++;
@@ -41,13 +41,14 @@ bool	parent_builtin(t_exec_step *step)
 		return (false);
 	if (ft_strcmp(step->cmd->arg_arr[0], "unset") == 0
 		|| ft_strcmp(step->cmd->arg_arr[0], "cd") == 0
-		|| (ft_strcmp(step->cmd->arg_arr[0], "export") == 0 && step->cmd->arg_arr[1] != NULL)
+		|| (ft_strcmp(step->cmd->arg_arr[0], "export") == 0
+			&& step->cmd->arg_arr[1] != NULL)
 		|| ft_strcmp(step->cmd->arg_arr[0], "exit") == 0)
 		return (true);
 	return (false);
 }
 
-bool 	run_builtin(t_exec_step *step, t_shell *shell, bool child)
+bool	run_builtin(t_exec_step *step, t_shell *shell, bool child)
 {
 	if (ft_strcmp(step->cmd->arg_arr[0], "echo") == 0)
 		ft_echo(step, shell);

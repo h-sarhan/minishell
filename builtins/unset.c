@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   unset.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/01 19:01:46 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/19 11:44:38 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/26 14:30:17 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,100 +40,55 @@ static bool	check_unset_arg(const char *arg)
 void	unset_var(t_shell *shell, const char *var)
 {
 	size_t	i;
-	size_t	j;
-	size_t	len;
 	bool	found;
 	char	*to_look;
 	char	**env_copy;
 
-	i = 0;
+	i = -1;
 	found = false;
 	to_look = ft_strjoin(var, "=");
-	while (shell->env[i] != NULL)
-	{
+	while (shell->env[++i] != NULL)
 		if (ft_strncmp(shell->env[i], to_look, ft_strlen(to_look)) == 0)
 			found = true;
-		i++;
-	}
 	if (found == false)
 	{
 		ft_free(&to_look);
 		return ;
 	}
-	len = env_len(shell->env) - 1;
-	i = 0;
-	j = 0;
-	env_copy = ft_calloc(len + 1, sizeof(char *));
-	while (shell->env[i] != NULL)
-	{
-		if (ft_strncmp(shell->env[i], to_look, ft_strlen(to_look)) != 0)
-		{
-			env_copy[j] = shell->env[i];
-			i++;
-			j++;
-		}
-		else
-		{
-			ft_free(&shell->env[i]);
-			i++;
-		}
-	}
+	env_copy = ft_calloc(env_len(shell->env), sizeof(char *));
+	remove_env_var(shell, env_copy, to_look);
 	ft_free(&shell->env);
 	ft_free(&to_look);
 	shell->env = env_copy;
-	
 }
 
 void	unset_declared_var(t_shell *shell, const char *var)
 {
 	size_t	i;
-	size_t	j;
-	size_t	len;
 	bool	found;
 	char	*to_look;
 	char	**env_copy;
 
-	i = 0;
+	i = -1;
 	found = false;
 	if (shell->declared_env == NULL)
-	{
 		return ;
-	}
 	to_look = ft_strdup(var);
-	while (shell->declared_env[i] != NULL)
-	{
-		if (ft_strncmp(shell->declared_env[i], to_look, ft_strlen(to_look)) == 0)
+	while (shell->declared_env[++i] != NULL)
+		if (ft_strncmp(shell->declared_env[i], to_look,
+				ft_strlen(to_look)) == 0)
 			found = true;
-		i++;
-	}
 	if (found == false)
 	{
 		ft_free(&to_look);
 		return ;
 	}
-	len = env_len(shell->declared_env) - 1;
-	i = 0;
-	j = 0;
-	env_copy = ft_calloc(len + 1, sizeof(char *));
-	while (shell->declared_env[i] != NULL)
-	{
-		if (ft_strncmp(shell->declared_env[i], to_look, ft_strlen(to_look)) != 0)
-		{
-			env_copy[j] = shell->declared_env[i];
-			i++;
-			j++;
-		}
-		else
-		{
-			ft_free(&shell->declared_env[i]);
-			i++;
-		}
-	}
+	env_copy = ft_calloc(env_len(shell->declared_env), sizeof(char *));
+	remove_declared_env_var(shell, env_copy, to_look);
 	ft_free(&shell->declared_env);
 	ft_free(&to_look);
 	shell->declared_env = env_copy;
 }
-
 
 void	ft_unset(t_shell *shell, t_exec_step *step)
 {
@@ -143,10 +98,9 @@ void	ft_unset(t_shell *shell, t_exec_step *step)
 
 	error = false;
 	args = step->cmd->arg_arr;
-	i = 1;
-	while (args[i] != NULL)
+	i = 0;
+	while (args[++i] != NULL)
 	{
-		// if the argument includes an equal sign
 		if (check_unset_arg(args[i]) == false)
 		{
 			unset_error(args[i]);
@@ -157,7 +111,6 @@ void	ft_unset(t_shell *shell, t_exec_step *step)
 			unset_declared_var(shell, args[i]);
 			unset_var(shell, args[i]);
 		}
-		i++;
 	}
 	if (error)
 		step->exit_code = 1;
@@ -165,4 +118,3 @@ void	ft_unset(t_shell *shell, t_exec_step *step)
 		step->exit_code = 0;
 	shell->last_exit_code = step->exit_code;
 }
-

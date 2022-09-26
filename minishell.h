@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/21 09:39:31 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/23 13:28:23 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/26 12:03:47 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,5 +51,6 @@ struct signal
 void	ft_close(int *fd);
 char	**copy_str_arr(char **arr);
 void	free_steps(t_list **step_lists);
+char	*get_env(const t_shell *shell, const char *name);
 
 #endif

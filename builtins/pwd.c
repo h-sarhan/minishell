@@ -3,24 +3,29 @@
 /*                                                        :::      ::::::::   */
 /*   pwd.c                                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/29 21:56:29 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/20 19:36:17 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/26 14:54:42 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
+/**
+ * @brief Gets the path from env to current directory
+ * and displays it.
+ * 
+ * @param step 
+ * @param shell 
+ */
 void	ft_pwd(t_exec_step *step, t_shell *shell)
 {
-	(void)step;
 	char	*dir;
-	
+
 	dir = getcwd(NULL, 0);
 	if (!dir)
 		dir = get_env(shell, "PWD");
-	// Doesnt really replicate bash but whatever
 	if (!dir)
 		return ;
 	printf("%s\n", dir);

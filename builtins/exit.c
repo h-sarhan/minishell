@@ -3,60 +3,76 @@
 /*                                                        :::      ::::::::   */
 /*   exit.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/01 13:43:52 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/19 10:18:12 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/26 11:56:54 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-void	ft_exit(t_exec_step *step, t_shell *shell, bool child)
+/**
+ * @brief Checks for valid args in exit. 
+ * Mainly two cases.
+ * 1) If the exit is called with arguments which are not numeric
+ * 2) If exit has more than expected number of arguments.
+ * 
+ * @param step 
+ * @param i 
+ * @param j 
+ */
+void	check_valid_args(t_exec_step *step, int i, int *j)
 {
-	int		i;
-	int		j;
-	bool	check;
-	
-	(void)shell;
-	i = 0;
-	j = 0;
-	check = true;
-	if (step->cmd->arg_arr[1] && (step->cmd->arg_arr[1][i] == '-' || step->cmd->arg_arr[1][i] == '+'))
-		++i;
-	while (step->cmd->arg_arr[1] && step->cmd->arg_arr[1][i] >= '0' && step->cmd->arg_arr[1][i] <= '9')
-		++i;
-	if ((step->cmd->arg_arr[1] && step->cmd->arg_arr[1][i]) || (step->cmd->arg_arr[1] && step->cmd->arg_arr[1][0] == '\0'))
+	if ((step->cmd->arg_arr[1] && step->cmd->arg_arr[1][i])
+		|| (step->cmd->arg_arr[1] && step->cmd->arg_arr[1][0] == '\0'))
 	{
-		ft_stderr("minishell: exit: %s: numeric argument required\n", step->cmd->arg_arr[1]);
+		ft_stderr("minishell: exit: %s: numeric argument required\n",
+			step->cmd->arg_arr[1]);
 		step->exit_code = 255;
-		j = 1;
+		*j = 1;
 	}
 	else if (step->cmd->arg_arr[1] && step->cmd->arg_arr[2] != NULL)
 	{
 		ft_stderr("minishell: exit: too many arguments\n");
 		step->exit_code = 1;
-		j = 1;
+		*j = 1;
 	}
+}
+
+/**
+ * @brief Builtin Function exit. Checks for valid args and sets,
+ * the exit code to the last exit code.
+ * 
+ * @param step 
+ * @param shell 
+ * @param child 
+ */
+void	ft_exit(t_exec_step *step, t_shell *shell, bool child)
+{
+	int		i;
+	int		j;
+	bool	check;
+
+	i = 0;
+	j = 0;
+	check = true;
+	if (step->cmd->arg_arr[1] && (step->cmd->arg_arr[1][i] == '-'
+		|| step->cmd->arg_arr[1][i] == '+'))
+		i++;
+	while (step->cmd->arg_arr[1] && step->cmd->arg_arr[1][i] >= '0'
+			&& step->cmd->arg_arr[1][i] <= '9')
+		i++;
+	check_valid_args(step, i, &j);
 	if (!j && step->cmd->arg_arr[1] != NULL)
-		step->exit_code =  ft_atol(step->cmd->arg_arr[1], &check);
-	if (!child)
-		printf("exit\n");
+		step->exit_code = ft_atol(step->cmd->arg_arr[1], &check);
 	if (check == false)
 	{
 		step->exit_code = 255;
-		ft_stderr("minishell: exit: %s: numeric argument required\n", step->cmd->arg_arr[1]);
+		ft_stderr("minishell: exit: %s: numeric argument required\n",
+			step->cmd->arg_arr[1]);
 	}
+	if (!child)
+		printf("exit\n");
 	shell->last_exit_code = step->exit_code;
-	// exitcode = step->exit_code;
-	// if (step->cmd->arg_arr)
-	// {
-	// 	ft_lstclear(&shell->tokens, free_token);
-	// 	ft_lstclear(&shell->steps, free_exec_step);
-	// 	free_split_array(shell->env);
-	// 	// ft_free(&line);
-	// }
-	// printf("exiting with %d\n", step->exit_code);
-	// step->exit_code = exitcode;
-	// exit(exitcode);
 }

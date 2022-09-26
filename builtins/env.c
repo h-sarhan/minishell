@@ -6,12 +6,19 @@
 /*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/29 17:43:57 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/17 18:40:38 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/26 12:04:56 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
+/**
+ * @brief Iterate through the copy of env variables array,
+ * and print them out when env is called.
+ * 
+ * @param shell 
+ * @param step 
+ */
 void	ft_env(t_shell *shell, t_exec_step *step)
 {
 	size_t	i;
@@ -30,32 +37,4 @@ void	ft_env(t_shell *shell, t_exec_step *step)
 	}
 	step->exit_code = 0;
 	shell->last_exit_code = step->exit_code;
-}
-
-char	*get_env(const t_shell *shell, const char *name)
-{
-	size_t		i;
-	char	**vars;
-	char	*look_for;
-	size_t	look_for_len;
-
-	i = 0;
-	vars = shell->env;
-	if (name[0] == '?')
-	{
-		return (ft_itoa(shell->last_exit_code));
-	}
-	while (vars[i] != NULL)
-	{
-		look_for = ft_strjoin(name, "=");
-		look_for_len = ft_strlen(look_for);
-		if (ft_strncmp(vars[i], look_for, look_for_len) == 0)
-		{
-			ft_free(&look_for);
-			return (ft_substr(vars[i], look_for_len, ft_strlen(vars[i]) - look_for_len + 1));
-		}
-		ft_free(&look_for);
-		i++;
-	}
-	return (NULL);
 }

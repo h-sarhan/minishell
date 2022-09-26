@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 14:49:04 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/23 16:07:36 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/26 12:03:25 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -107,4 +107,33 @@ void	free_steps(t_list **step_lists)
 	}
 	// ft_lstclear(step_lists, );
 	*step_lists = NULL;
+}
+
+char	*get_env(const t_shell *shell, const char *name)
+{
+	size_t		i;
+	char		**vars;
+	char		*look_for;
+	size_t		look_for_len;
+
+	i = 0;
+	vars = shell->env;
+	if (name[0] == '?')
+	{
+		return (ft_itoa(shell->last_exit_code));
+	}
+	while (vars[i] != NULL)
+	{
+		look_for = ft_strjoin(name, "=");
+		look_for_len = ft_strlen(look_for);
+		if (ft_strncmp(vars[i], look_for, look_for_len) == 0)
+		{
+			ft_free(&look_for);
+			return (ft_substr(vars[i], look_for_len,
+					ft_strlen(vars[i]) - look_for_len + 1));
+		}
+		ft_free(&look_for);
+		i++;
+	}
+	return (NULL);
 }

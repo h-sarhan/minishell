@@ -3,46 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   export.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/30 21:25:48 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/19 11:57:24 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/26 14:55:18 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
-
-char	**resize_str_arr(char **old, size_t new_size)
-{
-	size_t	i;
-	char	**new_arr;
-
-	new_arr = ft_calloc(new_size + 1, sizeof(char *));
-	if (new_arr == NULL)
-	{
-		exit(1);
-		// ! Handle error here
-	}
-	i = 0;
-	while (old[i] != NULL)
-	{
-		new_arr[i] = old[i];
-		i++;
-	}
-	// free_split_array(old);
-	ft_free(&old);
-	return (new_arr);
-}
-
-size_t	env_len(char **env)
-{
-	size_t	len;
-
-	len = 0;
-	while (env[len] != NULL)
-		len++;
-	return (len);
-}
 
 void	update_env(t_shell *shell, const char *str)
 {
@@ -62,36 +30,20 @@ void	update_env(t_shell *shell, const char *str)
 	to_look = ft_strjoin(key, "=");
 	key_val = strjoin_free(key_val, val, 3);
 	i = 0;
-	while (shell->env[i] != NULL)
-	{
-		if (ft_strncmp(shell->env[i], to_look, ft_strlen(to_look)) == 0)
-		{
-			ft_free(&to_look);
-			ft_free(&shell->env[i]);
-			ft_free(&key);
-			shell->env[i] = key_val;
-			return ;
-		}
-		i++;
-	}
+	if (assign_val_to_env(shell, to_look, key, key_val) == false)
+		return ;
 	ft_free(&to_look);
 	ft_free(&key);
 	shell->env = resize_str_arr(shell->env, env_len(shell->env) + 1);
 	shell->env[env_len(shell->env)] = key_val;
 }
 
-static void	export_error(char *arg)
-{
-	ft_putstr_fd("export: `", STDERR_FILENO);
-	ft_putstr_fd(arg, STDERR_FILENO);
-	ft_putendl_fd("`: not a valid identifier", STDERR_FILENO);
-}
-
-static bool	check_export_arg(const char *arg)
+bool	check_export_arg(const char *arg)
 {
 	size_t	i;
 
-	if (ft_isdigit(arg[0]) || arg[0] == '=' || (!ft_isalpha(arg[0]) && arg[0] != '_'))
+	if (ft_isdigit(arg[0]) || arg[0] == '='
+		|| (!ft_isalpha(arg[0]) && arg[0] != '_'))
 		return (false);
 	i = 1;
 	while (arg[i] != '=' && arg[i] != '\0')
@@ -105,31 +57,22 @@ static bool	check_export_arg(const char *arg)
 	return (true);
 }
 
-
-static void export_no_args(t_shell *shell, t_exec_step *step)
+static void	export_no_args(t_shell *shell, t_exec_step *step)
 {
 	size_t	i;
+	int		j;
+	char	*key;
+	char	*val;
 
 	i = 0;
 	while (shell->env[i] != NULL)
 	{
-		int j = 0;
+		j = 0;
 		while (shell->env[i][j] != '=')
 			j++;
-		char *key = ft_substr(shell->env[i], 0, j);
-		char *val = ft_substr(shell->env[i], j + 1, ft_strlen(shell->env[i]));
-		if (val[0] == '\0')
-		{
-			ft_free(&val);
-			printf("declare -x %s\n", key);
-		}
-		else
-		{
-			val = strjoin_free("=\"", val, 2);
-			val = strjoin_free(val, "\"", 1);
-			key = strjoin_free(key, val, 3);
-			printf("declare -x %s\n", key);
-		}
+		key = ft_substr(shell->env[i], 0, j);
+		val = ft_substr(shell->env[i], j + 1, ft_strlen(shell->env[i]));
+		print_the_export_env(&val, &key);
 		ft_free(&key);
 		i++;
 	}
@@ -148,16 +91,15 @@ void	update_declared_env(t_shell *shell, char *str)
 	size_t	i;
 	char	*to_look;
 
-	i = 0;
+	i = -1;
 	to_look = ft_strjoin(str, "=");
-	while (shell->env[i] != NULL)
+	while (shell->env[++i] != NULL)
 	{
 		if (ft_strncmp(shell->env[i], to_look, ft_strlen(to_look)) == 0)
 		{
 			ft_free(&to_look);
 			return ;
 		}
-		i++;
 	}
 	ft_free(&to_look);
 	if (shell->declared_env == NULL)
@@ -168,19 +110,29 @@ void	update_declared_env(t_shell *shell, char *str)
 		shell->declared_env[0] = ft_strdup(str);
 		return ;
 	}
-	
-	shell->declared_env = resize_str_arr(shell->declared_env, env_len(shell->declared_env) + 1);
+	shell->declared_env = resize_str_arr(shell->declared_env,
+			env_len(shell->declared_env) + 1);
 	shell->declared_env[env_len(shell->declared_env)] = ft_strdup(str);
 }
 
-// * Case 1: exported variable doesnt exist. Add new line
-// * Case 2: exported variable exists. Update variable
-// * Case 3: no equal sign. Do nothing
-// * Case 4: variable equals nothing. Set the value of the variable to be nothing
-// * Case 5: variable equals "". Set the value of the variable to be nothing
-// * Case 6: Multiple variables. Update/set all of them
-// * Case 7: Includes = by itself. Show error but still update other environmental variables if they are present
-// * Case 8: Identifier starts with a number. Show error but still update other environmental variables if they are present
+// // * Case 1: exported variable doesnt exist. Add new line
+// // * Case 2: exported variable exists. Update variable
+// // * Case 3: no equal sign. Do nothing
+// // * Case 4: variable equals nothing. Set the value of the 
+// variable to be nothing
+// // * Case 5: variable equals "". Set the value of the variable to be nothing
+// // * Case 6: Multiple variables. Update/set all of them
+// // * Case 7: Includes = by itself. Show error but still update 
+// other environmental variables if they are present
+// // * Case 8: Identifier starts with a number. Show error but 
+// still update other environmental variables if they are present
+
+/**
+ * @brief Function is triggered when export is called.
+ * 
+ * @param shell 
+ * @param step 
+ */
 void	ft_export(t_shell *shell, t_exec_step *step)
 {
 	char	**args;
@@ -192,24 +144,7 @@ void	ft_export(t_shell *shell, t_exec_step *step)
 	if (args[1] == NULL)
 		export_no_args(shell, step);
 	i = 1;
-	while (args[i] != NULL)
-	{
-		if (check_export_arg(args[i]) == false)
-		{
-			error = true;
-			export_error(args[i]);
-		}
-		else if (ft_strchr(args[i], '=') != NULL)
-		{
-			update_env(shell, args[i]);
-		}
-		else
-		{
-			unset_declared_var(shell, args[i]);
-			update_declared_env(shell, args[i]);
-		}
-		i++;
-	}
+	run_export_with_args(args, shell, &error);
 	if (error)
 		step->exit_code = 1;
 	else
