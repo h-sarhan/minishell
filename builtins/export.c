@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   export.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/30 21:25:48 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/26 14:55:18 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/26 16:16:51 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -136,14 +136,12 @@ void	update_declared_env(t_shell *shell, char *str)
 void	ft_export(t_shell *shell, t_exec_step *step)
 {
 	char	**args;
-	size_t	i;
 	bool	error;
 
 	args = step->cmd->arg_arr;
 	error = false;
 	if (args[1] == NULL)
 		export_no_args(shell, step);
-	i = 1;
 	run_export_with_args(args, shell, &error);
 	if (error)
 		step->exit_code = 1;

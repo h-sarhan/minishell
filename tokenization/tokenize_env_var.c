@@ -6,13 +6,13 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/26 12:36:39 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/26 12:45:06 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/26 17:42:41 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-void	set_quotes(const char ch, bool *in_quote, char *quote)
+void	set_quotes(const char ch, char *quote, bool *in_quote)
 {
 	if (ch == '\'' || ch == '\"')
 	{
@@ -41,7 +41,7 @@ static char	*get_env_string(const char *line, size_t *idx)
 	quote = '\0';
 	while (line[i] != '\0')
 	{
-		set_quotes(line[i], &in_quote, &quote);
+		set_quotes(line[i], &quote, &in_quote);
 		if ((line[i] == ' ' || ft_strchr("<>|(&)", line[i])) && !in_quote)
 			break ;
 		i++;

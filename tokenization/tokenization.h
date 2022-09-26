@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:44:00 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/26 09:25:14 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/26 17:45:58 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,5 +87,14 @@ t_list	*tokenize_normal(const t_shell *shell, const char *line, size_t *idx,
 void	set_in_quotes(const char *str, const size_t i, bool *in_single,
 			bool *in_double);
 bool	match_str_on_wildcard(const char *str, char **wc_segs);
-
+bool	is_operator(const char *line, const size_t i);
+t_list	*tokenize_operator_token(const char *line, size_t *i);
+void	*token_error(const char *msg, t_list **tokens, bool *success);
+bool	last_token_was_heredoc(t_list *tokens);
+void	tokenize_env_cleanup(const t_shell *shell, t_list **el,
+			t_list **tokens, bool *success);
+bool	tokenize_wildcard(const t_shell *shell, t_list **el,
+			t_list **tokens, bool *success);
+void	set_quotes(const char ch, char *quote, bool *in_quote);
+bool	check_for_token_errors(const char *line, bool *success);
 #endif
