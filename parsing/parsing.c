@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/21 12:03:03 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/26 20:27:51 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/26 20:56:03 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,57 +58,66 @@ bool	check_for_errors(t_list *tokens)
 	return (true);
 }
 
+t_redir	*create_redir(t_token **token, t_list **start, t_exec_step *step)
+{
+	t_redir	*redir;
+
+	redir = ft_calloc(1, sizeof(t_redir));
+	redir->type = (*token)->type;
+	*start = (*start)->next;
+	if (*start == NULL || redir == NULL)
+	{
+		ft_free(&redir);
+		ft_lstclear(&step->cmd->args, free);
+		ft_lstclear(&step->cmd->redirs, free_redir);
+		return (NULL);
+	}
+	*token = (*start)->content;
+	if (is_redirection(*token) == true)
+	{
+		ft_free(&redir);
+		ft_lstclear(&step->cmd->args, free);
+		ft_lstclear(&step->cmd->redirs, free_redir);
+		return (NULL);
+	}
+	if (redir->type != HEREDOC)
+		redir->file = ft_strdup((*token)->substr);
+	else
+		redir->limiter = ft_strdup((*token)->substr);
+	return (redir);
+}
+
+
+bool	parsing_error(t_redir *redir, t_exec_step *step)
+{
+	ft_free(&redir);
+	ft_lstclear(&step->cmd->args, free);
+	ft_lstclear(&step->cmd->redirs, free_redir);
+	return (false);
+}
+
 bool	fill_exec_step(t_exec_step *step, t_list *start,
 								const t_list *end)
 {
-	t_token	*token;
+	t_token	*tkn;
 	t_redir	*redir;
-	char	*cmd_arg;
 
 	redir = NULL;
-	cmd_arg = NULL;
 	while (start != NULL && start != end->next)
 	{
-		token = start->content;
-		if (is_redirection(token) == true)
+		tkn = start->content;
+		if (is_redirection(tkn) == true)
 		{
-			redir = ft_calloc(1, sizeof(t_redir));
-			redir->type = token->type;
-			start = start->next;
-			if (start == NULL)
-			{
-				ft_free(&redir);
-				ft_lstclear(&step->cmd->args, free);
-				ft_lstclear(&step->cmd->redirs, free_redir);
+			redir = create_redir(&tkn, &start, step);
+			if (redir == NULL)
 				return (false);
-			}
-			token = start->content;
-			if (is_redirection(token) == true)
-			{
-				ft_free(&redir);
-				ft_lstclear(&step->cmd->args, free);
-				ft_lstclear(&step->cmd->redirs, free_redir);
-				return (false);
-			}
-			if (redir->type != HEREDOC)
-				redir->file = ft_strdup(token->substr);
-			else
-				redir->limiter = ft_strdup(token->substr);
 			ft_lstadd_back(&step->cmd->redirs, ft_lstnew(redir));
 		}
-		else if (token->type == DOUBLE_QUOTED_STRING
-			|| token->type == QUOTED_STRING || token->type == NORMAL)
-		{
-			cmd_arg = ft_strdup(token->substr);
-			ft_lstadd_back(&step->cmd->args, ft_lstnew(cmd_arg));
-		}
-		else if (token->type == SUB_EXPR)
-		{
-			ft_free(&redir);
-			ft_lstclear(&step->cmd->args, free);
-			ft_lstclear(&step->cmd->redirs, free_redir);
-			return (false);
-		}
+		else if (tkn->type == DOUBLE_QUOTED_STRING
+			|| tkn->type == QUOTED_STRING || tkn->type == NORMAL)
+			ft_lstadd_back(&step->cmd->args, ft_lstnew(ft_strdup(tkn->substr)));
+		else if (tkn->type == SUB_EXPR)
+			return (parsing_error(redir, step));
 		start = start->next;
 	}
 	return (true);
@@ -123,11 +132,9 @@ t_list	*parse_tokens(t_list *tokens, bool *success)
 	t_list		*cmd_end;
 
 	steps = NULL;
-	if (check_for_errors(tokens) == false)
-	{
-		*success = false;
+	*success = check_for_errors(tokens);
+	if (*success == false)
 		return (steps);
-	}
 	while (tokens != NULL)
 	{
 		token = tokens->content;
