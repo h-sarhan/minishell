@@ -6,7 +6,7 @@
 #    By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/04/29 21:51:32 by hsarhan           #+#    #+#              #
-#    Updated: 2022/09/26 22:21:34 by hsarhan          ###   ########.fr        #
+#    Updated: 2022/09/27 00:13:15 by hsarhan          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -71,7 +71,7 @@ BUILTINS_SRCS = echo.c pwd.c builtins.c env.c exit.c export.c export_utils.c \
 				cd.c cd_utils.c unset.c unset_utils.c
 BUILTINS_SRCS := $(addprefix builtins/, $(BUILTINS_SRCS))
 
-EXEC_SRCS = exec.c here_doc.c
+EXEC_SRCS = exec.c here_doc.c first_cmd.c
 EXEC_SRCS := $(addprefix exec/, $(EXEC_SRCS))
 
 SIGNAL_SRCS = signal_handlers.c signals.c
