@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/21 12:03:03 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/25 19:56:41 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/26 20:27:51 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,12 +37,9 @@ bool	check_for_errors(t_list *tokens)
 	if (tokens == NULL)
 		return (true);
 	token = tokens->content;
-	if (is_terminator(token) == true)
-		return (false);
-	if (ft_lstsize(tokens) == 1 && is_redirection(token) == true)
-		return (false);
-	token = ft_lstlast(tokens)->content;
-	if (is_terminator(token) == true)
+	if (is_terminator(token) == true
+		|| (ft_lstsize(tokens) == 1 && is_redirection(token))
+		|| (is_terminator(ft_lstlast(tokens)->content) == true))
 		return (false);
 	while (tokens->next != NULL)
 	{
@@ -50,17 +47,11 @@ bool	check_for_errors(t_list *tokens)
 		next_token = tokens->next->content;
 		if (((is_terminator(token) && is_terminator(next_token)))
 			|| (is_redirection(token) && is_redirection(next_token))
-			|| (is_redirection(token) && is_terminator(next_token)))
-		{
-			return (false);
-		}
-		if (is_redirection(token) && next_token->expanded == true)
-			return (false);
-		if (is_redirection(token) && next_token->type == SUB_EXPR)
-			return (false);
-		if (token->type == SUB_EXPR && is_redirection(next_token))
-			return (false);
-		if (token->type == PIPE && next_token->type == SUB_EXPR)
+			|| (is_redirection(token) && is_terminator(next_token))
+			|| (is_redirection(token) && next_token->expanded == true)
+			|| (is_redirection(token) && next_token->type == SUB_EXPR)
+			|| (token->type == SUB_EXPR && is_redirection(next_token))
+			|| (token->type == PIPE && next_token->type == SUB_EXPR))
 			return (false);
 		tokens = tokens->next;
 	}
@@ -130,10 +121,8 @@ t_list	*parse_tokens(t_list *tokens, bool *success)
 	t_exec_step	*step;
 	t_list		*cmd_start;
 	t_list		*cmd_end;
-	size_t		step_number;
 
 	steps = NULL;
-	step_number = 0;
 	if (check_for_errors(tokens) == false)
 	{
 		*success = false;
@@ -214,8 +203,6 @@ t_list	*parse_tokens(t_list *tokens, bool *success)
 					return (steps);
 				}
 			}
-			step->step_number = step_number;
-			step_number++;
 			ft_lstadd_back(&steps, ft_lstnew(step));
 		}
 		tokens = tokens->next;
