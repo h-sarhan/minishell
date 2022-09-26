@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/21 12:03:03 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/26 22:23:04 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/26 23:50:26 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,10 @@ bool	parse_subexpr(t_token *token, t_list **steps,
 
 	step = ft_calloc(1, sizeof(t_exec_step));
 	if (step == NULL)
+	{
+		*success = false;
 		return (false);
+	}
 	step->subexpr_line = ft_strdup(token->substr);
 	ft_lstadd_back(steps, ft_lstnew(step));
 	if (check_next_subexpr_token(tokens, &token, step, success) == false)
@@ -39,15 +42,12 @@ t_list	*parse_tokens(t_list *tokens, bool *success)
 	while (tokens != NULL)
 	{
 		token = tokens->content;
-		if (token->type == SUB_EXPR
-			&& parse_subexpr(token, &steps, tokens, success) == false)
-			return (steps);
+		if (token->type == SUB_EXPR)
+			parse_subexpr(token, &steps, tokens, success);
 		else if (is_terminator(token) == false)
-		{
 			steps = parse_step(&tokens, &token, &steps, success);
-			if (*success == false)
-				return (steps);
-		}
+		if (*success == false)
+			return (steps);
 		tokens = tokens->next;
 	}
 	ft_lstiter(steps, list_to_str_arr);
