@@ -6,15 +6,10 @@
 #    By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/04/29 21:51:32 by hsarhan           #+#    #+#              #
-#    Updated: 2022/09/26 14:45:44 by mkhan            ###   ########.fr        #
+#    Updated: 2022/09/26 14:58:04 by mkhan            ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-TOKENIZATION_SRCS = tokenization.c expansion.c \
-					tokenization2.c wildcard.c split_wildcard.c \
-					print_tokens.c free_funcs.c tokenization3.c join_tokens.c
-
-TOKENIZATION_SRCS := $(addprefix tokenization/, $(TOKENIZATION_SRCS))
 COLOR=\033[0;34m
 NC=\033[0m
 RED=\033[0;31m
@@ -60,7 +55,14 @@ GIGASHELL = \
 \t\t ╚██████╔╝██║╚██████╔╝██║░░██║██████╔╝██║░░██║███████╗███████╗███████╗ ╚█████╔╝╚█████╔╝██║░╚═╝░██║██║░░░░░██║███████╗███████╗██████╔╝\n \
 \t\t ░╚═════╝░╚═╝░╚═════╝░╚═╝░░╚═╝╚═════╝░╚═╝░░╚═╝╚══════╝╚══════╝╚══════╝ ░╚════╝░░╚════╝░╚═╝░░░░░╚═╝╚═╝░░░░░╚═╝╚══════╝╚══════╝╚═════╝░\n \
 
-PARSING_SRCS = parsing.c parsing_utils.c
+TOKENIZATION_SRCS = tokenization.c expansion.c \
+					tokenization2.c wildcard.c split_wildcard.c \
+					print_tokens.c free_funcs.c tokenization3.c \
+					contains_env_var.c wildcard_algorithm.c
+
+TOKENIZATION_SRCS := $(addprefix tokenization/, $(TOKENIZATION_SRCS))
+
+PARSING_SRCS = parsing.c parsing_utils.c check_subexprs.c
 PARSING_SRCS := $(addprefix parsing/, $(PARSING_SRCS))
 
 BUILTINS_SRCS = echo.c pwd.c builtins.c env.c exit.c export.c export_utils.c \
@@ -70,7 +72,10 @@ BUILTINS_SRCS := $(addprefix builtins/, $(BUILTINS_SRCS))
 EXEC_SRCS = exec.c here_doc.c
 EXEC_SRCS := $(addprefix exec/, $(EXEC_SRCS))
 
-SRCS = $(TOKENIZATION_SRCS) $(PARSING_SRCS) $(BUILTINS_SRCS) $(EXEC_SRCS)
+SIGNAL_SRCS = signal_handlers.c signals.c
+SIGNAL_SRCS := $(addprefix signals/, $(SIGNAL_SRCS))
+
+SRCS = $(TOKENIZATION_SRCS) $(PARSING_SRCS) $(BUILTINS_SRCS) $(EXEC_SRCS) $(SIGNAL_SRCS)
 
 SRCS += utils.c main.c
 

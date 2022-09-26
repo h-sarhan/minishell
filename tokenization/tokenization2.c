@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 22:19:29 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/25 15:37:27 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/26 08:57:10 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,13 +77,14 @@ char	*eat_quotes(const char *str)
 	return (trimmed_str);
 }
 
-t_list	*tokenize_normal(const t_shell *shell, const char *line, size_t *idx, bool expand_var)
+t_list	*tokenize_normal(const t_shell *shell, const char *line, size_t *idx,
+	bool expand_var)
 {
 	size_t	i;
 	t_token	*tkn;
 	t_list	*el;
 	char	quote;
-	
+
 	quote = '\0';
 	i = *idx;
 	tkn = ft_calloc(1, sizeof(t_token));
@@ -119,13 +120,10 @@ t_list	*tokenize_normal(const t_shell *shell, const char *line, size_t *idx, boo
 	if (expand_var == true)
 	{
 		while (contains_env_var(tkn->substr))
-			tkn->substr = expand_double_quote(shell, tkn->substr);
+			tkn->substr = expand_env_var(shell, tkn->substr);
 	}
-	// if (quote != '\0')
-	// {
-		tkn->substr = eat_dollars(tkn->substr);
-		tkn->substr = eat_quotes(tkn->substr);
-	// }
+	tkn->substr = eat_dollars(tkn->substr);
+	tkn->substr = eat_quotes(tkn->substr);
 	if (tkn->substr == NULL)
 		return (NULL);
 	el = ft_lstnew(tkn);
@@ -133,8 +131,8 @@ t_list	*tokenize_normal(const t_shell *shell, const char *line, size_t *idx, boo
 	return (el);
 }
 
-static t_list	*tokenize_subexpr_helper(const t_shell *shell, t_token *tkn, const size_t i,
-					const char *line, size_t *idx)
+static t_list	*tokenize_subexpr_helper(const t_shell *shell, t_token *tkn,
+	const size_t i, const char *line, size_t *idx)
 {
 	bool	success;
 	t_list	*el;

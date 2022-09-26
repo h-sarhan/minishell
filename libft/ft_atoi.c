@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_atoi.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/12 22:18:16 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/25 17:09:21 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/25 18:02:24 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,14 +45,33 @@ int	ft_atoi(const char *str)
 	}
 	return (num * sign);
 }
+
+static long	ft_atol_helper(const char *str, int i, bool *check)
+{
+	long	temp;
+	long	num;
+
+	num = 0;
+	temp = 0;
+	while (str[i] >= '0' && str[i] <= '9')
+	{
+		temp = num;
+		num *= 10;
+		num += str[i++] - '0';
+		if (temp > num)
+		{
+			*check = false;
+			return (-1);
+		}
+	}
+	return (num);
+}
+
 long	ft_atol(const char *str, bool *check)
 {
-	long	num;
-	long	temp;
 	int		i;
 	int		sign;
 
-	num = 0;
 	i = 0;
 	sign = 1;
 	*check = true;
@@ -66,16 +85,5 @@ long	ft_atol(const char *str, bool *check)
 			sign = -1;
 		i++;
 	}
-	while (str[i] >= '0' && str[i] <= '9')
-	{
-		temp = num;
-		num *= 10;
-		num += str[i++] - '0';
-		if (temp > num)
-		{
-			*check = false;
-			return (-1);
-		}
-	}
-	return (num * sign);
+	return (ft_atol_helper(str, i, check) * sign);
 }

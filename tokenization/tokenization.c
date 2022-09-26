@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 14:46:52 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/25 16:00:20 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/26 08:57:10 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,8 +48,6 @@ static char	*get_env_string(const char *line, size_t *idx)
 	bool	in_quote;
 	char	quote;
 
-	// * Stupid case: 
-	// $"lkjvnfdlinfd liuhdf liufhnv *kuh df || "*'vdfuhvdfl'"vdskhbvfd"$GGGGGG" SSS "
 	i = *idx;
 	in_quote = false;
 	quote = '\0';
@@ -68,7 +66,7 @@ static char	*get_env_string(const char *line, size_t *idx)
 				quote = '\0';
 			}
 		}
-		if ((line[i] == ' ' || ft_strchr("<>|(&)", line[i]) != NULL) && in_quote == false)
+		if ((line[i] == ' ' || ft_strchr("<>|(&)", line[i])) && !in_quote)
 			break ;
 		i++;
 	}
@@ -82,7 +80,7 @@ static char	*get_env_string(const char *line, size_t *idx)
 	return (str);
 }
 
-char *eat_dollars(const char *str)
+char	*eat_dollars(const char *str)
 {
 	size_t	num_dollars;
 	size_t	i;
@@ -136,7 +134,6 @@ char *eat_dollars(const char *str)
 		}
 		if (in_quote == true)
 		{
-
 			trimmed_str[j] = str[i];
 			j++;
 			i++;
@@ -158,7 +155,8 @@ char *eat_dollars(const char *str)
 	return (trimmed_str);
 }
 
-t_list	*tokenize_env_variable(const t_shell *shell, const char *line, size_t *idx)
+t_list	*tokenize_env_variable(const t_shell *shell, const char *line,
+	size_t *idx)
 {
 	t_token	*tkn;
 	t_list	*el;
@@ -168,25 +166,29 @@ t_list	*tokenize_env_variable(const t_shell *shell, const char *line, size_t *id
 		return (NULL);
 	tkn->type = ENV_VAR;
 	tkn->substr = get_env_string(line, idx);
-	// printf("substr is |%s|\n", tkn->substr);
 	if (tkn->substr == NULL)
 		return (NULL);
-	if (ft_strncmp(tkn->substr, "$\"\"", ft_strlen(tkn->substr)) == 0 && ft_strlen(tkn->substr) == 3)
+	if (ft_strncmp(tkn->substr, "$\"\"", ft_strlen(tkn->substr)) == 0
+		&& ft_strlen(tkn->substr) == 3)
 	{
 		tkn->type = NORMAL;
 		el = ft_lstnew(tkn);
 		return (el);
 	}
 	while (contains_env_var(tkn->substr))
-		tkn->substr = expand_double_quote(shell, tkn->substr);
-	// printf("substr after expanding is |%s|\n", tkn->substr);
-	
+		tkn->substr = expand_env_var(shell, tkn->substr);
 	tkn->type = NORMAL;
 	tkn->substr = eat_dollars(tkn->substr);
 	tkn->substr = eat_quotes(tkn->substr);
 	el = ft_lstnew(tkn);
 	return (el);
-	
+}
+
+static t_token	*last_token(t_list *tokens)
+{
+	if (tokens == NULL)
+		return (NULL);
+	return (ft_lstlast(tokens)->content);
 }
 
 t_list	*tokenize_line(const t_shell *shell, const char *line, bool *success)
@@ -194,9 +196,15 @@ t_list	*tokenize_line(const t_shell *shell, const char *line, bool *success)
 	size_t	i;
 	t_list	*tokens;
 	t_list	*el;
-	bool	in_quotes = false;
-	char	quote = '\0';
-	
+	bool	in_quotes;
+	char	quote;
+	t_token	*tok;
+	t_token	*envvar_token;
+	t_list	*wildcard_tokens;
+	char	*substr_copy;
+
+	in_quotes = false;
+	quote = '\0';
 	i = 0;
 	*success = true;
 	while (line[i] != '\0')
@@ -215,8 +223,8 @@ t_list	*tokenize_line(const t_shell *shell, const char *line, bool *success)
 			}
 		}
 		if (!in_quotes && (line[i] == '\\' || line[i] == ';' || line[i] == '`'
-			|| (line[i] == '&' && line[i + 1] != '&')
-			|| (line[i] == '(' && line[i + 1] == ')')))
+				|| (line[i] == '&' && line[i + 1] != '&')
+				|| (line[i] == '(' && line[i + 1] == ')')))
 		{
 			write_to_stderr("Parse Error: Invalid input\n");
 			*success = false;
@@ -252,10 +260,9 @@ t_list	*tokenize_line(const t_shell *shell, const char *line, bool *success)
 			}
 			ft_lstadd_back(&tokens, el);
 		}
-		// else if (line[i] == '$' && line[i + 1] != '?')
-		else if (line[i] == '$' && (tokens == NULL || (tokens != NULL && ((t_token *)ft_lstlast(tokens)->content)->type != HEREDOC)))
+		else if (line[i] == '$' && (tokens == NULL
+				|| (tokens != NULL && last_token(tokens)->type != HEREDOC)))
 		{
-			// printf("GOES HERE\n");
 			el = tokenize_env_variable(shell, line, &i);
 			if (el == NULL)
 			{
@@ -264,7 +271,7 @@ t_list	*tokenize_line(const t_shell *shell, const char *line, bool *success)
 				write_to_stderr("Parse Error: Invalid input\n");
 				return (NULL);
 			}
-			t_token	*envvar_token = el->content;
+			envvar_token = el->content;
 			if (envvar_token->substr == NULL)
 				ft_lstclear(&el, free_token);
 			else if (ft_strncmp(envvar_token->substr, "$\"\"", 3) == 0)
@@ -273,14 +280,14 @@ t_list	*tokenize_line(const t_shell *shell, const char *line, bool *success)
 				envvar_token->substr = ft_strdup("");
 				ft_lstadd_back(&tokens, el);
 			}
-			else if (ft_strlen(envvar_token->substr) != 0 && ft_strchr(envvar_token->substr, '$') != NULL)
+			else if (ft_strlen(envvar_token->substr) != 0
+				&& ft_strchr(envvar_token->substr, '$') != NULL)
 			{
 				ft_lstadd_back(&tokens, el);
 			}
 			else if (ft_strlen(envvar_token->substr) != 0)
 			{
-				char *substr_copy = ft_strdup(envvar_token->substr);
-				// printf("%s\n", substr_copy);
+				substr_copy = ft_strdup(envvar_token->substr);
 				ft_lstclear(&el, free_token);
 				el = tokenize_line(shell, substr_copy, success);
 				ft_free(&substr_copy);
@@ -343,17 +350,6 @@ t_list	*tokenize_line(const t_shell *shell, const char *line, bool *success)
 			}
 			ft_lstadd_back(&tokens, el);
 		}
-		// else if (line[i] == '$' && line[i + 1] == '?')
-		// {
-		// 	el = tokenize_operator(line, &i, LAST_EXIT);
-		// 	if (el == NULL)
-		// 	{
-		// 		*success = false;
-		// 		ft_lstclear(&tokens, free_token);
-		// 		return (NULL);
-		// 	}
-		// 	ft_lstadd_back(&tokens, el);
-		// }
 		else if (line[i] == '&' && line[i + 1] == '&')
 		{
 			el = tokenize_operator(line, &i, AND);
@@ -396,7 +392,8 @@ t_list	*tokenize_line(const t_shell *shell, const char *line, bool *success)
 		}
 		else if (line[i] != ' ')
 		{
-			el = tokenize_normal(shell, line, &i, tokens != NULL && ((t_token *)ft_lstlast(tokens)->content)->type != HEREDOC);
+			el = tokenize_normal(shell, line, &i,
+					tokens != NULL && last_token(tokens)->type != HEREDOC);
 			if (el == NULL)
 			{
 				*success = false;
@@ -404,16 +401,15 @@ t_list	*tokenize_line(const t_shell *shell, const char *line, bool *success)
 				ft_lstclear(&el, free_token);
 				return (NULL);
 			}
-			t_token	*tok = el->content;
+			tok = el->content;
 			if (ft_strchr(tok->substr, '*') != NULL)
 			{
-				// printf("Goes here\n");
-				// tok->substr = eat_quotes(tok->substr);
 				tok->substr = expand_wildcard(tok->substr);
 				tok->expanded = true;
 				if (ft_strchr(tok->substr, '*') == NULL)
 				{
-					t_list	*wildcard_tokens = tokenize_line(shell, tok->substr, success);
+					wildcard_tokens = tokenize_line(shell, tok->substr,
+							success);
 					if (*success == false || wildcard_tokens == NULL)
 					{
 						ft_lstclear(&el, free_token);
