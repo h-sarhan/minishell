@@ -6,7 +6,7 @@
 /*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/01 18:16:54 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/26 18:37:28 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/26 19:45:10 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -204,73 +204,151 @@ t_redir	*last_inredir(t_list *in_redir)
 	return (last);
 }
 
+/**
+ * @brief Checks if the file given in the redirection argument exists.
+ * 
+ * @param redir_file 
+ * @param out_fd 
+ * @return true 
+ * @return false 
+ */
+bool	check_redir_file_exist(t_redir *redir_file, int *out_fd)
+{
+	if (access(redir_file->file, W_OK) == 0)
+	{
+		ft_close(out_fd);
+		if (redir_file->type == APPEND)
+			*out_fd = open(redir_file->file, O_WRONLY | O_APPEND);
+		else
+			*out_fd = open(redir_file->file, O_WRONLY | O_TRUNC);
+		if (*out_fd == -1)
+			ft_stderr("minishell: %s: failed to open\n", redir_file->file);
+		return (true);
+	}
+	else if ((access(redir_file->file, F_OK) != -1
+			&& access(redir_file->file, W_OK) == -1)
+		|| is_dir(redir_file->file))
+		return (false);
+	return (true);
+}
+
+/**
+ * @brief Create a redir file if the given file doesn't exist.
+ * 
+ * @param redir_file 
+ * @param out_fd 
+ * @return true 
+ * @return false 
+ */
+bool	create_redir_file(t_redir *redir_file, int *out_fd)
+{
+	ft_close(out_fd);
+	if (redir_file->type == APPEND)
+		*out_fd = open(redir_file->file,
+				O_WRONLY | O_CREAT | O_APPEND, 0644);
+	else
+		*out_fd = open(redir_file->file,
+				O_WRONLY | O_CREAT | O_TRUNC, 0644);
+	if (*out_fd == -1)
+	{	
+		ft_stderr("minishell: %s: file failed to create\n",
+			redir_file->file);
+		return (false);
+	}
+	return (true);
+}
+
+/**
+ * @brief Checks if the files specified in the redirection argument exists,
+ * and are accessible.
+ * 
+ * @param redir_file 
+ * @param redir 
+ * @return int 
+ */
+
+int	check_access_for_redir(t_redir *redir_file, t_list **redir)
+{
+	if (redir_file->type == INPUT_REDIR)
+	{
+		if (access(redir_file->file, R_OK) == -1)
+			return (1);
+	}
+	else if (redir_file->type == OUTPUT_REDIR || redir_file->type == APPEND)
+	{
+		if ((access(redir_file->file, F_OK) != -1
+				&& access(redir_file->file, W_OK) == -1)
+			|| is_dir(redir_file->file))
+			return (1);
+	}
+	if (redir_file->type == INPUT_REDIR || redir_file->type == HEREDOC)
+	{
+		*redir = (*redir)->next;
+		return (2);
+	}
+	return (0);
+}
+
+/**
+ * @brief Calls functions to check for valid redir files, 
+ * returns the out_fd which if the fd for the file opened/created.
+ * 
+ * @param step 
+ * @return int 
+ */
 int	exec_outredir(t_exec_step *step)
 {
 	t_list	*redir;
 	t_redir	*redir_file;
 	int		out_fd;
+	int 	check;
 
 	out_fd = -1;
+	if (step->cmd == NULL)
+		return (out_fd);
 	redir = step->cmd->redirs;
 	while (redir)
 	{
 		redir_file = redir->content;
-		if (redir_file->type == INPUT_REDIR)
-		{
-			if (access(redir_file->file, R_OK) == -1)
-				break ;
-		}
-		else if (redir_file->type == OUTPUT_REDIR || redir_file->type == APPEND)
-		{
-			if ((access(redir_file->file, F_OK) != -1
-					&& access(redir_file->file, W_OK) == -1)
-				|| is_dir(redir_file->file))
-				break ;
-		}
-		if (redir_file->type == INPUT_REDIR || redir_file->type == HEREDOC)
-		{
-			redir = redir->next;
+		check = check_access_for_redir(redir_file, &redir);
+		if (check == 1)
+			break ;
+		else if (check == 2)
 			continue ;
-		}
-		// if ( == false)
-		// 	return (out_fd);
-		
-		if (access(redir_file->file, W_OK) == 0)
-		{
-			ft_close(&out_fd);
-			if (redir_file->type == APPEND)
-				out_fd = open(redir_file->file, O_WRONLY | O_APPEND);
-			else
-				out_fd = open(redir_file->file, O_WRONLY | O_TRUNC);
-			if (out_fd == -1)
-				ft_stderr("minishell: %s: failed to open\n", redir_file->file);
-		}
-		else if ((access(redir_file->file, F_OK) != -1
-				&& access(redir_file->file, W_OK) == -1)
-			|| is_dir(redir_file->file))
+		if (check_redir_file_exist(redir_file, &out_fd) == false)
 			return (out_fd);
 		else
-		{
-			ft_close(&out_fd);
-			if (redir_file->type == APPEND)
-				out_fd = open(redir_file->file,
-						O_WRONLY | O_CREAT | O_APPEND, 0644);
-			else
-				out_fd = open(redir_file->file,
-						O_WRONLY | O_CREAT | O_TRUNC, 0644);
-			if (out_fd == -1)
-			{	
-				ft_stderr("minishell: %s: file failed to create\n",
-					redir_file->file);
+			if (create_redir_file(redir_file, &out_fd) == false)
 				return (-2);
-			}
-		}
 		redir = redir->next;
 	}
 	return (out_fd);
 }
 
 
+int	run_builtin_in_parent(t_exec_step *step, t_shell *shell, int fd)
+{
+	int	exitcode;
+	
+	if (parent_builtin(step) && !step->pipe_next)
+	{
+		// ! We dont dup2 input/output/heredoc redirections here
+		run_builtin(step, shell, false);
+		if (ft_strcmp(step->cmd->arg_arr[0], "exit") == 0)
+		{
+			exitcode = step->exit_code;
+			if (step->cmd->arg_arr)
+			{
+				ft_lstclear(&shell->tokens, free_token);
+				ft_lstclear(&shell->steps, free_exec_step);
+				free_split_array(shell->env);
+				ft_free(&fd);
+			}
+			exit(exitcode);
+		}
+		return (fd);
+	}
+}
 int	*first_cmd(t_exec_step *step, int *fd, t_shell *shell, int out_fd)
 {
 	int			in_fd;
@@ -283,6 +361,7 @@ int	*first_cmd(t_exec_step *step, int *fd, t_shell *shell, int out_fd)
 	in_fd = -1;
 	hd_fd[0] = -1;
 	hd_fd[1] = -1;
+	// run_builtin_in_parent(step, shell, fd);
 	if (parent_builtin(step) && !step->pipe_next)
 	{
 		// ! We dont dup2 input/output/heredoc redirections here
