@@ -6,15 +6,17 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/19 16:25:19 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/26 08:57:10 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/26 09:32:01 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-static void	*parse_error(const char *msg)
+static void	*parse_error(const char *msg, t_token *tkn)
 {
-	write_to_stderr(msg);
+	ft_free(&tkn);
+	if (msg != NULL)
+		write_to_stderr(msg);
 	return (NULL);
 }
 
@@ -36,10 +38,7 @@ t_list	*tokenize_single_quote(const t_shell *shell, const char *line,
 	while (line[i] != '\0' && line[i] != '\'')
 		i++;
 	if (line[i] == '\0')
-	{
-		free_token(tkn);
-		return (parse_error(("Parse Error: Unterminated string\n")));
-	}
+		return (parse_error("Parse Error: Unterminated string\n", tkn));
 	i++;
 	while (line[i] != ' ' && line[i] != '\0')
 	{
@@ -50,10 +49,7 @@ t_list	*tokenize_single_quote(const t_shell *shell, const char *line,
 			while (line[i] != quote && line[i] != '\0')
 				i++;
 			if (line[i] == '\0')
-			{
-				free_token(tkn);
-				return (parse_error(("Parse Error: Unterminated string\n")));
-			}
+				return (parse_error("Parse Error: Unterminated string\n", tkn));
 			i++;
 		}
 		else if (ft_strchr("<>|(&)", line[i]) != NULL)
@@ -65,22 +61,14 @@ t_list	*tokenize_single_quote(const t_shell *shell, const char *line,
 	tkn->substr = ft_substr(line, tkn->start, tkn->end - tkn->start + 1);
 	tkn->sub_tokens = NULL;
 	if (tkn->substr == NULL)
-	{
-		free_token(tkn);
-		return (NULL);
-	}
+		return (parse_error(NULL, tkn));
 	while (contains_env_var(tkn->substr))
 		tkn->substr = expand_env_var(shell, tkn->substr);
 	tkn->substr = eat_quotes(tkn->substr);
 	if (tkn->substr == NULL)
-	{
-		free_token(tkn);
-		return (parse_error("Parse error: Invalid Input\n"));
-	}
+		return (parse_error("Parse error: Invalid Input\n", tkn));
 	if (ft_strchr(tkn->substr, '*') != NULL)
-	{
 		tkn->substr = expand_wildcard(tkn->substr);
-	}
 	el = ft_lstnew(tkn);
 	*idx = tkn->end;
 	return (el);
@@ -103,10 +91,7 @@ t_list	*tokenize_double_quote(const t_shell *shell, const char *line,
 	while (line[i] != '\0' && line[i] != '\"')
 		i++;
 	if (line[i] == '\0')
-	{
-		free_token(tkn);
-		return (parse_error(("Parse Error: Unterminated string\n")));
-	}
+		return (parse_error("Parse Error: Unterminated string\n", tkn));
 	i++;
 	while (line[i] != ' ' && line[i] != '\0')
 	{
@@ -117,10 +102,7 @@ t_list	*tokenize_double_quote(const t_shell *shell, const char *line,
 			while (line[i] != quote && line[i] != '\0')
 				i++;
 			if (line[i] == '\0')
-			{
-				free_token(tkn);
-				return (parse_error(("Parse Error: Unterminated string\n")));
-			}
+				return (parse_error("Parse Error: Unterminated string\n", tkn));
 			i++;
 		}
 		else if (ft_strchr("<>|(&)", line[i]) != NULL)
@@ -134,22 +116,14 @@ t_list	*tokenize_double_quote(const t_shell *shell, const char *line,
 	else
 		tkn->substr = ft_substr(line, tkn->start, tkn->end - tkn->start + 1);
 	if (tkn->substr == NULL)
-	{
-		free_token(tkn);
-		return (NULL);
-	}
+		return (parse_error(NULL, tkn));
 	while (contains_env_var(tkn->substr))
 		tkn->substr = expand_env_var(shell, tkn->substr);
 	tkn->substr = eat_quotes(tkn->substr);
 	if (tkn->substr == NULL)
-	{
-		free_token(tkn);
-		return (parse_error("Parse error: Invalid Input\n"));
-	}
+		return (parse_error("Parse error: Invalid Input\n", tkn));
 	if (ft_strchr(tkn->substr, '*') != NULL)
-	{
 		tkn->substr = expand_wildcard(tkn->substr);
-	}
 	el = ft_lstnew(tkn);
 	*idx = tkn->end;
 	return (el);
