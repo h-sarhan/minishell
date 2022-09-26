@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+         #
+#    By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/04/29 21:51:32 by hsarhan           #+#    #+#              #
-#    Updated: 2022/09/26 14:58:04 by mkhan            ###   ########.fr        #
+#    Updated: 2022/09/26 15:05:50 by hsarhan          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -56,9 +56,11 @@ GIGASHELL = \
 \t\t ░╚═════╝░╚═╝░╚═════╝░╚═╝░░╚═╝╚═════╝░╚═╝░░╚═╝╚══════╝╚══════╝╚══════╝ ░╚════╝░░╚════╝░╚═╝░░░░░╚═╝╚═╝░░░░░╚═╝╚══════╝╚══════╝╚═════╝░\n \
 
 TOKENIZATION_SRCS = tokenization.c expansion.c \
-					tokenization2.c wildcard.c split_wildcard.c \
-					print_tokens.c free_funcs.c tokenization3.c \
-					contains_env_var.c wildcard_algorithm.c
+					tokenize_subexpr.c wildcard.c split_wildcard.c \
+					print_tokens.c free_funcs.c tokenize_quotes.c \
+					contains_env_var.c wildcard_algorithm.c eat_quotes.c \
+					tokenize_normal.c tokenize_env_var.c eat_dollars.c \
+					tokenize_operator.c
 
 TOKENIZATION_SRCS := $(addprefix tokenization/, $(TOKENIZATION_SRCS))
 

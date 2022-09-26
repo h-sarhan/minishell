@@ -8,6 +8,7 @@
 		"locale": "c",
 		"algorithm": "c",
 		"__node_handle": "c",
-		"ratio": "c"
+		"ratio": "c",
+		"sstream": "c"
 	}
 }

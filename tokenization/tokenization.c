@@ -6,189 +6,168 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 14:46:52 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/26 08:57:10 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/26 15:04:29 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-t_list	*tokenize_operator(const char *line, size_t *idx,
-							const t_token_type type)
+static void	set_quotes(const char ch, char *quote, bool *in_quote)
 {
-	t_token	*token;
-	t_list	*el;
-
-	token = ft_calloc(1, sizeof(t_token));
-	if (token == NULL)
-		return (NULL);
-	token->start = *idx;
-	token->type = type;
-	token->end = *idx;
-	if (type == HEREDOC || type == APPEND || type == LAST_EXIT
-		|| type == AND || type == OR)
+	if (ch == '\'' || ch == '\"')
 	{
-		token->end++;
-		token->substr = ft_substr(line, token->start, 2);
+		if (*quote == '\0')
+		{
+			*quote = ch;
+			*in_quote = !(*in_quote);
+		}
+		else if (*quote == ch)
+		{
+			*in_quote = !(*in_quote);
+			*quote = '\0';
+		}
 	}
-	else
-		token->substr = ft_substr(line, token->start, 1);
-	el = ft_lstnew(token);
-	if (token->substr == NULL || el == NULL)
-		return (NULL);
-	if (type == HEREDOC || type == APPEND || type == LAST_EXIT
-		|| type == AND || type == OR)
-		*idx += 1;
-	return (el);
 }
 
-static char	*get_env_string(const char *line, size_t *idx)
+static bool	last_token_was_heredoc(t_list *tokens)
 {
-	char	*str;
-	size_t	i;
-	bool	in_quote;
-	char	quote;
+	t_token	*token;
 
-	i = *idx;
-	in_quote = false;
+	if (tokens == NULL)
+		return (false);
+	token = ft_lstlast(tokens)->content;
+	return (token->type == HEREDOC);
+}
+
+static bool	check_for_errors(const char *line, bool *success)
+{
+	size_t	i;
+	char	quote;
+	bool	in_quotes;
+
+	i = 0;
+	in_quotes = false;
 	quote = '\0';
 	while (line[i] != '\0')
 	{
-		if (line[i] == '\'' || line[i] == '\"')
+		set_quotes(line[i], &quote, &in_quotes);
+		if (!in_quotes && (line[i] == '\\' || line[i] == ';' || line[i] == '`'
+				|| (line[i] == '&' && line[i + 1] != '&')
+				|| (line[i] == '(' && line[i + 1] == ')')))
 		{
-			if (quote == '\0')
-			{
-				quote = line[i];
-				in_quote = !in_quote;
-			}
-			else if (quote == line[i])
-			{
-				in_quote = !in_quote;
-				quote = '\0';
-			}
+			write_to_stderr("Parse Error: Invalid input\n");
+			*success = false;
+			return (false);
 		}
-		if ((line[i] == ' ' || ft_strchr("<>|(&)", line[i])) && !in_quote)
-			break ;
+		if (!in_quotes && (line[i] == '&' && line[i + 1] != '\0'))
+			i++;
 		i++;
 	}
-	if (in_quote == true)
-	{
-		*idx = i;
-		return (NULL);
-	}
-	str = ft_substr(line, *idx, i - *idx);
-	*idx = i - 1;
-	return (str);
+	return (true);
 }
 
-char	*eat_dollars(const char *str)
+static bool	is_operator(const char *line, const size_t i)
 {
-	size_t	num_dollars;
-	size_t	i;
-	size_t	j;
-	char	*trimmed_str;
-	char	quote;
-	bool	in_quote;
-
-	in_quote = false;
-	num_dollars = 0;
-	i = 0;
-	while (str[i] != '\0' && str[i + 1] != '\0')
-	{
-		if (str[i] == '$' && (str[i + 1] == '\'' || str[i + 1] == '\"'))
-		{
-			quote = str[i + 1];
-			num_dollars += 1;
-			i += 2;
-			while (str[i] != quote && str[i] != '\0')
-				i++;
-			if (str[i] == '\0')
-			{
-				ft_free(&str);
-				return (NULL);
-			}
-			i++;
-		}
-		else
-			i++;
-	}
-	trimmed_str = ft_calloc(ft_strlen(str) + 1, sizeof(char));
-	if (trimmed_str == NULL)
-		return (NULL);
-	i = 0;
-	j = 0;
-	quote = '\0';
-	while (str[i] != '\0')
-	{
-		if (str[i] == '\'' || str[i] == '\"')
-		{
-			if (quote == '\0')
-			{
-				quote = str[i];
-				in_quote = !in_quote;
-			}
-			else if (quote == str[i])
-			{
-				in_quote = !in_quote;
-				quote = '\0';
-			}
-		}
-		if (in_quote == true)
-		{
-			trimmed_str[j] = str[i];
-			j++;
-			i++;
-		}
-		else if (str[i] == '$' && (str[i + 1] == '\'' || str[i + 1] == '\"'))
-		{
-			quote = str[i + 1];
-			trimmed_str[j] = str[i];
-			i++;
-		}
-		else
-		{
-			trimmed_str[j] = str[i];
-			j++;
-			i++;
-		}
-	}
-	ft_free(&str);
-	return (trimmed_str);
+	if ((line[i] == '>' && line[i + 1] != '>')
+		|| (line[i] == '<' && line[i + 1] != '<')
+		|| (line[i] == '<' && line[i + 1] == '<')
+		|| (line[i] == '>' && line[i + 1] == '>')
+		|| (line[i] == '|' && line[i + 1] != '|')
+		|| (line[i] == '&' && line[i + 1] == '&')
+		|| (line[i] == '|' && line[i + 1] == '|'))
+		return (true);
+	return (false);
 }
 
-t_list	*tokenize_env_variable(const t_shell *shell, const char *line,
-	size_t *idx)
+static t_list	*tokenize_operator_token(const char *line, size_t *i)
 {
-	t_token	*tkn;
-	t_list	*el;
+	t_list			*el;
+	t_token_type	operator_type;
 
-	tkn = ft_calloc(1, sizeof(t_token));
-	if (tkn == NULL)
-		return (NULL);
-	tkn->type = ENV_VAR;
-	tkn->substr = get_env_string(line, idx);
-	if (tkn->substr == NULL)
-		return (NULL);
-	if (ft_strncmp(tkn->substr, "$\"\"", ft_strlen(tkn->substr)) == 0
-		&& ft_strlen(tkn->substr) == 3)
-	{
-		tkn->type = NORMAL;
-		el = ft_lstnew(tkn);
-		return (el);
-	}
-	while (contains_env_var(tkn->substr))
-		tkn->substr = expand_env_var(shell, tkn->substr);
-	tkn->type = NORMAL;
-	tkn->substr = eat_dollars(tkn->substr);
-	tkn->substr = eat_quotes(tkn->substr);
-	el = ft_lstnew(tkn);
+	if (line[*i] == '>' && line[*i + 1] != '>')
+		operator_type = OUTPUT_REDIR;
+	else if (line[*i] == '<' && line[*i + 1] != '<')
+		operator_type = INPUT_REDIR;
+	else if (line[*i] == '<' && line[*i + 1] == '<')
+		operator_type = HEREDOC;
+	else if (line[*i] == '>' && line[*i + 1] == '>')
+		operator_type = APPEND;
+	else if (line[*i] == '|' && line[*i + 1] != '|')
+		operator_type = PIPE;
+	else if (line[*i] == '&' && line[*i + 1] == '&')
+		operator_type = AND;
+	else
+		operator_type = OR;
+	el = tokenize_operator(line, i, operator_type);
 	return (el);
 }
 
-static t_token	*last_token(t_list *tokens)
+static void	tokenize_env_cleanup(const t_shell *shell, t_list **el,
+	t_list **tokens, bool *success)
 {
-	if (tokens == NULL)
-		return (NULL);
-	return (ft_lstlast(tokens)->content);
+	t_token	*token;
+	char	*substr_copy;
+
+	token = (*el)->content;
+	if (token->substr == NULL)
+		ft_lstclear(el, free_token);
+	else if (ft_strncmp(token->substr, "$\"\"", 3) == 0)
+	{
+		ft_free(&token->substr);
+		token->substr = ft_strdup("");
+		ft_lstadd_back(tokens, *el);
+	}
+	else if (ft_strlen(token->substr) != 0
+		&& ft_strchr(token->substr, '$') != NULL)
+		ft_lstadd_back(tokens, *el);
+	else if (ft_strlen(token->substr) != 0)
+	{
+		substr_copy = ft_strdup(token->substr);
+		ft_lstclear(el, free_token);
+		*el = tokenize_line(shell, substr_copy, success);
+		ft_free(&substr_copy);
+		ft_lstadd_back(tokens, *el);
+	}
+	else
+		ft_lstclear(el, free_token);
+}
+
+static bool	tokenize_wildcard(const t_shell *shell, t_list **el,
+	t_list **tokens, bool *success)
+{
+	t_token	*token;
+	t_list	*wildcard_tokens;
+
+	token = (*el)->content;
+	token->substr = expand_wildcard(token->substr);
+	token->expanded = true;
+	if (ft_strchr(token->substr, '*') == NULL)
+	{
+		wildcard_tokens = tokenize_line(shell, token->substr, success);
+		if (*success == false || wildcard_tokens == NULL)
+		{
+			ft_lstclear(el, free_token);
+			ft_lstclear(tokens, free_token);
+			ft_lstclear(&wildcard_tokens, free_token);
+			return (*success);
+		}
+		token = wildcard_tokens->content;
+		token->expanded = true;
+		ft_lstclear(el, free_token);
+		ft_lstadd_back(tokens, wildcard_tokens);
+	}
+	else
+		ft_lstadd_back(tokens, *el);
+	return (*success);
+}
+
+static void	*token_error(const char *msg, t_list **tokens, bool *success)
+{
+	*success = false;
+	ft_lstclear(tokens, free_token);
+	if (msg != NULL)
+		write_to_stderr(msg);
+	return (NULL);
 }
 
 t_list	*tokenize_line(const t_shell *shell, const char *line, bool *success)
@@ -196,234 +175,50 @@ t_list	*tokenize_line(const t_shell *shell, const char *line, bool *success)
 	size_t	i;
 	t_list	*tokens;
 	t_list	*el;
-	bool	in_quotes;
-	char	quote;
 	t_token	*tok;
-	t_token	*envvar_token;
-	t_list	*wildcard_tokens;
-	char	*substr_copy;
 
-	in_quotes = false;
-	quote = '\0';
-	i = 0;
 	*success = true;
-	while (line[i] != '\0')
-	{
-		if (line[i] == '\'' || line[i] == '\"')
-		{
-			if (quote == '\0')
-			{
-				quote = line[i];
-				in_quotes = !in_quotes;
-			}
-			else if (line[i] == quote)
-			{
-				quote = '\0';
-				in_quotes = !in_quotes;
-			}
-		}
-		if (!in_quotes && (line[i] == '\\' || line[i] == ';' || line[i] == '`'
-				|| (line[i] == '&' && line[i + 1] != '&')
-				|| (line[i] == '(' && line[i + 1] == ')')))
-		{
-			write_to_stderr("Parse Error: Invalid input\n");
-			*success = false;
-			return (NULL);
-		}
-		if (!in_quotes && (line[i] == '&' && line[i + 1] != '\0'))
-			i++;
-		i++;
-	}
+	if (check_for_errors(line, success) == false)
+		return (NULL);
 	tokens = NULL;
 	i = 0;
 	while (line[i] != '\0')
 	{
-		if (line[i] == '\'')
+		if (line[i] == '\'' || line[i] == '\"' || is_operator(line, i) == true
+			|| line[i] == '(')
 		{
-			el = tokenize_single_quote(shell, line, &i);
+			if (line[i] == '\'')
+				el = tokenize_single_quote(shell, line, &i);
+			else if (line[i] == '\"')
+				el = tokenize_double_quote(shell, line, &i);
+			else if (is_operator(line, i) == true)
+				el = tokenize_operator_token(line, &i);
+			else
+				el = tokenize_subexpr(shell, line, &i);
 			if (el == NULL)
-			{
-				*success = false;
-				ft_lstclear(&tokens, free_token);
-				return (NULL);
-			}
+				return (token_error(NULL, &tokens, success));
 			ft_lstadd_back(&tokens, el);
 		}
-		else if (line[i] == '\"')
-		{
-			el = tokenize_double_quote(shell, line, &i);
-			if (el == NULL)
-			{
-				*success = false;
-				ft_lstclear(&tokens, free_token);
-				return (NULL);
-			}
-			ft_lstadd_back(&tokens, el);
-		}
-		else if (line[i] == '$' && (tokens == NULL
-				|| (tokens != NULL && last_token(tokens)->type != HEREDOC)))
+		else if (line[i] == '$' && last_token_was_heredoc(tokens) == false)
 		{
 			el = tokenize_env_variable(shell, line, &i);
 			if (el == NULL)
-			{
-				*success = false;
-				ft_lstclear(&tokens, free_token);
-				write_to_stderr("Parse Error: Invalid input\n");
-				return (NULL);
-			}
-			envvar_token = el->content;
-			if (envvar_token->substr == NULL)
-				ft_lstclear(&el, free_token);
-			else if (ft_strncmp(envvar_token->substr, "$\"\"", 3) == 0)
-			{
-				ft_free(&envvar_token->substr);
-				envvar_token->substr = ft_strdup("");
-				ft_lstadd_back(&tokens, el);
-			}
-			else if (ft_strlen(envvar_token->substr) != 0
-				&& ft_strchr(envvar_token->substr, '$') != NULL)
-			{
-				ft_lstadd_back(&tokens, el);
-			}
-			else if (ft_strlen(envvar_token->substr) != 0)
-			{
-				substr_copy = ft_strdup(envvar_token->substr);
-				ft_lstclear(&el, free_token);
-				el = tokenize_line(shell, substr_copy, success);
-				ft_free(&substr_copy);
-				ft_lstadd_back(&tokens, el);
-			}
-			else
-				ft_lstclear(&el, free_token);
-		}
-		else if (line[i] == '>' && line[i + 1] != '>')
-		{
-			el = tokenize_operator(line, &i, OUTPUT_REDIR);
-			if (el == NULL)
-			{
-				*success = false;
-				ft_lstclear(&tokens, free_token);
-				return (NULL);
-			}
-			ft_lstadd_back(&tokens, el);
-		}
-		else if (line[i] == '<' && line[i + 1] != '<')
-		{
-			el = tokenize_operator(line, &i, INPUT_REDIR);
-			if (el == NULL)
-			{
-				*success = false;
-				return (NULL);
-			}
-			ft_lstadd_back(&tokens, el);
-		}
-		else if (line[i] == '<' && line[i + 1] == '<')
-		{
-			el = tokenize_operator(line, &i, HEREDOC);
-			if (el == NULL)
-			{
-				*success = false;
-				ft_lstclear(&tokens, free_token);
-				return (NULL);
-			}
-			ft_lstadd_back(&tokens, el);
-		}
-		else if (line[i] == '>' && line[i + 1] == '>')
-		{
-			el = tokenize_operator(line, &i, APPEND);
-			if (el == NULL)
-			{
-				*success = false;
-				ft_lstclear(&tokens, free_token);
-				return (NULL);
-			}
-			ft_lstadd_back(&tokens, el);
-		}
-		else if (line[i] == '|' && line[i + 1] != '|')
-		{
-			el = tokenize_operator(line, &i, PIPE);
-			if (el == NULL)
-			{
-				*success = false;
-				ft_lstclear(&tokens, free_token);
-				return (NULL);
-			}
-			ft_lstadd_back(&tokens, el);
-		}
-		else if (line[i] == '&' && line[i + 1] == '&')
-		{
-			el = tokenize_operator(line, &i, AND);
-			if (el == NULL)
-			{
-				*success = false;
-				ft_lstclear(&tokens, free_token);
-				return (NULL);
-			}
-			ft_lstadd_back(&tokens, el);
-		}
-		else if (line[i] == '|' && line[i + 1] == '|')
-		{
-			el = tokenize_operator(line, &i, OR);
-			if (el == NULL)
-			{
-				*success = false;
-				ft_lstclear(&tokens, free_token);
-				return (NULL);
-			}
-			ft_lstadd_back(&tokens, el);
-		}
-		else if (line[i] == '(')
-		{
-			el = tokenize_subexpr(shell, line, &i);
-			if (el == NULL)
-			{
-				*success = false;
-				ft_lstclear(&tokens, free_token);
-				return (NULL);
-			}
-			ft_lstadd_back(&tokens, el);
+				return (token_error("Parse Error\n", &tokens, success));
+			tokenize_env_cleanup(shell, &el, &tokens, success);
 		}
 		else if (line[i] == ')')
-		{
-			write_to_stderr("Parse Error: Invalid input\n");
-			*success = false;
-			ft_lstclear(&tokens, free_token);
-			return (NULL);
-		}
+			return (token_error("Parse Error\n", &tokens, success));
 		else if (line[i] != ' ')
 		{
 			el = tokenize_normal(shell, line, &i,
-					tokens != NULL && last_token(tokens)->type != HEREDOC);
+					last_token_was_heredoc(tokens) == false);
 			if (el == NULL)
-			{
-				*success = false;
-				ft_lstclear(&tokens, free_token);
-				ft_lstclear(&el, free_token);
-				return (NULL);
-			}
+				return (token_error(NULL, &tokens, success));
 			tok = el->content;
 			if (ft_strchr(tok->substr, '*') != NULL)
 			{
-				tok->substr = expand_wildcard(tok->substr);
-				tok->expanded = true;
-				if (ft_strchr(tok->substr, '*') == NULL)
-				{
-					wildcard_tokens = tokenize_line(shell, tok->substr,
-							success);
-					if (*success == false || wildcard_tokens == NULL)
-					{
-						ft_lstclear(&el, free_token);
-						ft_lstclear(&tokens, free_token);
-						ft_lstclear(&wildcard_tokens, free_token);
-						return (NULL);
-					}
-					tok = wildcard_tokens->content;
-					tok->expanded = true;
-					ft_lstclear(&el, free_token);
-					ft_lstadd_back(&tokens, wildcard_tokens);
-				}
-				else
-					ft_lstadd_back(&tokens, el);
+				if (tokenize_wildcard(shell, &el, &tokens, success) == false)
+					return (NULL);
 			}
 			else
 				ft_lstadd_back(&tokens, el);
