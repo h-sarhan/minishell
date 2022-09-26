@@ -6,7 +6,7 @@
 /*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/01 18:16:54 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/26 19:45:10 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/26 21:21:26 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -325,30 +325,6 @@ int	exec_outredir(t_exec_step *step)
 	return (out_fd);
 }
 
-
-int	run_builtin_in_parent(t_exec_step *step, t_shell *shell, int fd)
-{
-	int	exitcode;
-	
-	if (parent_builtin(step) && !step->pipe_next)
-	{
-		// ! We dont dup2 input/output/heredoc redirections here
-		run_builtin(step, shell, false);
-		if (ft_strcmp(step->cmd->arg_arr[0], "exit") == 0)
-		{
-			exitcode = step->exit_code;
-			if (step->cmd->arg_arr)
-			{
-				ft_lstclear(&shell->tokens, free_token);
-				ft_lstclear(&shell->steps, free_exec_step);
-				free_split_array(shell->env);
-				ft_free(&fd);
-			}
-			exit(exitcode);
-		}
-		return (fd);
-	}
-}
 int	*first_cmd(t_exec_step *step, int *fd, t_shell *shell, int out_fd)
 {
 	int			in_fd;
@@ -361,7 +337,6 @@ int	*first_cmd(t_exec_step *step, int *fd, t_shell *shell, int out_fd)
 	in_fd = -1;
 	hd_fd[0] = -1;
 	hd_fd[1] = -1;
-	// run_builtin_in_parent(step, shell, fd);
 	if (parent_builtin(step) && !step->pipe_next)
 	{
 		// ! We dont dup2 input/output/heredoc redirections here
