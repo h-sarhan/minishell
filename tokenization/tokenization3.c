@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/19 16:25:19 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/25 22:37:10 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/26 08:57:10 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,7 @@ t_list	*tokenize_single_quote(const t_shell *shell, const char *line,
 		return (NULL);
 	}
 	while (contains_env_var(tkn->substr))
-		tkn->substr = expand_double_quote(shell, tkn->substr);
+		tkn->substr = expand_env_var(shell, tkn->substr);
 	tkn->substr = eat_quotes(tkn->substr);
 	if (tkn->substr == NULL)
 	{
@@ -139,7 +139,7 @@ t_list	*tokenize_double_quote(const t_shell *shell, const char *line,
 		return (NULL);
 	}
 	while (contains_env_var(tkn->substr))
-		tkn->substr = expand_double_quote(shell, tkn->substr);
+		tkn->substr = expand_env_var(shell, tkn->substr);
 	tkn->substr = eat_quotes(tkn->substr);
 	if (tkn->substr == NULL)
 	{

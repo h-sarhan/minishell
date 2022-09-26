@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 21:30:28 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/25 23:14:56 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/26 08:59:43 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ static char	*create_env_var_str(const t_shell *shell, char *str,
 	return (str);
 }
 
-static void	set_in_quotes(const char *str, const size_t i, bool *in_single,
+void	set_in_quotes(const char *str, const size_t i, bool *in_single,
 	bool *in_double)
 {
 	if (str[i] == '\'' && *in_double == false)
@@ -55,7 +55,7 @@ static bool	skip_to_end(const char *str, size_t *i, size_t *start, size_t *end)
 	return (true);
 }
 
-char	*expand_double_quote(const t_shell *shell, char *str)
+char	*expand_env_var(const t_shell *shell, char *str)
 {
 	size_t	i;
 	size_t	start;
@@ -82,49 +82,4 @@ char	*expand_double_quote(const t_shell *shell, char *str)
 			i++;
 	}
 	return (create_env_var_str(shell, str, start, end));
-}
-
-bool	contains_env_var(const char *str)
-{
-	size_t	i;
-	bool	in_s_quotes;
-	bool	in_d_quotes;
-
-	i = 0;
-	in_s_quotes = false;
-	in_d_quotes = false;
-	while (str[i] != '\0')
-	{
-		if (str[i] == '\'' && in_d_quotes == false)
-			in_s_quotes = !in_s_quotes;
-		if (str[i] == '\"' && in_s_quotes == false)
-			in_d_quotes = !in_d_quotes;
-		if (str[i] == '$' && in_s_quotes == false)
-		{
-			i++;
-			if (str[i] == '\0')
-				return (false);
-			else if (str[i] == '?')
-				return (true);
-			else if ((str[i] == '\"' || str[i] == '\''))
-			{
-				if (str[i + 1] == '\0')
-					return (false);
-				else if (!ft_isalnum(str[i + 1]) && str[i + 1] != '_')
-					i++;
-				else
-					return (true);
-			}
-			else if (!ft_isalnum(str[i]) && str[i] != '_')
-				i++;
-			else
-				return (true);
-			if (str[i] == '\0')
-				return (false);
-			i++;
-		}
-		else
-			i++;
-	}
-	return (false);
 }

@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/11 14:52:15 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/25 19:57:48 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/26 08:57:10 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ char	*read_from_stdin(t_shell *shell, char *limiter)
 			break;
 		while (contains_env_var(line) == true)
 		{
-			line = expand_double_quote(shell, line);
+			line = expand_env_var(shell, line);
 		}
 		// if (g_interactive == false)
 		// 	break;

@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:44:00 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/25 19:54:54 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/26 08:59:10 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -65,7 +65,7 @@ void	print_tokens_detailed(t_list *tokens);
 char	*strjoin_free(char *s1, char *s2, int f);
 char	*substr_free(char *s, unsigned int start, size_t len);
 bool	contains_env_var(const char *str);
-char	*expand_double_quote(const t_shell *shell, char *str);
+char	*expand_env_var(const t_shell *shell, char *str);
 void	ft_free(void *memory);
 t_list	*tokenize_operator(const char *line, size_t *idx,
 			const t_token_type type);
@@ -84,4 +84,7 @@ void	print_tokens(t_list *tokens);
 char	*eat_quotes(const char *str);
 t_list	*tokenize_normal(const t_shell *shell, const char *line, size_t *idx,
 			bool expand_var);
+void	set_in_quotes(const char *str, const size_t i, bool *in_single,
+	bool *in_double);
+
 #endif

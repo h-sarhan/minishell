@@ -6,7 +6,7 @@
 #    By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/04/29 21:51:32 by hsarhan           #+#    #+#              #
-#    Updated: 2022/09/25 19:50:37 by hsarhan          ###   ########.fr        #
+#    Updated: 2022/09/26 08:58:20 by hsarhan          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -57,7 +57,8 @@ GIGASHELL = \
 
 TOKENIZATION_SRCS = tokenization.c expansion.c \
 					tokenization2.c wildcard.c split_wildcard.c \
-					print_tokens.c free_funcs.c tokenization3.c
+					print_tokens.c free_funcs.c tokenization3.c \
+					contains_env_var.c
 
 TOKENIZATION_SRCS := $(addprefix tokenization/, $(TOKENIZATION_SRCS))
 
