@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:43:26 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/26 16:36:53 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/27 08:22:31 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -132,7 +132,7 @@ int	main(int argc, char **argv, char **env)
 		if (handle_heredoc_ctrl_c(&shell, line) == false)
 			continue ;
 		if (shell.steps != NULL)
-			exec_cmd(&shell, shell.steps, 0, shell.line);
+			exec_cmds(&shell, shell.steps, 0, shell.line);
 		ft_lstclear(&shell.tokens, free_token);
 		free_steps(&shell.steps_to_free);
 		rl_on_new_line();

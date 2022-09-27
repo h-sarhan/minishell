@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 00:12:36 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/27 08:16:39 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/27 08:35:58 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,6 +26,7 @@ static int	*run_parent_builtin(t_exec_step *step, t_shell *shell, int *fd)
 			free_steps(&shell->steps_to_free);
 			free_split_array(shell->env);
 			free_split_array(shell->declared_env);
+			ft_close(&g_dupstdin);
 			ft_free(&fd);
 		}
 		exit(exit_code);
