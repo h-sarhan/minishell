@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 08:49:50 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/27 18:56:33 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/27 19:32:29 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -227,6 +227,7 @@ int	get_exit(t_list *exec_steps, t_exec_step *step, t_exec_flags *flags)
 			printf("Quit\n");
 			step->exit_code = 131;
 		}
+		return (step->exit_code);
 	}
 	if (!flags->exit)
 	{
