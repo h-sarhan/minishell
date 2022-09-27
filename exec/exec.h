@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/01 18:17:33 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/27 08:23:00 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/27 08:53:11 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,5 +29,9 @@ int		run_child_builtin(t_shell *shell, t_exec_step *step, int *fds,
 			int *heredoc_fds);
 int		*cmd_cleanup(int *fds, int *in_fd, int *out_fd,
 			int *heredoc_fds);
+int		is_dir(const char *path);
+char	*get_full_path(char *bin, char **env);
+bool	check_valid_redir(t_exec_step *step);
+int		exec_outredir(t_exec_step *step);
 
 #endif
