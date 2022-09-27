@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/01 18:16:54 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/27 08:49:43 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/27 10:02:57 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -301,7 +301,7 @@ int	exec_outredir(t_exec_step *step)
 	t_list	*redir;
 	t_redir	*redir_file;
 	int		out_fd;
-	int 	check;
+	int		check;
 
 	out_fd = -1;
 	if (step->cmd == NULL)

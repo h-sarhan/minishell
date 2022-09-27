@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 08:49:50 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/27 09:59:33 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/27 10:04:01 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,6 @@ bool	check_and_open_redirs(t_shell *shell, t_exec_step *step,
 	return (valid_redirs);
 }
 
-
 void	set_cmd_path(t_shell *shell, t_exec_step *step)
 {
 	char	*cmd_copy;
@@ -85,21 +84,20 @@ bool	handle_invalid_path(t_shell *shell, t_exec_step *step, bool *exit_flag,
 	if (!*flag)
 		*flag = true;
 	if (step->and_next || step->or_next)
-		return (false) ;
-	return (true) ;
+		return (false);
+	return (true);
 }
 
 bool	check_invalid_path(t_exec_step *step)
 {
 	return (step->cmd->arg_arr[0] && access(step->cmd->arg_arr[0], X_OK) != -1
-				&& !ft_strchr(step->cmd->arg_arr[0], '/'));
+		&& !ft_strchr(step->cmd->arg_arr[0], '/'));
 }
-
 
 bool	check_invalid_command(t_exec_step *step, bool valid_redirs)
 {
 	return (step->cmd->arg_arr[0] && ((access(step->cmd->arg_arr[0], X_OK) == -1
-			&& !is_builtin(step)) || is_dir(step->cmd->arg_arr[0])
+				&& !is_builtin(step)) || is_dir(step->cmd->arg_arr[0])
 			|| !valid_redirs));
 }
 
@@ -178,7 +176,7 @@ void	exec_cmds(t_shell *shell, t_list *exec_steps, int step_number,
 				shell->last_exit_code = step->exit_code;
 			}
 			else if (is_dir(step->cmd->arg_arr[0]) && valid_redirs)
-			{	
+			{
 				ft_stderr("minishell: %s: is a directory\n",
 					step->cmd->arg_arr[0]);
 				exit_flag = true;
