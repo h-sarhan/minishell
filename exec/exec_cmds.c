@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 08:49:50 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/27 10:04:01 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/27 10:35:23 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,6 +101,66 @@ bool	check_invalid_command(t_exec_step *step, bool valid_redirs)
 			|| !valid_redirs));
 }
 
+bool	cmd_not_found_check(t_exec_step *step, bool valid_redirs)
+{
+	bool	check;
+
+	check = (access(step->cmd->arg_arr[0], F_OK) == -1 && !is_builtin(step));
+	if ((check || is_dir(step->cmd->arg_arr[0])) && valid_redirs
+		&& !ft_strchr(step->cmd->arg_arr[0], '/'))
+		return (true);
+	if (access(step->cmd->arg_arr[0], F_OK) != -1
+		&& access(step->cmd->arg_arr[0], X_OK) == -1
+		&& !ft_strchr(step->cmd->arg_arr[0], '/') && valid_redirs)
+		return (true);
+	return (false);
+}
+
+void	cmd_not_found(t_shell *shell, t_exec_step *step, bool *exit_flag)
+{
+	ft_stderr("minishell: %s: command not found\n", step->cmd->arg_arr[0]);
+	*exit_flag = true;
+	step->exit_code = 127;
+	shell->last_exit_code = step->exit_code;
+}
+
+void	cmd_is_dir(t_shell *shell, t_exec_step *step, bool *exit_flag)
+{
+	ft_stderr("minishell: %s: is a directory\n", step->cmd->arg_arr[0]);
+	*exit_flag = true;
+	step->exit_code = 126;
+	shell->last_exit_code = step->exit_code;
+}
+
+bool	file_not_found_check(t_exec_step *step, bool valid_redirs)
+{
+	return ((access(step->cmd->arg_arr[0], F_OK) == -1 && !is_builtin(step))
+		&& valid_redirs && ft_strchr(step->cmd->arg_arr[0], '/'));
+}
+
+void	file_not_found(t_shell *shell, t_exec_step *step, bool *exit_flag)
+{
+	ft_stderr("minishell: %s: No such file or directory\n",
+		step->cmd->arg_arr[0]);
+	*exit_flag = true;
+	step->exit_code = 127;
+	shell->last_exit_code = step->exit_code;
+}
+
+bool	permission_denied_check(t_exec_step *step, bool valid_redirs)
+{
+	return ((access(step->cmd->arg_arr[0], X_OK) == -1
+			&& !is_builtin(step)) && valid_redirs);
+}
+
+void	permission_denied(t_shell *shell, t_exec_step *step, bool *exit_flag)
+{
+	ft_stderr("minishell: %s: Permission denied\n", step->cmd->arg_arr[0]);
+	*exit_flag = true;
+	step->exit_code = 126;
+	shell->last_exit_code = step->exit_code;
+}
+
 void	exec_cmds(t_shell *shell, t_list *exec_steps, int step_number,
 	char *current_line)
 {
@@ -155,53 +215,14 @@ void	exec_cmds(t_shell *shell, t_list *exec_steps, int step_number,
 		}
 		if (check_invalid_command(step, valid_redirs) == true)
 		{
-			if (((access(step->cmd->arg_arr[0], F_OK) == -1
-						&& !is_builtin(step)) || is_dir(step->cmd->arg_arr[0]))
-				&& valid_redirs && !ft_strchr(step->cmd->arg_arr[0], '/'))
-			{
-				ft_stderr("minishell: %s: command not found\n",
-					step->cmd->arg_arr[0]);
-				exit_flag = true;
-				step->exit_code = 127;
-				shell->last_exit_code = step->exit_code;
-			}
-			else if (access(step->cmd->arg_arr[0], F_OK) != -1
-				&& access(step->cmd->arg_arr[0], X_OK) == -1
-				&& !ft_strchr(step->cmd->arg_arr[0], '/') && valid_redirs)
-			{
-				ft_stderr("minishell: %s: command not found\n",
-					step->cmd->arg_arr[0]);
-				exit_flag = true;
-				step->exit_code = 127;
-				shell->last_exit_code = step->exit_code;
-			}
+			if (cmd_not_found_check(step, valid_redirs))
+				cmd_not_found(shell, step, &exit_flag);
 			else if (is_dir(step->cmd->arg_arr[0]) && valid_redirs)
-			{
-				ft_stderr("minishell: %s: is a directory\n",
-					step->cmd->arg_arr[0]);
-				exit_flag = true;
-				step->exit_code = 126;
-				shell->last_exit_code = step->exit_code;
-			}
-			else if ((access(step->cmd->arg_arr[0], F_OK) == -1
-					&& !is_builtin(step)) && valid_redirs
-				&& ft_strchr(step->cmd->arg_arr[0], '/'))
-			{
-				ft_stderr("minishell: %s: No such file or directory\n",
-					step->cmd->arg_arr[0]);
-				exit_flag = true;
-				step->exit_code = 127;
-				shell->last_exit_code = step->exit_code;
-			}
-			else if ((access(step->cmd->arg_arr[0], X_OK) == -1
-					&& !is_builtin(step)) && valid_redirs)
-			{
-				ft_stderr("minishell: %s: Permission denied\n",
-					step->cmd->arg_arr[0]);
-				exit_flag = true;
-				step->exit_code = 126;
-				shell->last_exit_code = step->exit_code;
-			}
+				cmd_is_dir(shell, step, &exit_flag);
+			else if (file_not_found_check(step, valid_redirs))
+				file_not_found(shell, step, &exit_flag);
+			else if (permission_denied_check(step, valid_redirs))
+				permission_denied(shell, step, &exit_flag);
 			ft_close(&shell->fd[0]);
 			shell->fd[0] = open("/dev/null", O_RDONLY);
 			if (!first_flag)
