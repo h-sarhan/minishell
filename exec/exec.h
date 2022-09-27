@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/01 18:17:33 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/27 17:02:47 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/27 17:18:08 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@
 struct	s_exec_flags
 {
 	bool		first_flag;
-	bool		exit_flag;
+	bool		exit;
 	bool		valid_redirs;
 	int			w_status;
 };

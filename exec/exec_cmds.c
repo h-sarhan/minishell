@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 08:49:50 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/27 17:03:05 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/27 17:18:08 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ bool	exec_subexpr(t_shell *shell, t_exec_step *step, bool *first_flag,
 	return (true);
 }
 
-bool	check_and_open_redirs(t_shell *shell, t_exec_step *step,
+bool	open_redirs(t_shell *shell, t_exec_step *step,
 	bool *exit_flag, int *out_fd)
 {
 	bool	valid_redirs;
@@ -71,11 +71,12 @@ void	set_cmd_path(t_shell *shell, t_exec_step *step)
 	}
 }
 
-bool	handle_invalid_path(t_shell *shell, t_exec_step *step, t_exec_flags *flags)
+bool	handle_invalid_path(t_shell *shell, t_exec_step *step,
+	t_exec_flags *flags)
 {
 	ft_stderr("minishell: %s: command not found\n",
 		step->cmd->arg_arr[0]);
-	flags->exit_flag = true;
+	flags->exit = true;
 	step->exit_code = 127;
 	shell->last_exit_code = step->exit_code;
 	ft_close(&shell->fd[0]);
@@ -160,16 +161,17 @@ void	permission_denied(t_shell *shell, t_exec_step *step, bool *exit_flag)
 	shell->last_exit_code = step->exit_code;
 }
 
-bool	handle_invalid_cmd(t_shell *shell, t_exec_step *step, t_exec_flags *flags)
+bool	handle_invalid_cmd(t_shell *shell, t_exec_step *step,
+	t_exec_flags *flags)
 {
 	if (cmd_not_found_check(step, flags->valid_redirs))
-		cmd_not_found(shell, step, &flags->exit_flag);
+		cmd_not_found(shell, step, &flags->exit);
 	else if (is_dir(step->cmd->arg_arr[0]) && flags->valid_redirs)
-		cmd_is_dir(shell, step, &flags->exit_flag);
+		cmd_is_dir(shell, step, &flags->exit);
 	else if (file_not_found_check(step, flags->valid_redirs))
-		file_not_found(shell, step, &flags->exit_flag);
+		file_not_found(shell, step, &flags->exit);
 	else if (permission_denied_check(step, flags->valid_redirs))
-		permission_denied(shell, step, &flags->exit_flag);
+		permission_denied(shell, step, &flags->exit);
 	ft_close(&shell->fd[0]);
 	shell->fd[0] = open("/dev/null", O_RDONLY);
 	if (step->and_next || step->or_next)
@@ -216,7 +218,7 @@ t_list	*wait_cmds(t_list *steps, int step_number_start, int step_number,
 
 int	get_exit(t_list *exec_steps, t_exec_step *step, t_exec_flags *flags)
 {
-	if (!flags->exit_flag && !WIFEXITED(flags->w_status) 
+	if (!flags->exit && !WIFEXITED(flags->w_status)
 		&& WIFSIGNALED(flags->w_status))
 	{
 		if (WTERMSIG(flags->w_status) == SIGINT)
@@ -227,7 +229,7 @@ int	get_exit(t_list *exec_steps, t_exec_step *step, t_exec_flags *flags)
 			step->exit_code = 131;
 		}
 	}
-	if (!flags->exit_flag)
+	if (!flags->exit)
 	{
 		if (!(((t_exec_step *)exec_steps->content)->pipe_next == false
 				&& parent_builtin(exec_steps->content)))
@@ -290,7 +292,6 @@ int	handle_or_next(t_shell *shell, t_list **steps, t_exec_step *step,
 	return (step_number);
 }
 
-
 void	reparse(t_shell *shell, char *current_line, int step_number)
 {
 	t_list		*tokens;
@@ -317,6 +318,34 @@ void	handle_and_or(t_shell *shell, t_exec_step *step, int step_number,
 		reparse(shell, shell->current_line, step_number);
 }
 
+void	init_exec_cmds(t_shell *shell, int *out_fd, t_exec_flags *flags)
+{
+	shell->fd[0] = -1;
+	shell->fd[1] = -1;
+	*out_fd = -1;
+	flags->w_status = 0;
+	flags->first_flag = false;
+	flags->exit = false;
+}
+
+t_list	*go_to_step(int *step_number_start, t_list *exec_steps,
+	int step_number, t_exec_step **step)
+{
+	t_list	*steps;
+
+	*step_number_start = 0;
+	steps = exec_steps;
+	while (*step_number_start < step_number && steps != NULL)
+	{
+		steps = steps->next;
+		*step_number_start += 1;
+	}
+	if (steps == NULL)
+		return (NULL);
+	*step = steps->content;
+	return (steps);
+}
+
 void	exec_cmds(t_shell *shell, t_list *exec_steps, int step_number,
 	char *current_line)
 {
@@ -324,24 +353,12 @@ void	exec_cmds(t_shell *shell, t_list *exec_steps, int step_number,
 	t_list			*steps;
 	t_exec_flags	flags;
 	int				out_fd;
-	int				step_number_start;
+	int				step_num_start;
 
-	shell->fd[0] = -1;
-	shell->fd[1] = -1;
-	out_fd = -1;
-	flags.w_status = 0;
-	step_number_start = 0;
-	steps = exec_steps;
-	while (step_number_start < step_number && steps != NULL)
-	{
-		steps = steps->next;
-		step_number_start++;
-	}
+	init_exec_cmds(shell, &out_fd, &flags);
+	steps = go_to_step(&step_num_start, exec_steps, step_number, &step);
 	if (steps == NULL)
 		return ;
-	step = steps->content;
-	flags.first_flag = false;
-	flags.exit_flag = false;
 	while (steps)
 	{
 		step_number++;
@@ -352,8 +369,8 @@ void	exec_cmds(t_shell *shell, t_list *exec_steps, int step_number,
 				break ;
 			continue ;
 		}
-		flags.exit_flag = false;
-		flags.valid_redirs = check_and_open_redirs(shell, step, &flags.exit_flag, &out_fd);
+		flags.exit = false;
+		flags.valid_redirs = open_redirs(shell, step, &flags.exit, &out_fd);
 		set_cmd_path(shell, step);
 		if (check_invalid_path(step) == true)
 		{
@@ -386,8 +403,8 @@ void	exec_cmds(t_shell *shell, t_list *exec_steps, int step_number,
 	ft_close(&out_fd);
 	if (step->cmd)
 	{
-		steps = skip_to_step(exec_steps, step_number_start);
-		steps = wait_cmds(steps, step_number_start, step_number, &flags.w_status);
+		steps = skip_to_step(exec_steps, step_num_start);
+		steps = wait_cmds(steps, step_num_start, step_number, &flags.w_status);
 		shell->last_exit_code = get_exit(exec_steps, step, &flags);
 	}
 	shell->current_line = current_line;
