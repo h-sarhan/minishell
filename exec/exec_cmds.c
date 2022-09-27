@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 08:49:50 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/27 17:18:08 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/27 18:56:33 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -179,7 +179,7 @@ bool	handle_invalid_cmd(t_shell *shell, t_exec_step *step,
 	return (true);
 }
 
-t_list	*skip_to_step(t_list *exec_steps, int step_number_start)
+t_list	*reset_to_step(t_list *exec_steps, int step_number_start)
 {
 	t_list	*steps;
 	int		wait_idx;
@@ -194,23 +194,22 @@ t_list	*skip_to_step(t_list *exec_steps, int step_number_start)
 	return (steps);
 }
 
-t_list	*wait_cmds(t_list *steps, int step_number_start, int step_number,
-	int *w_status)
+t_list	*wait_cmds(t_list *steps, t_exec_flags *flags)
 {
 	t_exec_step	*step;
 
-	while (steps && step_number_start < step_number)
+	while (steps && flags->step_num_start < flags->step_num)
 	{
 		step = steps->content;
 		if (step->cmd->arg_arr[0] && !is_dir(step->cmd->arg_arr[0])
 			&& (access(step->cmd->arg_arr[0], X_OK) != -1
 				|| is_builtin(step)))
 		{
-			waitpid(step->cmd->pid, w_status, 0);
+			waitpid(step->cmd->pid, &flags->w_status, 0);
 		}
 		if (step->and_next || step->or_next)
 			return (steps);
-		step_number_start++;
+		flags->step_num_start++;
 		steps = steps->next;
 	}
 	return (steps);
@@ -318,7 +317,8 @@ void	handle_and_or(t_shell *shell, t_exec_step *step, int step_number,
 		reparse(shell, shell->current_line, step_number);
 }
 
-void	init_exec_cmds(t_shell *shell, int *out_fd, t_exec_flags *flags)
+void	init_exec_cmds(t_shell *shell, int *out_fd, t_exec_flags *flags,
+	int step_number)
 {
 	shell->fd[0] = -1;
 	shell->fd[1] = -1;
@@ -326,23 +326,124 @@ void	init_exec_cmds(t_shell *shell, int *out_fd, t_exec_flags *flags)
 	flags->w_status = 0;
 	flags->first_flag = false;
 	flags->exit = false;
+	flags->step_num = step_number;
 }
 
-t_list	*go_to_step(int *step_number_start, t_list *exec_steps,
-	int step_number, t_exec_step **step)
+t_list	*go_to_step(t_exec_flags *flags, t_list *exec_steps,
+	t_exec_step **step)
 {
 	t_list	*steps;
 
-	*step_number_start = 0;
+	flags->step_num_start = 0;
 	steps = exec_steps;
-	while (*step_number_start < step_number && steps != NULL)
+	while (flags->step_num_start < flags->step_num && steps != NULL)
 	{
 		steps = steps->next;
-		*step_number_start += 1;
+		flags->step_num_start += 1;
 	}
 	if (steps == NULL)
 		return (NULL);
 	*step = steps->content;
+	return (steps);
+}
+
+void	check_command(t_shell *shell, t_list **steps, t_exec_step *step,
+	t_exec_flags *flags)
+{
+	if (check_invalid_path(step) == true)
+	{
+		if (!handle_invalid_path(shell, step, flags))
+		{
+			flags->action = BREAK;
+			return ;
+		}
+		*steps = (*steps)->next;
+		flags->action = CONT;
+		return ;
+	}
+	if (check_invalid_command(step, flags->valid_redirs) == true)
+	{
+		if (!flags->first_flag)
+			flags->first_flag = true;
+		if (!handle_invalid_cmd(shell, step, flags))
+		{
+			flags->action = BREAK;
+			return ;
+		}
+		*steps = (*steps)->next;
+		flags->action = CONT;
+		return ;
+	}
+	flags->action = PASS;
+}
+
+bool	run_cmds(t_shell *shell, t_exec_step *step, t_exec_flags *flags,
+	int out_fd)
+{
+	if (!flags->first_flag && flags->valid_redirs)
+	{
+		shell->fd = first_cmd(step, shell->fd, shell, out_fd);
+		flags->first_flag = true;
+	}
+	else if (flags->valid_redirs)
+		shell->fd = mid_cmd(step, shell->fd, shell, out_fd);
+	if (step->and_next || step->or_next)
+		return (false);
+	return (true);
+}
+
+t_exec_step	*run_exec_cmds(t_shell *shell, t_list **steps, int *out_fd,
+	t_exec_flags *flags)
+{
+	t_exec_step	*step;
+
+	flags->action = PASS;
+	step = (*steps)->content;
+	if (step->subexpr_line != NULL)
+	{
+		if (exec_subexpr(shell, step, &flags->first_flag, steps) == false)
+		{
+			flags->action = BREAK;
+			return (step);
+		}
+		flags->action = CONT;
+		return (step);
+	}
+	flags->exit = false;
+	flags->valid_redirs = open_redirs(shell, step, &flags->exit, out_fd);
+	set_cmd_path(shell, step);
+	check_command(shell, steps, step, flags);
+	if (flags->action == BREAK)
+		return (step);
+	else if (flags->action == CONT)
+		return (step);
+	if (run_cmds(shell, step, flags, *out_fd) == false)
+		flags->action = BREAK;
+	return (step);
+}
+
+t_list	*wait_and_get_exit(t_shell *shell, t_exec_step *step,
+	t_list *exec_steps, t_exec_flags *flags)
+{
+	t_list	*steps;
+	int		i;
+
+	if (step->cmd)
+	{
+		steps = reset_to_step(exec_steps, flags->step_num_start);
+		steps = wait_cmds(steps, flags);
+		shell->last_exit_code = get_exit(exec_steps, step, flags);
+	}
+	else
+	{
+		i = 0;
+		steps = exec_steps;
+		while (steps && i < flags->step_num)
+		{
+			steps = steps->next;
+			i++;
+		}
+	}
 	return (steps);
 }
 
@@ -353,60 +454,24 @@ void	exec_cmds(t_shell *shell, t_list *exec_steps, int step_number,
 	t_list			*steps;
 	t_exec_flags	flags;
 	int				out_fd;
-	int				step_num_start;
 
-	init_exec_cmds(shell, &out_fd, &flags);
-	steps = go_to_step(&step_num_start, exec_steps, step_number, &step);
+	init_exec_cmds(shell, &out_fd, &flags, step_number);
+	steps = go_to_step(&flags, exec_steps, &step);
 	if (steps == NULL)
 		return ;
 	while (steps)
 	{
-		step_number++;
-		step = steps->content;
-		if (step->subexpr_line != NULL)
-		{
-			if (exec_subexpr(shell, step, &flags.first_flag, &steps) == false)
-				break ;
+		flags.step_num++;
+		step = run_exec_cmds(shell, &steps, &out_fd, &flags);
+		if (flags.action == CONT)
 			continue ;
-		}
-		flags.exit = false;
-		flags.valid_redirs = open_redirs(shell, step, &flags.exit, &out_fd);
-		set_cmd_path(shell, step);
-		if (check_invalid_path(step) == true)
-		{
-			if (!handle_invalid_path(shell, step, &flags))
-				break ;
-			steps = steps->next;
-			continue ;
-		}
-		if (check_invalid_command(step, flags.valid_redirs) == true)
-		{
-			if (!flags.first_flag)
-				flags.first_flag = true;
-			if (!handle_invalid_cmd(shell, step, &flags))
-				break ;
-			steps = steps->next;
-			continue ;
-		}
-		if (!flags.first_flag && flags.valid_redirs)
-		{
-			shell->fd = first_cmd(step, shell->fd, shell, out_fd);
-			flags.first_flag = true;
-		}
-		else if (flags.valid_redirs)
-			shell->fd = mid_cmd(step, shell->fd, shell, out_fd);
-		if (step->and_next || step->or_next)
+		if (flags.action == BREAK)
 			break ;
 		steps = steps->next;
 	}
 	ft_close(&shell->fd[0]);
 	ft_close(&out_fd);
-	if (step->cmd)
-	{
-		steps = skip_to_step(exec_steps, step_num_start);
-		steps = wait_cmds(steps, step_num_start, step_number, &flags.w_status);
-		shell->last_exit_code = get_exit(exec_steps, step, &flags);
-	}
+	steps = wait_and_get_exit(shell, step, exec_steps, &flags);
 	shell->current_line = current_line;
-	handle_and_or(shell, step, step_number, steps);
+	handle_and_or(shell, step, flags.step_num, steps);
 }
