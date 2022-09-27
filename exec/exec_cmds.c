@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 08:49:50 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/27 16:52:57 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/27 17:03:05 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,18 +71,17 @@ void	set_cmd_path(t_shell *shell, t_exec_step *step)
 	}
 }
 
-bool	handle_invalid_path(t_shell *shell, t_exec_step *step, bool *exit_flag,
-	bool *flag)
+bool	handle_invalid_path(t_shell *shell, t_exec_step *step, t_exec_flags *flags)
 {
 	ft_stderr("minishell: %s: command not found\n",
 		step->cmd->arg_arr[0]);
-	*exit_flag = true;
+	flags->exit_flag = true;
 	step->exit_code = 127;
 	shell->last_exit_code = step->exit_code;
 	ft_close(&shell->fd[0]);
 	shell->fd[0] = open("/dev/null", O_RDONLY);
-	if (!*flag)
-		*flag = true;
+	if (!flags->first_flag)
+		flags->first_flag = true;
 	if (step->and_next || step->or_next)
 		return (false);
 	return (true);
@@ -161,17 +160,16 @@ void	permission_denied(t_shell *shell, t_exec_step *step, bool *exit_flag)
 	shell->last_exit_code = step->exit_code;
 }
 
-bool	handle_invalid_cmd(t_shell *shell, t_exec_step *step, bool valid_redirs,
-	bool *exit_flag)
+bool	handle_invalid_cmd(t_shell *shell, t_exec_step *step, t_exec_flags *flags)
 {
-	if (cmd_not_found_check(step, valid_redirs))
-		cmd_not_found(shell, step, exit_flag);
-	else if (is_dir(step->cmd->arg_arr[0]) && valid_redirs)
-		cmd_is_dir(shell, step, exit_flag);
-	else if (file_not_found_check(step, valid_redirs))
-		file_not_found(shell, step, exit_flag);
-	else if (permission_denied_check(step, valid_redirs))
-		permission_denied(shell, step, exit_flag);
+	if (cmd_not_found_check(step, flags->valid_redirs))
+		cmd_not_found(shell, step, &flags->exit_flag);
+	else if (is_dir(step->cmd->arg_arr[0]) && flags->valid_redirs)
+		cmd_is_dir(shell, step, &flags->exit_flag);
+	else if (file_not_found_check(step, flags->valid_redirs))
+		file_not_found(shell, step, &flags->exit_flag);
+	else if (permission_denied_check(step, flags->valid_redirs))
+		permission_denied(shell, step, &flags->exit_flag);
 	ft_close(&shell->fd[0]);
 	shell->fd[0] = open("/dev/null", O_RDONLY);
 	if (step->and_next || step->or_next)
@@ -216,25 +214,25 @@ t_list	*wait_cmds(t_list *steps, int step_number_start, int step_number,
 	return (steps);
 }
 
-int	get_exit(t_list *exec_steps, t_exec_step *step, bool exit_flag,
-	int w_status)
+int	get_exit(t_list *exec_steps, t_exec_step *step, t_exec_flags *flags)
 {
-	if (!exit_flag && !WIFEXITED(w_status) && WIFSIGNALED(w_status))
+	if (!flags->exit_flag && !WIFEXITED(flags->w_status) 
+		&& WIFSIGNALED(flags->w_status))
 	{
-		if (WTERMSIG(w_status) == SIGINT)
+		if (WTERMSIG(flags->w_status) == SIGINT)
 			step->exit_code = 130;
-		if (WTERMSIG(w_status) == SIGQUIT)
+		if (WTERMSIG(flags->w_status) == SIGQUIT)
 		{
 			printf("Quit\n");
 			step->exit_code = 131;
 		}
 	}
-	if (!exit_flag)
+	if (!flags->exit_flag)
 	{
 		if (!(((t_exec_step *)exec_steps->content)->pipe_next == false
 				&& parent_builtin(exec_steps->content)))
 		{
-			step->exit_code = WEXITSTATUS(w_status);
+			step->exit_code = WEXITSTATUS(flags->w_status);
 		}
 	}
 	return (step->exit_code);
@@ -322,19 +320,16 @@ void	handle_and_or(t_shell *shell, t_exec_step *step, int step_number,
 void	exec_cmds(t_shell *shell, t_list *exec_steps, int step_number,
 	char *current_line)
 {
-	t_exec_step	*step;
-	t_list		*steps;
-	bool		first_flag;
-	bool		exit_flag;
-	bool		valid_redirs;
-	int			out_fd;
-	int			w_status;
-	int			step_number_start;
+	t_exec_step		*step;
+	t_list			*steps;
+	t_exec_flags	flags;
+	int				out_fd;
+	int				step_number_start;
 
 	shell->fd[0] = -1;
 	shell->fd[1] = -1;
 	out_fd = -1;
-	w_status = 0;
+	flags.w_status = 0;
 	step_number_start = 0;
 	steps = exec_steps;
 	while (step_number_start < step_number && steps != NULL)
@@ -345,43 +340,43 @@ void	exec_cmds(t_shell *shell, t_list *exec_steps, int step_number,
 	if (steps == NULL)
 		return ;
 	step = steps->content;
-	first_flag = false;
-	exit_flag = false;
+	flags.first_flag = false;
+	flags.exit_flag = false;
 	while (steps)
 	{
 		step_number++;
 		step = steps->content;
 		if (step->subexpr_line != NULL)
 		{
-			if (exec_subexpr(shell, step, &first_flag, &steps) == false)
+			if (exec_subexpr(shell, step, &flags.first_flag, &steps) == false)
 				break ;
 			continue ;
 		}
-		exit_flag = false;
-		valid_redirs = check_and_open_redirs(shell, step, &exit_flag, &out_fd);
+		flags.exit_flag = false;
+		flags.valid_redirs = check_and_open_redirs(shell, step, &flags.exit_flag, &out_fd);
 		set_cmd_path(shell, step);
 		if (check_invalid_path(step) == true)
 		{
-			if (!handle_invalid_path(shell, step, &exit_flag, &first_flag))
+			if (!handle_invalid_path(shell, step, &flags))
 				break ;
 			steps = steps->next;
 			continue ;
 		}
-		if (check_invalid_command(step, valid_redirs) == true)
+		if (check_invalid_command(step, flags.valid_redirs) == true)
 		{
-			if (!first_flag)
-				first_flag = true;
-			if (!handle_invalid_cmd(shell, step, valid_redirs, &exit_flag))
+			if (!flags.first_flag)
+				flags.first_flag = true;
+			if (!handle_invalid_cmd(shell, step, &flags))
 				break ;
 			steps = steps->next;
 			continue ;
 		}
-		if (!first_flag && valid_redirs)
+		if (!flags.first_flag && flags.valid_redirs)
 		{
 			shell->fd = first_cmd(step, shell->fd, shell, out_fd);
-			first_flag = true;
+			flags.first_flag = true;
 		}
-		else if (valid_redirs)
+		else if (flags.valid_redirs)
 			shell->fd = mid_cmd(step, shell->fd, shell, out_fd);
 		if (step->and_next || step->or_next)
 			break ;
@@ -392,8 +387,8 @@ void	exec_cmds(t_shell *shell, t_list *exec_steps, int step_number,
 	if (step->cmd)
 	{
 		steps = skip_to_step(exec_steps, step_number_start);
-		steps = wait_cmds(steps, step_number_start, step_number, &w_status);
-		shell->last_exit_code = get_exit(exec_steps, step, exit_flag, w_status);
+		steps = wait_cmds(steps, step_number_start, step_number, &flags.w_status);
+		shell->last_exit_code = get_exit(exec_steps, step, &flags);
 	}
 	shell->current_line = current_line;
 	handle_and_or(shell, step, step_number, steps);

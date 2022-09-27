@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/01 18:17:33 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/27 16:51:09 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/27 17:02:47 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,15 @@
 # define EXEC_H
 
 # include "../parsing/parsing.h"
+struct	s_exec_flags
+{
+	bool		first_flag;
+	bool		exit_flag;
+	bool		valid_redirs;
+	int			w_status;
+};
 
+typedef struct s_exec_flags t_exec_flags;
 void	exec_cmds(t_shell *shell, t_list *steps,
 			int step_number, char *current_line);
 char	*read_from_stdin(t_shell *shell, char *limiter);
