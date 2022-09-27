@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/01 18:16:54 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/27 00:12:28 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/27 07:43:24 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -325,16 +325,17 @@ int	exec_outredir(t_exec_step *step)
 	return (out_fd);
 }
 
-// int	*first_cmd(t_exec_step *step, int *fd, t_shell *shell, int out_fd)
+// int	*mid_cmd(t_exec_step *step, int *fd, t_shell *shell, int out_fd)
 // {
 // 	int			in_fd;
+// 	int			fdtmp;
 // 	int			hd_fd[2];
-// 	int			exitcode;
 // 	int			exit_code;
 // 	t_redir		*inredir;
 
-// 	inredir = NULL;
 // 	in_fd = -1;
+// 	fdtmp = fd[0];
+// 	inredir = NULL;
 // 	hd_fd[0] = -1;
 // 	hd_fd[1] = -1;
 // 	if (step->pipe_next)
@@ -353,42 +354,30 @@ int	exec_outredir(t_exec_step *step)
 // 			}
 // 		}
 // 	}
-// 	if (parent_builtin(step) && !step->pipe_next)
-// 	{
-// 		// ! We dont dup2 input/output/heredoc redirections here
-// 		run_builtin(step, shell, false);
-// 		if (ft_strcmp(step->cmd->arg_arr[0], "exit") == 0)
-// 		{
-// 			exitcode = step->exit_code;
-// 			if (step->cmd->arg_arr)
-// 			{
-// 				ft_lstclear(&shell->tokens, free_token);
-// 				ft_lstclear(&shell->steps, free_exec_step);
-// 				free_split_array(shell->env);
-// 				ft_free(&fd);
-// 			}
-// 			exit(exitcode);
-// 		}
-// 		return (fd);
-// 	}
 // 	if (step->cmd->arg_arr[0] != NULL)
 // 		step->cmd->pid = fork();
 // 	if (step->cmd->arg_arr[0] != NULL && step->cmd->pid == 0)
 // 	{
+// 		dup2(fdtmp, 0);
 // 		if (inredir && inredir->type == HEREDOC)
 // 		{
 // 			ft_close(&hd_fd[1]);
+// 			ft_close(&fdtmp);
 // 			dup2(hd_fd[0], 0);
 // 		}
 // 		if (step->pipe_next)
-// 		{
+// 		{	
 // 			ft_close(&fd[0]);
 // 			dup2(fd[1], 1);
 // 		}
 // 		if (in_fd != -1)
+// 		{
 // 			dup2(in_fd, 0);
+// 		}
 // 		if (out_fd != -1)
+// 		{
 // 			dup2(out_fd, 1);
+// 		}
 // 		if (is_builtin(step))
 // 		{
 // 			run_builtin(step, shell, true);
@@ -397,111 +386,29 @@ int	exec_outredir(t_exec_step *step)
 // 			ft_close(&hd_fd[0]);
 // 			ft_close(&hd_fd[1]);
 // 			ft_close(&g_dupstdin);
+// 			ft_close(&fdtmp);
 // 			exit_code = step->exit_code;
 // 			ft_lstclear(&shell->tokens, free_token);
 // 			free_steps(&shell->steps_to_free);
-// 			ft_close(&out_fd);
-// 			ft_close(&in_fd);
 // 			free_split_array(shell->env);
 // 			free_split_array(shell->declared_env);
+// 			ft_close(&out_fd);
+// 			ft_close(&in_fd);
 // 			ft_free(&fd);
 // 			exit(exit_code);
 // 		}
 // 		execve(step->cmd->arg_arr[0], step->cmd->arg_arr, shell->env);
 // 	}
+// 	if (!step->pipe_next)
+// 		ft_close(&fd[0]);
 // 	ft_close(&in_fd);
 // 	ft_close(&out_fd);
 // 	ft_close(&hd_fd[0]);
 // 	ft_close(&hd_fd[1]);
-// 	if (step->pipe_next)
-// 		ft_close(&fd[1]);
+// 	ft_close(&fd[1]);
+// 	ft_close(&fdtmp);
 // 	return (fd);
 // }
-
-int	*mid_cmd(t_exec_step *step, int *fd, t_shell *shell, int out_fd)
-{
-	int			in_fd;
-	int			fdtmp;
-	int			hd_fd[2];
-	int			exit_code;
-	t_redir		*inredir;
-
-	in_fd = -1;
-	fdtmp = fd[0];
-	inredir = NULL;
-	hd_fd[0] = -1;
-	hd_fd[1] = -1;
-	if (step->pipe_next)
-		pipe(fd);
-	if (step->cmd->redirs)
-	{
-		inredir = last_inredir(step->cmd->redirs);
-		if (inredir != NULL)
-		{
-			if (inredir->type == INPUT_REDIR)
-				in_fd = open(inredir->file, O_RDONLY);
-			else
-			{
-				pipe(hd_fd);
-				ft_putstr_fd(step->cmd->heredoc_contents, hd_fd[1]);
-			}
-		}
-	}
-	if (step->cmd->arg_arr[0] != NULL)
-		step->cmd->pid = fork();
-	if (step->cmd->arg_arr[0] != NULL && step->cmd->pid == 0)
-	{
-		dup2(fdtmp, 0);
-		if (inredir && inredir->type == HEREDOC)
-		{
-			ft_close(&hd_fd[1]);
-			ft_close(&fdtmp);
-			dup2(hd_fd[0], 0);
-		}
-		if (step->pipe_next)
-		{	
-			ft_close(&fd[0]);
-			dup2(fd[1], 1);
-		}
-		if (in_fd != -1)
-		{
-			dup2(in_fd, 0);
-		}
-		if (out_fd != -1)
-		{
-			dup2(out_fd, 1);
-		}
-		if (is_builtin(step))
-		{
-			run_builtin(step, shell, true);
-			ft_close(&fd[1]);
-			ft_close(&fd[0]);
-			ft_close(&hd_fd[0]);
-			ft_close(&hd_fd[1]);
-			ft_close(&g_dupstdin);
-			ft_close(&fdtmp);
-			exit_code = step->exit_code;
-			ft_lstclear(&shell->tokens, free_token);
-			free_steps(&shell->steps_to_free);
-			free_split_array(shell->env);
-			free_split_array(shell->declared_env);
-			ft_close(&out_fd);
-			ft_close(&in_fd);
-			ft_free(&fd);
-			exit(exit_code);
-		}
-		execve(step->cmd->arg_arr[0], step->cmd->arg_arr, shell->env);
-	}
-	if (!step->pipe_next)
-		ft_close(&fd[0]);
-	ft_close(&in_fd);
-	ft_close(&out_fd);
-	ft_close(&hd_fd[0]);
-	ft_close(&hd_fd[1]);
-	ft_close(&fd[1]);
-	ft_close(&fdtmp);
-	return (fd);
-}
 
 void	exec_cmd(t_shell *shell, t_list *exec_steps,
 	int step_number, char *current_line)
