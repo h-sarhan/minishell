@@ -6,11 +6,17 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 08:49:50 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/27 08:49:58 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/27 09:12:59 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
+
+
+void	init_exec_cmds()
+{
+	
+}
 
 void	exec_cmds(t_shell *shell, t_list *exec_steps, int step_number,
 	char *current_line)
@@ -207,7 +213,7 @@ void	exec_cmds(t_shell *shell, t_list *exec_steps, int step_number,
 			i++;
 			steps = steps->next;
 		}
-		if (WIFSIGNALED(w_status))
+		if (!exit_flag && !WIFEXITED(w_status) && WIFSIGNALED(w_status))
 		{
 			if (WTERMSIG(w_status) == SIGINT)
 			{
