@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 08:49:50 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/27 10:35:23 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/27 16:52:57 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -161,32 +161,186 @@ void	permission_denied(t_shell *shell, t_exec_step *step, bool *exit_flag)
 	shell->last_exit_code = step->exit_code;
 }
 
+bool	handle_invalid_cmd(t_shell *shell, t_exec_step *step, bool valid_redirs,
+	bool *exit_flag)
+{
+	if (cmd_not_found_check(step, valid_redirs))
+		cmd_not_found(shell, step, exit_flag);
+	else if (is_dir(step->cmd->arg_arr[0]) && valid_redirs)
+		cmd_is_dir(shell, step, exit_flag);
+	else if (file_not_found_check(step, valid_redirs))
+		file_not_found(shell, step, exit_flag);
+	else if (permission_denied_check(step, valid_redirs))
+		permission_denied(shell, step, exit_flag);
+	ft_close(&shell->fd[0]);
+	shell->fd[0] = open("/dev/null", O_RDONLY);
+	if (step->and_next || step->or_next)
+		return (false);
+	return (true);
+}
+
+t_list	*skip_to_step(t_list *exec_steps, int step_number_start)
+{
+	t_list	*steps;
+	int		wait_idx;
+
+	steps = exec_steps;
+	wait_idx = 0;
+	while (steps && wait_idx < step_number_start)
+	{
+		steps = steps->next;
+		wait_idx++;
+	}
+	return (steps);
+}
+
+t_list	*wait_cmds(t_list *steps, int step_number_start, int step_number,
+	int *w_status)
+{
+	t_exec_step	*step;
+
+	while (steps && step_number_start < step_number)
+	{
+		step = steps->content;
+		if (step->cmd->arg_arr[0] && !is_dir(step->cmd->arg_arr[0])
+			&& (access(step->cmd->arg_arr[0], X_OK) != -1
+				|| is_builtin(step)))
+		{
+			waitpid(step->cmd->pid, w_status, 0);
+		}
+		if (step->and_next || step->or_next)
+			return (steps);
+		step_number_start++;
+		steps = steps->next;
+	}
+	return (steps);
+}
+
+int	get_exit(t_list *exec_steps, t_exec_step *step, bool exit_flag,
+	int w_status)
+{
+	if (!exit_flag && !WIFEXITED(w_status) && WIFSIGNALED(w_status))
+	{
+		if (WTERMSIG(w_status) == SIGINT)
+			step->exit_code = 130;
+		if (WTERMSIG(w_status) == SIGQUIT)
+		{
+			printf("Quit\n");
+			step->exit_code = 131;
+		}
+	}
+	if (!exit_flag)
+	{
+		if (!(((t_exec_step *)exec_steps->content)->pipe_next == false
+				&& parent_builtin(exec_steps->content)))
+		{
+			step->exit_code = WEXITSTATUS(w_status);
+		}
+	}
+	return (step->exit_code);
+}
+
+int	handle_and_next(t_shell *shell, t_list **steps, t_exec_step *step,
+	int step_number)
+{
+	if (shell->last_exit_code != 0)
+	{
+		while (*steps != NULL && step->and_next)
+		{
+			step = (*steps)->content;
+			*steps = (*steps)->next;
+			step_number++;
+		}
+		if (step->or_next)
+			step_number--;
+		while (*steps && !step->and_next && !step->or_next)
+		{
+			step = (*steps)->content;
+			*steps = (*steps)->next;
+			step_number++;
+		}
+		if (*steps == NULL)
+			return (-1);
+	}
+	return (step_number);
+}
+
+int	handle_or_next(t_shell *shell, t_list **steps, t_exec_step *step,
+	int step_number)
+{
+	if (shell->last_exit_code == 0)
+	{
+		while (*steps != NULL && step->or_next)
+		{
+			step = (*steps)->content;
+			*steps = (*steps)->next;
+			step_number++;
+		}
+		if (step->and_next)
+		{
+			step_number--;
+		}
+		while (*steps && !step->and_next && !step->or_next)
+		{
+			step = (*steps)->content;
+			*steps = (*steps)->next;
+			step_number++;
+		}
+		if (*steps == NULL)
+			return (-1);
+	}
+	return (step_number);
+}
+
+
+void	reparse(t_shell *shell, char *current_line, int step_number)
+{
+	t_list		*tokens;
+	t_list		*new_steps;
+	bool		success;
+
+	ft_lstclear(&shell->tokens, free_token);
+	tokens = tokenize_line(shell, current_line, &success);
+	new_steps = parse_tokens(tokens, &success);
+	ft_lstadd_back(&shell->steps_to_free, ft_lstnew(new_steps));
+	shell->tokens = tokens;
+	shell->steps = new_steps;
+	exec_cmds(shell, new_steps, step_number, current_line);
+}
+
+void	handle_and_or(t_shell *shell, t_exec_step *step, int step_number,
+	t_list *steps)
+{
+	if (step && step->and_next)
+		step_number = handle_and_next(shell, &steps, step, step_number);
+	else if (step && step->or_next)
+		step_number = handle_or_next(shell, &steps, step, step_number);
+	if (step && steps != NULL && (step->and_next || step->or_next))
+		reparse(shell, shell->current_line, step_number);
+}
+
 void	exec_cmds(t_shell *shell, t_list *exec_steps, int step_number,
 	char *current_line)
 {
 	t_exec_step	*step;
 	t_list		*steps;
-	t_list		*tokens;
-	t_list		*new_steps;
 	bool		first_flag;
 	bool		exit_flag;
-	bool		success;
 	bool		valid_redirs;
 	int			out_fd;
 	int			w_status;
-	int			i;
-	int			wait_idx;
+	int			step_number_start;
 
 	shell->fd[0] = -1;
 	shell->fd[1] = -1;
 	out_fd = -1;
 	w_status = 0;
-	i = 0;
+	step_number_start = 0;
 	steps = exec_steps;
-	while (i < step_number && steps != NULL)
+	while (step_number_start < step_number && steps != NULL)
 	{
 		steps = steps->next;
-		i++;
+		step_number_start++;
 	}
 	if (steps == NULL)
 		return ;
@@ -206,7 +360,7 @@ void	exec_cmds(t_shell *shell, t_list *exec_steps, int step_number,
 		exit_flag = false;
 		valid_redirs = check_and_open_redirs(shell, step, &exit_flag, &out_fd);
 		set_cmd_path(shell, step);
-		if (check_invalid_path(step))
+		if (check_invalid_path(step) == true)
 		{
 			if (!handle_invalid_path(shell, step, &exit_flag, &first_flag))
 				break ;
@@ -215,19 +369,9 @@ void	exec_cmds(t_shell *shell, t_list *exec_steps, int step_number,
 		}
 		if (check_invalid_command(step, valid_redirs) == true)
 		{
-			if (cmd_not_found_check(step, valid_redirs))
-				cmd_not_found(shell, step, &exit_flag);
-			else if (is_dir(step->cmd->arg_arr[0]) && valid_redirs)
-				cmd_is_dir(shell, step, &exit_flag);
-			else if (file_not_found_check(step, valid_redirs))
-				file_not_found(shell, step, &exit_flag);
-			else if (permission_denied_check(step, valid_redirs))
-				permission_denied(shell, step, &exit_flag);
-			ft_close(&shell->fd[0]);
-			shell->fd[0] = open("/dev/null", O_RDONLY);
 			if (!first_flag)
 				first_flag = true;
-			if (step->and_next || step->or_next)
+			if (!handle_invalid_cmd(shell, step, valid_redirs, &exit_flag))
 				break ;
 			steps = steps->next;
 			continue ;
@@ -245,116 +389,12 @@ void	exec_cmds(t_shell *shell, t_list *exec_steps, int step_number,
 	}
 	ft_close(&shell->fd[0]);
 	ft_close(&out_fd);
-	// ! Do not wait for subexpressions
 	if (step->cmd)
 	{
-		steps = exec_steps;
-		wait_idx = 0;
-		while (steps && wait_idx < i)
-		{
-			steps = steps->next;
-			wait_idx++;
-		}
-		while (steps && i < step_number)
-		{
-			step = steps->content;
-			if (step->cmd->arg_arr[0] && !is_dir(step->cmd->arg_arr[0])
-				&& (access(step->cmd->arg_arr[0], X_OK) != -1
-					|| is_builtin(step)))
-			{
-				waitpid(step->cmd->pid, &w_status, 0);
-			}
-			if (step->and_next || step->or_next)
-				break ;
-			i++;
-			steps = steps->next;
-		}
-		if (!exit_flag && !WIFEXITED(w_status) && WIFSIGNALED(w_status))
-		{
-			if (WTERMSIG(w_status) == SIGINT)
-			{
-				step->exit_code = 130;
-				shell->last_exit_code = step->exit_code;
-			}
-			if (WTERMSIG(w_status) == SIGQUIT)
-			{
-				printf("Quit\n");
-				step->exit_code = 131;
-				shell->last_exit_code = step->exit_code;
-			}
-			return ;
-		}
-		if (!exit_flag)
-		{
-			// Checking the only case where we dont fork
-			if (!(((t_exec_step *)exec_steps->content)->pipe_next == false
-					&& parent_builtin(exec_steps->content)))
-			{
-				step->exit_code = WEXITSTATUS(w_status);
-				shell->last_exit_code = step->exit_code;
-			}
-		}
+		steps = skip_to_step(exec_steps, step_number_start);
+		steps = wait_cmds(steps, step_number_start, step_number, &w_status);
+		shell->last_exit_code = get_exit(exec_steps, step, exit_flag, w_status);
 	}
-	if (step == NULL)
-		return ;
-	if (step->and_next)
-	{
-		if (shell->last_exit_code != 0)
-		{
-			while (steps != NULL && step->and_next)
-			{
-				step = steps->content;
-				steps = steps->next;
-				step_number++;
-			}
-			if (step->or_next)
-				step_number--;
-			while (steps && (!step->and_next && !step->or_next))
-			{
-				step = steps->content;
-				steps = steps->next;
-				step_number++;
-			}
-			if (steps == NULL)
-				return ;
-		}
-		ft_lstclear(&shell->tokens, free_token);
-		tokens = tokenize_line(shell, current_line, &success);
-		new_steps = parse_tokens(tokens, &success);
-		ft_lstadd_back(&shell->steps_to_free, ft_lstnew(new_steps));
-		shell->tokens = tokens;
-		shell->steps = new_steps;
-		exec_cmds(shell, new_steps, step_number, current_line);
-	}
-	else if (step->or_next)
-	{
-		if (shell->last_exit_code == 0)
-		{
-			while (steps != NULL && step->or_next)
-			{
-				step = steps->content;
-				steps = steps->next;
-				step_number++;
-			}
-			if (step->and_next)
-			{
-				step_number--;
-			}
-			while (steps && (!step->and_next && !step->or_next))
-			{
-				step = steps->content;
-				steps = steps->next;
-				step_number++;
-			}
-			if (steps == NULL)
-				return ;
-		}
-		ft_lstclear(&shell->tokens, free_token);
-		tokens = tokenize_line(shell, current_line, &success);
-		new_steps = parse_tokens(tokens, &success);
-		ft_lstadd_back(&shell->steps_to_free, ft_lstnew(new_steps));
-		shell->tokens = tokens;
-		shell->steps = new_steps;
-		exec_cmds(shell, new_steps, step_number, current_line);
-	}
+	shell->current_line = current_line;
+	handle_and_or(shell, step, step_number, steps);
 }
