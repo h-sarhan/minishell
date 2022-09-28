@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.h                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/01 18:17:33 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/28 17:16:03 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/28 20:45:02 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ struct	s_exec_flags
 
 typedef struct s_exec_flags	t_exec_flags;
 
-bool		exec_subexpr(t_shell *shell, t_exec_step *step, bool *first_flag,
+bool		exec_subexpr(t_shell *shell, t_exec_step *step, t_exec_flags *flags,
 				t_list **steps);
 void		set_cmd_path(t_shell *shell, t_exec_step *step);
 t_list		*reset_to_step(t_list *exec_steps, int step_number_start);

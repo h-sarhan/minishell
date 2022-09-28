@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   exec.c                                             :+:      :+:    :+:   */
+/*   exec_cmds.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/28 17:10:10 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/28 17:11:54 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/28 20:44:49 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ t_exec_step	*run_exec_cmds(t_shell *shell, t_list **steps, int *out_fd,
 	step = (*steps)->content;
 	if (step->subexpr_line != NULL)
 	{
-		if (exec_subexpr(shell, step, &flags->first_flag, steps) == false)
+		if (exec_subexpr(shell, step, flags, steps) == false)
 		{
 			flags->action = BREAK;
 			return (step);

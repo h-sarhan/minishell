@@ -3,29 +3,55 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 08:49:50 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/28 17:13:15 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/28 20:55:20 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-bool	exec_subexpr(t_shell *shell, t_exec_step *step, bool *first_flag,
+bool	exec_subexpr(t_shell *shell, t_exec_step *step, t_exec_flags *flags,
 	t_list **steps)
 {
 	t_list		*sub_tokens;
 	t_list		*sub_steps;
 	bool		success;
+	int			pid;
 
 	sub_tokens = tokenize_line(shell, step->subexpr_line, &success);
 	sub_steps = parse_tokens(sub_tokens, &success);
 	ft_lstclear(&sub_tokens, free_token);
 	ft_lstadd_back(&shell->steps_to_free, ft_lstnew(sub_steps));
-	exec_cmds(shell, sub_steps, 0, step->subexpr_line);
-	if (!(*first_flag))
-		*first_flag = true;
+	pid = fork();
+	if (pid == 0)
+	{
+		exec_cmds(shell, sub_steps, 0, step->subexpr_line);
+		ft_lstclear(&shell->tokens, free_token);
+		free_steps(&shell->steps_to_free);
+		ft_close(&g_dupstdin);
+		free_split_array(shell->env);
+		free_split_array(shell->declared_env);
+		ft_free(&shell->fd);
+		exit(shell->last_exit_code);
+	}
+	waitpid(pid, &flags->w_status, 0);
+	if (!WIFEXITED(flags->w_status) && WIFSIGNALED(flags->w_status))
+	{
+		if (WTERMSIG(flags->w_status) == SIGINT)
+			step->exit_code = 130;
+		if (WTERMSIG(flags->w_status) == SIGQUIT)
+		{
+			printf("Quit\n");
+			step->exit_code = 131;
+		}
+	}
+	else
+		step->exit_code = WEXITSTATUS(flags->w_status);
+	shell->last_exit_code = step->exit_code;
+	if (!(flags->first_flag))
+		flags->first_flag = true;
 	if (step->and_next || step->or_next)
 		return (false);
 	*steps = (*steps)->next;
