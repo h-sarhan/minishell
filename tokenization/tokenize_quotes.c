@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/19 16:25:19 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/26 12:21:53 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/28 20:27:34 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ static void	*parse_error(const char *msg, t_token *tkn)
 {
 	free_token(tkn);
 	if (msg != NULL)
-		write_to_stderr(msg);
+		ft_stderr(msg);
 	return (NULL);
 }
 

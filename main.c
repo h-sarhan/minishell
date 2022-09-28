@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:43:26 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/27 08:22:31 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/28 20:26:38 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,7 @@ bool	handle_parsing_error(t_shell *shell, bool success, char *line)
 	if (success == false || check_subexprs(shell, shell->steps) == false)
 	{
 		shell->last_exit_code = 258;
-		write_to_stderr("Parse error\n");
+		ft_stderr("Parse error\n");
 		ft_lstclear(&shell->tokens, free_token);
 		free_steps(&shell->steps_to_free);
 		rl_on_new_line();

@@ -3,19 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   utils.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 14:49:04 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/28 17:18:04 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/28 20:25:31 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-void	write_to_stderr(const char *msg)
-{
-	write(STDERR_FILENO, msg, ft_strlen(msg));
-}
 
 // This is ft_strjoin but with an additional argument
 // to specify which input strings to free

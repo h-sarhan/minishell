@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:44:00 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/26 17:45:58 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/28 20:26:31 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,6 @@ char	*eat_dollars(const char *str);
 t_list	*tokenize_line(const t_shell *shell, const char *line, bool *success);
 t_list	*tokenize_env_variable(const t_shell *shell, const char *line,
 			size_t *idx);
-void	write_to_stderr(const char *msg);
 void	print_tokens_detailed(t_list *tokens);
 char	*strjoin_free(char *s1, char *s2, int f);
 char	*substr_free(char *s, unsigned int start, size_t len);

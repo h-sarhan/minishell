@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/26 16:41:23 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/26 17:47:02 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/28 20:28:25 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ void	*token_error(const char *msg, t_list **tokens, bool *success)
 	*success = false;
 	ft_lstclear(tokens, free_token);
 	if (msg != NULL)
-		write_to_stderr(msg);
+		ft_stderr(msg);
 	return (NULL);
 }
 
@@ -99,7 +99,7 @@ bool	check_for_token_errors(const char *line, bool *success)
 				|| (line[i] == '&' && line[i + 1] != '&')
 				|| (line[i] == '(' && line[i + 1] == ')')))
 		{
-			write_to_stderr("Parse Error: Invalid input\n");
+			ft_stderr("Parse Error: Invalid input\n");
 			*success = false;
 			return (false);
 		}
