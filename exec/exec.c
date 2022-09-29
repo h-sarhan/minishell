@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 08:49:50 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/29 15:02:27 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/29 20:59:39 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,14 +16,18 @@ int	count_heredocs(t_list *substeps)
 {
 	int			num_heredocs;
 	t_exec_step	*step;
+	t_redir		*last_redir;
 
 	num_heredocs = 0;
 	while (substeps != NULL)
 	{
 		step = substeps->content;
-		if (step->cmd != NULL && step->cmd->redirs != NULL
-			&& last_inredir(step->cmd->redirs)->type == HEREDOC)
-			num_heredocs++;
+		if (step->cmd != NULL && step->cmd->redirs != NULL)
+		{
+			last_redir = last_inredir(step->cmd->redirs);
+			if (last_redir != NULL)
+				num_heredocs++;
+		}
 		substeps = substeps->next;
 	}
 	return (num_heredocs);

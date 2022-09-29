@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/28 17:10:10 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/29 09:43:24 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/29 21:19:15 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,10 @@ static t_exec_step	*run_exec_cmds(t_shell *shell, t_list **steps, int *out_fd,
 	if (flags->action == BREAK)
 		return (step);
 	else if (flags->action == CONT)
+	{
+		ft_close(out_fd);
 		return (step);
+	}
 	if (run_cmds(shell, step, flags, *out_fd) == false)
 		flags->action = BREAK;
 	return (step);
