@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/25 19:39:40 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/29 11:46:23 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/29 12:21:27 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@ void	handle_eof(const char *line, t_shell *shell)
 		ft_close(&g_dupstdin);
 		ft_free(&shell->fd);
 		clear_history();
+		get_next_line(-1);
 		exit(shell->last_exit_code);
 	}
 }

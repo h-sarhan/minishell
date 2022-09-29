@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/11 14:52:15 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/29 12:05:07 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/29 14:23:31 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,14 +58,14 @@ static char	*read_from_stdin(t_shell *shell, char *limiter)
  */
 t_list	*run_here_docs(t_shell *shell, t_list *steps)
 {
-	t_list	*heredocs;
+	t_list		*heredocs;
 	t_exec_step	*step;
-	t_list	*redirs;
-	t_redir	*redir;
-	t_list	*tokens;
-	t_list	*substeps;
-	bool	success;
-	char	*contents;
+	t_list		*redirs;
+	t_redir		*redir;
+	t_list		*tokens;
+	t_list		*substeps;
+	bool		success;
+	char		*contents;
 
 	heredocs = NULL;
 	contents = NULL;
@@ -80,7 +80,7 @@ t_list	*run_here_docs(t_shell *shell, t_list *steps)
 			ft_lstadd_back(&heredocs, run_here_docs(shell, substeps));
 			ft_lstclear(&substeps, free_exec_step);
 			steps = steps->next;
-			continue;
+			continue ;
 		}
 		if (step->cmd->redirs != NULL)
 		{

@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/25 18:25:23 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/25 19:38:32 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/29 14:19:14 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,7 @@ void	hd_sig_handler(int sig)
 	if (sig == SIGINT)
 	{
 		ft_close(&g_dupstdin);
+		get_next_line(-1);
 		rl_on_new_line();
 		printf("\n");
 	}

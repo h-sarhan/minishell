@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:43:26 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/29 11:46:37 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/29 14:21:11 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,7 +91,6 @@ int	main(int argc, char **argv, char **env)
 	char	*line;
 	bool	success;
 	t_shell	shell;
-	// t_list	*exec_steps_start;
 
 	(void) argc;
 	(void) argv;

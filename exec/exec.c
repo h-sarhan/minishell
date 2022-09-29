@@ -6,12 +6,11 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 08:49:50 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/29 12:02:46 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/29 14:22:28 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
-
 
 int	count_heredocs(t_list *substeps)
 {
@@ -30,6 +29,25 @@ int	count_heredocs(t_list *substeps)
 	return (num_heredocs);
 }
 
+void	skip_sub_heredocs(t_list *heredocs, int num_skipped)
+{
+	int	i;
+
+	i = 0;
+	if (num_skipped == 0)
+		return ;
+	while (heredocs != NULL && heredocs->content != NULL)
+		heredocs = heredocs->next;
+	if (heredocs == NULL)
+		return ;
+	while (i < num_skipped)
+	{
+		ft_free(&heredocs->content);
+		heredocs = heredocs->next;
+		i++;
+	}
+}
+
 bool	exec_subexpr(t_shell *shell, t_exec_step *step, t_exec_flags *flags,
 	t_list **steps)
 {
@@ -41,8 +59,6 @@ bool	exec_subexpr(t_shell *shell, t_exec_step *step, t_exec_flags *flags,
 
 	sub_tokens = tokenize_line(shell, step->subexpr_line, &success);
 	sub_steps = parse_tokens(sub_tokens, &success);
-	heredocs_to_skip = count_heredocs(sub_steps);
-	printf("HEREDOCS TO SKIP == %d\n", heredocs_to_skip);
 	ft_lstclear(&sub_tokens, free_token);
 	ft_lstadd_back(&shell->steps_to_free, ft_lstnew(sub_steps));
 	pid = fork();
@@ -56,10 +72,12 @@ bool	exec_subexpr(t_shell *shell, t_exec_step *step, t_exec_flags *flags,
 		free_split_array(shell->declared_env);
 		ft_lstclear(&shell->heredoc_contents, free);
 		ft_free(&shell->fd);
+		get_next_line(-1);
 		exit(shell->last_exit_code);
 	}
 	waitpid(pid, &flags->w_status, 0);
-	// ! increment shell->heredocs heredocs_to_skip times
+	heredocs_to_skip = count_heredocs(sub_steps);
+	skip_sub_heredocs(shell->heredoc_contents, heredocs_to_skip);
 	step->exit_code = WEXITSTATUS(flags->w_status);
 	shell->last_exit_code = step->exit_code;
 	if (!(flags->first_flag))

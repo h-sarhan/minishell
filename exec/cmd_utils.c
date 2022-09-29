@@ -6,14 +6,14 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 08:12:47 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/29 12:02:19 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/29 14:22:09 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-static int	open_last_redir(t_list *hd_contents, t_exec_step *step, int *heredoc_fds,
-	t_redir **inredir)
+static int	open_last_redir(t_list *hd_contents, t_exec_step *step,
+	int *heredoc_fds, t_redir **inredir)
 {
 	int			in_fd;
 
@@ -29,7 +29,7 @@ static int	open_last_redir(t_list *hd_contents, t_exec_step *step, int *heredoc_
 			while (hd_contents != NULL)
 			{
 				if (hd_contents->content != NULL)
-					break;
+					break ;
 				hd_contents = hd_contents->next;
 			}
 			ft_putstr_fd(hd_contents->content, heredoc_fds[1]);
@@ -50,8 +50,8 @@ int	*cmd_cleanup(int *fds, int *in_fd, int *out_fd,
 	return (fds);
 }
 
-int	cmd_init(t_shell *shell, t_redir **inredir, t_exec_step *step, int *heredoc_fds,
-	int *fds)
+int	cmd_init(t_shell *shell, t_redir **inredir, t_exec_step *step,
+	int *heredoc_fds, int *fds)
 {
 	int	in_fd;
 
@@ -62,7 +62,8 @@ int	cmd_init(t_shell *shell, t_redir **inredir, t_exec_step *step, int *heredoc_
 		pipe(fds);
 	in_fd = -1;
 	if (step->cmd->redirs)
-		in_fd = open_last_redir(shell->heredoc_contents, step, heredoc_fds, inredir);
+		in_fd = open_last_redir(shell->heredoc_contents, step,
+				heredoc_fds, inredir);
 	return (in_fd);
 }
 
