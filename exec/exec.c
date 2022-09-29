@@ -6,11 +6,29 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 08:49:50 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/29 11:12:37 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/29 12:02:46 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
+
+
+int	count_heredocs(t_list *substeps)
+{
+	int			num_heredocs;
+	t_exec_step	*step;
+
+	num_heredocs = 0;
+	while (substeps != NULL)
+	{
+		step = substeps->content;
+		if (step->cmd != NULL && step->cmd->redirs != NULL
+			&& last_inredir(step->cmd->redirs)->type == HEREDOC)
+			num_heredocs++;
+		substeps = substeps->next;
+	}
+	return (num_heredocs);
+}
 
 bool	exec_subexpr(t_shell *shell, t_exec_step *step, t_exec_flags *flags,
 	t_list **steps)
@@ -19,11 +37,12 @@ bool	exec_subexpr(t_shell *shell, t_exec_step *step, t_exec_flags *flags,
 	t_list		*sub_steps;
 	bool		success;
 	int			pid;
-	// flags->
+	int			heredocs_to_skip;
 
 	sub_tokens = tokenize_line(shell, step->subexpr_line, &success);
 	sub_steps = parse_tokens(sub_tokens, &success);
-	// ! heredocs_to_skip = count_heredocs(sub_steps);
+	heredocs_to_skip = count_heredocs(sub_steps);
+	printf("HEREDOCS TO SKIP == %d\n", heredocs_to_skip);
 	ft_lstclear(&sub_tokens, free_token);
 	ft_lstadd_back(&shell->steps_to_free, ft_lstnew(sub_steps));
 	pid = fork();
@@ -35,6 +54,7 @@ bool	exec_subexpr(t_shell *shell, t_exec_step *step, t_exec_flags *flags,
 		ft_close(&g_dupstdin);
 		free_split_array(shell->env);
 		free_split_array(shell->declared_env);
+		ft_lstclear(&shell->heredoc_contents, free);
 		ft_free(&shell->fd);
 		exit(shell->last_exit_code);
 	}

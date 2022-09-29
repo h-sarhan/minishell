@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/11 14:52:15 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/29 11:44:31 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/29 12:05:07 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,9 +77,8 @@ t_list	*run_here_docs(t_shell *shell, t_list *steps)
 			tokens = tokenize_line(shell, step->subexpr_line, &success);
 			substeps = parse_tokens(tokens, &success);
 			ft_lstclear(&tokens, free_token);
-			run_here_docs(shell, substeps);
-			// ft_lstclear(substeps, free_steps);
-			free_steps(&substeps);
+			ft_lstadd_back(&heredocs, run_here_docs(shell, substeps));
+			ft_lstclear(&substeps, free_exec_step);
 			steps = steps->next;
 			continue;
 		}
