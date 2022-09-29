@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/01 13:43:52 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/29 21:04:27 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/29 23:15:08 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@
  * @param i 
  * @param j 
  */
-void	check_valid_args(t_exec_step *step, int i, int *j)
+void	check_valid_args(t_shell *shell, t_exec_step *step, int i, int *j)
 {
 	if ((step->cmd->arg_arr[1] && step->cmd->arg_arr[1][i])
 		|| (step->cmd->arg_arr[1] && step->cmd->arg_arr[1][0] == '\0'))
@@ -30,12 +30,14 @@ void	check_valid_args(t_exec_step *step, int i, int *j)
 		ft_stderr("minishell: exit: %s: numeric argument required\n",
 			step->cmd->arg_arr[1]);
 		step->exit_code = 255;
+		shell->last_exit_code = step->exit_code;
 		*j = 1;
 	}
 	else if (step->cmd->arg_arr[1] && step->cmd->arg_arr[2] != NULL)
 	{
 		ft_stderr("minishell: exit: too many arguments\n");
 		step->exit_code = 1;
+		shell->last_exit_code = step->exit_code;
 		*j = 1;
 	}
 }
@@ -63,16 +65,19 @@ void	ft_exit(t_exec_step *step, t_shell *shell, bool child)
 	while (step->cmd->arg_arr[1] && step->cmd->arg_arr[1][i] >= '0'
 			&& step->cmd->arg_arr[1][i] <= '9')
 		i++;
-	check_valid_args(step, i, &j);
+	check_valid_args(shell, step, i, &j);
 	if (!j && step->cmd->arg_arr[1] != NULL)
+	{
 		step->exit_code = ft_atol(step->cmd->arg_arr[1], &check);
+		shell->last_exit_code = step->exit_code;
+	}
 	if (check == false)
 	{
 		step->exit_code = 255;
+		shell->last_exit_code = step->exit_code;
 		ft_stderr("minishell: exit: %s: numeric argument required\n",
 			step->cmd->arg_arr[1]);
 	}
 	if (!child)
 		printf("exit\n");
-	shell->last_exit_code = step->exit_code;
 }
