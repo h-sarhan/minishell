@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/25 19:35:44 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/28 20:25:08 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/29 19:50:32 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ bool	check_subexprs(t_shell *shell, t_list *shell_steps)
 				return (subexpr_parse_error(tokens, NULL));
 			steps = parse_tokens(tokens, &success);
 			ft_lstclear(&tokens, free_token);
-			if (success == false || check_subexprs(shell, steps) == false)
+			if (!steps || !success || check_subexprs(shell, steps) == false)
 				return (subexpr_parse_error(NULL, steps));
 			step = steps->content;
 			if (step->subexpr_line != NULL && steps->next == NULL)

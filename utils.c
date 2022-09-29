@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 14:49:04 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/28 20:25:31 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/29 19:51:15 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -147,6 +147,8 @@ char	*get_env(const t_shell *shell, const char *name)
 // 		printf("AND  expr into next command\n");
 // 	if (step->or_next == true)
 // 		printf("OR   expr into next command\n");
+// 	if (step->subexpr_line != NULL)
+// 		printf("subexpr is |%s|\n", step->subexpr_line);
 // 	printf("\n");
 // 	while (redirs != NULL)
 // 	{
