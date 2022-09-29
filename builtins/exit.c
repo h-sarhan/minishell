@@ -6,11 +6,17 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/01 13:43:52 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/29 23:15:08 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/29 23:38:10 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
+
+static void	set_exitcode(t_shell *shell, t_exec_step *step, const int exitcode)
+{
+	step->exit_code = exitcode;
+	shell->last_exit_code = step->exit_code;
+}
 
 /**
  * @brief Checks for valid args in exit. 
@@ -29,15 +35,13 @@ void	check_valid_args(t_shell *shell, t_exec_step *step, int i, int *j)
 	{
 		ft_stderr("minishell: exit: %s: numeric argument required\n",
 			step->cmd->arg_arr[1]);
-		step->exit_code = 255;
-		shell->last_exit_code = step->exit_code;
+		set_exitcode(shell, step, 255);
 		*j = 1;
 	}
 	else if (step->cmd->arg_arr[1] && step->cmd->arg_arr[2] != NULL)
 	{
 		ft_stderr("minishell: exit: too many arguments\n");
-		step->exit_code = 1;
-		shell->last_exit_code = step->exit_code;
+		set_exitcode(shell, step, 1);
 		*j = 1;
 	}
 }
@@ -67,14 +71,10 @@ void	ft_exit(t_exec_step *step, t_shell *shell, bool child)
 		i++;
 	check_valid_args(shell, step, i, &j);
 	if (!j && step->cmd->arg_arr[1] != NULL)
-	{
-		step->exit_code = ft_atol(step->cmd->arg_arr[1], &check);
-		shell->last_exit_code = step->exit_code;
-	}
+		set_exitcode(shell, step, ft_atol(step->cmd->arg_arr[1], &check));
 	if (check == false)
 	{
-		step->exit_code = 255;
-		shell->last_exit_code = step->exit_code;
+		set_exitcode(shell, step, 255);
 		ft_stderr("minishell: exit: %s: numeric argument required\n",
 			step->cmd->arg_arr[1]);
 	}
