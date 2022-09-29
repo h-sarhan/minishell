@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 08:12:47 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/29 15:16:49 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/29 23:45:50 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,15 +51,13 @@ int	*cmd_cleanup(int *fds, int *in_fd, int *out_fd,
 }
 
 int	cmd_init(t_shell *shell, t_redir **inredir, t_exec_step *step,
-	int *heredoc_fds, int *fds)
+	int *heredoc_fds)
 {
 	int	in_fd;
 
 	*inredir = NULL;
 	heredoc_fds[0] = -1;
 	heredoc_fds[1] = -1;
-	if (step->pipe_next)
-		pipe(fds);
 	in_fd = -1;
 	if (step->cmd->redirs)
 		in_fd = open_last_redir(shell->heredoc_contents, step,
@@ -86,4 +84,10 @@ int	run_child_builtin(t_shell *shell, t_exec_step *step, int *fds,
 	ft_lstclear(&shell->heredoc_contents, free);
 	ft_free(&fds);
 	return (exit_code);
+}
+
+void	pipe_fds(const t_exec_step *step, int *fds)
+{
+	if (step->pipe_next)
+		pipe(fds);
 }

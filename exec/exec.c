@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 08:49:50 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/29 20:59:39 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/29 23:57:36 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,23 +53,21 @@ void	skip_sub_heredocs(t_list *heredocs, int num_skipped)
 	}
 }
 
-bool	exec_subexpr(t_shell *shell, t_exec_step *step, t_exec_flags *flags,
-	t_list **steps)
+static int	parse_and_fork_subexpr(t_shell *shell, t_exec_step *step,
+	t_list **sub_steps)
 {
 	t_list		*sub_tokens;
-	t_list		*sub_steps;
-	bool		success;
 	int			pid;
-	int			heredocs_to_skip;
+	bool		success;
 
 	sub_tokens = tokenize_line(shell, step->subexpr_line, &success);
-	sub_steps = parse_tokens(sub_tokens, &success);
+	*sub_steps = parse_tokens(sub_tokens, &success);
 	ft_lstclear(&sub_tokens, free_token);
-	ft_lstadd_back(&shell->steps_to_free, ft_lstnew(sub_steps));
+	ft_lstadd_back(&shell->steps_to_free, ft_lstnew(*sub_steps));
 	pid = fork();
 	if (pid == 0)
 	{
-		exec_cmds(shell, sub_steps, 0, step->subexpr_line);
+		exec_cmds(shell, *sub_steps, 0, step->subexpr_line);
 		ft_lstclear(&shell->tokens, free_token);
 		free_steps(&shell->steps_to_free);
 		ft_close(&g_dupstdin);
@@ -80,6 +78,17 @@ bool	exec_subexpr(t_shell *shell, t_exec_step *step, t_exec_flags *flags,
 		get_next_line(-1);
 		exit(shell->last_exit_code);
 	}
+	return (pid);
+}
+
+bool	exec_subexpr(t_shell *shell, t_exec_step *step, t_exec_flags *flags,
+	t_list **steps)
+{
+	int			pid;
+	t_list		*sub_steps;
+	int			heredocs_to_skip;
+
+	pid = parse_and_fork_subexpr(shell, step, &sub_steps);
 	waitpid(pid, &flags->w_status, 0);
 	heredocs_to_skip = count_heredocs(sub_steps);
 	skip_sub_heredocs(shell->heredoc_contents, heredocs_to_skip);

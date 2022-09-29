@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 07:43:36 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/29 11:31:39 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/29 23:49:07 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,6 +46,13 @@ static void	child_builtin_cleanup(int *out_fd, int *in_fd, int *fdtmp,
 	exit(exit_code);
 }
 
+static void	close_fds(const t_exec_step *step, int *fds, int *fdtmp)
+{
+	if (!step->pipe_next)
+		ft_close(&fds[0]);
+	ft_close(fdtmp);
+}
+
 int	*mid_cmd(t_exec_step *step, int *fds, t_shell *shell, int out_fd)
 {
 	int			in_fd;
@@ -55,7 +62,8 @@ int	*mid_cmd(t_exec_step *step, int *fds, t_shell *shell, int out_fd)
 	t_redir		*inredir;
 
 	fdtmp = fds[0];
-	in_fd = cmd_init(shell, &inredir, step, heredoc_fds, fds);
+	in_fd = cmd_init(shell, &inredir, step, heredoc_fds);
+	pipe_fds(step, fds);
 	if (step->cmd->arg_arr[0] != NULL)
 		step->cmd->pid = fork();
 	if (step->cmd->arg_arr[0] != NULL && step->cmd->pid == 0)
@@ -69,8 +77,6 @@ int	*mid_cmd(t_exec_step *step, int *fds, t_shell *shell, int out_fd)
 		}
 		execve(step->cmd->arg_arr[0], step->cmd->arg_arr, shell->env);
 	}
-	if (!step->pipe_next)
-		ft_close(&fds[0]);
-	ft_close(&fdtmp);
+	close_fds(step, fds, &fdtmp);
 	return (cmd_cleanup(fds, &in_fd, &out_fd, heredoc_fds));
 }

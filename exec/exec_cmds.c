@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/28 17:10:10 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/29 23:04:00 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/29 23:51:39 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,18 @@ static bool	run_cmds(t_shell *shell, t_exec_step *step, t_exec_flags *flags,
 	return (true);
 }
 
+static t_exec_step	*run_subexpr(t_shell *shell, t_exec_step *step,
+	t_exec_flags *flags, t_list **steps)
+{
+	if (exec_subexpr(shell, step, flags, steps) == false)
+	{
+		flags->action = BREAK;
+		return (step);
+	}
+	flags->action = CONT;
+	return (step);
+}
+
 static t_exec_step	*run_exec_cmds(t_shell *shell, t_list **steps, int *out_fd,
 	t_exec_flags *flags)
 {
@@ -35,15 +47,7 @@ static t_exec_step	*run_exec_cmds(t_shell *shell, t_list **steps, int *out_fd,
 	flags->action = PASS;
 	step = (*steps)->content;
 	if (step->subexpr_line != NULL)
-	{
-		if (exec_subexpr(shell, step, flags, steps) == false)
-		{
-			flags->action = BREAK;
-			return (step);
-		}
-		flags->action = CONT;
-		return (step);
-	}
+		return (run_subexpr(shell, step, flags, steps));
 	flags->exit = false;
 	flags->valid_redirs = open_redirs(shell, step, &flags->exit, out_fd);
 	set_cmd_path(shell, step);

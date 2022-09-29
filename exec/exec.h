@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/01 18:17:33 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/29 21:51:15 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/29 23:46:40 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,11 +51,12 @@ int			*mid_cmd(t_exec_step *step, int *fds, t_shell *shell, int out_fd);
 
 /* ----- CMD UTILS -- CLOSE PIPES -- CHILD BUILTINS ----- */
 int			cmd_init(t_shell *shell, t_redir **inredir, t_exec_step *step,
-				int *heredoc_fds, int *fds);
+				int *heredoc_fds);
 int			*cmd_cleanup(int *fds, int *in_fd, int *out_fd,
 				int *heredoc_fds);
 int			run_child_builtin(t_shell *shell, t_exec_step *step, int *fds,
 				int *heredoc_fds);
+void		pipe_fds(const t_exec_step *step, int *fds);
 
 /* ----- RUN HEREDOCS ----- */
 // void		run_here_docs(t_shell *shell, t_exec_step *step);
