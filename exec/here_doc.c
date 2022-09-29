@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/11 14:52:15 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/29 14:23:31 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/29 15:00:58 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,8 +95,11 @@ t_list	*run_here_docs(t_shell *shell, t_list *steps)
 				}
 				redirs = redirs->next;
 			}
-			ft_lstadd_back(&heredocs, ft_lstnew(ft_strdup(contents)));
-			ft_free(&contents);
+			if (redir->type == HEREDOC)
+			{
+				ft_lstadd_back(&heredocs, ft_lstnew(ft_strdup(contents)));
+				ft_free(&contents);
+			}
 		}
 		steps = steps->next;
 	}
