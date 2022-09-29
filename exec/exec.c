@@ -3,51 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   exec.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 08:49:50 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/29 15:02:27 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/29 15:14:09 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
-
-int	count_heredocs(t_list *substeps)
-{
-	int			num_heredocs;
-	t_exec_step	*step;
-
-	num_heredocs = 0;
-	while (substeps != NULL)
-	{
-		step = substeps->content;
-		if (step->cmd != NULL && step->cmd->redirs != NULL
-			&& last_inredir(step->cmd->redirs)->type == HEREDOC)
-			num_heredocs++;
-		substeps = substeps->next;
-	}
-	return (num_heredocs);
-}
-
-void	skip_sub_heredocs(t_list *heredocs, int num_skipped)
-{
-	int	i;
-
-	i = 0;
-	if (num_skipped == 0)
-		return ;
-	while (heredocs != NULL && heredocs->content == NULL)
-		heredocs = heredocs->next;
-	if (heredocs == NULL)
-		return ;
-	while (i < num_skipped)
-	{
-		ft_free(&heredocs->content);
-		heredocs->content = NULL;
-		heredocs = heredocs->next;
-		i++;
-	}
-}
 
 bool	exec_subexpr(t_shell *shell, t_exec_step *step, t_exec_flags *flags,
 	t_list **steps)

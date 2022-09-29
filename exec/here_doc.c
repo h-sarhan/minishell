@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   here_doc.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/11 14:52:15 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/29 15:00:58 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/29 15:14:45 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -104,4 +104,41 @@ t_list	*run_here_docs(t_shell *shell, t_list *steps)
 		steps = steps->next;
 	}
 	return (heredocs);
+}
+
+int	count_heredocs(t_list *substeps)
+{
+	int			num_heredocs;
+	t_exec_step	*step;
+
+	num_heredocs = 0;
+	while (substeps != NULL)
+	{
+		step = substeps->content;
+		if (step->cmd != NULL && step->cmd->redirs != NULL
+			&& last_inredir(step->cmd->redirs)->type == HEREDOC)
+			num_heredocs++;
+		substeps = substeps->next;
+	}
+	return (num_heredocs);
+}
+
+void	skip_sub_heredocs(t_list *heredocs, int num_skipped)
+{
+	int	i;
+
+	i = 0;
+	if (num_skipped == 0)
+		return ;
+	while (heredocs != NULL && heredocs->content == NULL)
+		heredocs = heredocs->next;
+	if (heredocs == NULL)
+		return ;
+	while (i < num_skipped)
+	{
+		ft_free(&heredocs->content);
+		heredocs->content = NULL;
+		heredocs = heredocs->next;
+		i++;
+	}
 }
