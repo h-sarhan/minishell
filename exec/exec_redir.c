@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/01 18:16:54 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/29 09:44:24 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/29 15:06:47 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,8 +56,8 @@ static bool	create_redir_file(t_redir *redir_file, int *out_fd)
 		*out_fd = open(redir_file->file,
 				O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if (*out_fd == -1)
-	{	
-		ft_stderr("minishell: %s: file failed to create\n",
+	{
+		ft_stderr("minishell: %s: No such file or directory\n",
 			redir_file->file);
 		return (false);
 	}

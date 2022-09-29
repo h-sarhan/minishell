@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 08:49:50 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/29 14:56:25 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/29 15:02:27 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,10 +40,8 @@ void	skip_sub_heredocs(t_list *heredocs, int num_skipped)
 		heredocs = heredocs->next;
 	if (heredocs == NULL)
 		return ;
-	// printf("num_skipped inside sub heredocs %d\n", num_skipped);
 	while (i < num_skipped)
 	{
-		// printf("skipping %s\n", (char *)heredocs->content);
 		ft_free(&heredocs->content);
 		heredocs->content = NULL;
 		heredocs = heredocs->next;
@@ -80,7 +78,6 @@ bool	exec_subexpr(t_shell *shell, t_exec_step *step, t_exec_flags *flags,
 	}
 	waitpid(pid, &flags->w_status, 0);
 	heredocs_to_skip = count_heredocs(sub_steps);
-	// printf("Skipping %d heredocs\n", heredocs_to_skip);
 	skip_sub_heredocs(shell->heredoc_contents, heredocs_to_skip);
 	step->exit_code = WEXITSTATUS(flags->w_status);
 	shell->last_exit_code = step->exit_code;
