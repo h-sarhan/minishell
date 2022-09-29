@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/01 18:17:33 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/29 14:23:15 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/29 21:51:15 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,7 @@ t_list		*run_here_docs(t_shell *shell, t_list *steps);
 
 /* ----- IMPLEMENT && || AND REPARSE AGAIN DURING EXECUTION ----- */
 void		handle_and_or(t_shell *shell, t_exec_step *step, int step_number,
-				t_list *steps);
+				t_list **steps);
 
 /* ----- FUNTIONS TO HANDLE WAITING FOR COMMANDS RAN AND EXIT ----- */
 int			get_exit(t_list *exec_steps, t_exec_step *step,

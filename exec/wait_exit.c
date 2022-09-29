@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/28 14:59:47 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/29 09:55:02 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/29 22:14:26 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,7 @@ t_list	*wait_and_get_exit(t_shell *shell, t_exec_step *step,
 	}
 	else
 	{
-		i = 0;
+		i = 1;
 		steps = exec_steps;
 		while (steps && i < flags->step_num)
 		{
