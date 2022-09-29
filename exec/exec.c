@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 08:49:50 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/29 09:34:08 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/29 11:12:37 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,9 +19,11 @@ bool	exec_subexpr(t_shell *shell, t_exec_step *step, t_exec_flags *flags,
 	t_list		*sub_steps;
 	bool		success;
 	int			pid;
+	// flags->
 
 	sub_tokens = tokenize_line(shell, step->subexpr_line, &success);
 	sub_steps = parse_tokens(sub_tokens, &success);
+	// ! heredocs_to_skip = count_heredocs(sub_steps);
 	ft_lstclear(&sub_tokens, free_token);
 	ft_lstadd_back(&shell->steps_to_free, ft_lstnew(sub_steps));
 	pid = fork();
@@ -37,6 +39,7 @@ bool	exec_subexpr(t_shell *shell, t_exec_step *step, t_exec_flags *flags,
 		exit(shell->last_exit_code);
 	}
 	waitpid(pid, &flags->w_status, 0);
+	// ! increment shell->heredocs heredocs_to_skip times
 	step->exit_code = WEXITSTATUS(flags->w_status);
 	shell->last_exit_code = step->exit_code;
 	if (!(flags->first_flag))

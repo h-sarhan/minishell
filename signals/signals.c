@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/25 19:39:40 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/25 23:17:54 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/29 11:46:23 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,7 @@ bool	handle_heredoc_ctrl_c(t_shell *shell, char *line)
 		shell->last_exit_code = 1;
 		ft_lstclear(&shell->tokens, free_token);
 		free_steps(&shell->steps_to_free);
+		ft_lstclear(&shell->heredoc_contents, free);
 		rl_on_new_line();
 		ft_free(&line);
 		ft_close(&g_dupstdin);

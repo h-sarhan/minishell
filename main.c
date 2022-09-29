@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:43:26 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/28 20:26:38 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/29 11:46:37 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,7 +91,7 @@ int	main(int argc, char **argv, char **env)
 	char	*line;
 	bool	success;
 	t_shell	shell;
-	t_list	*exec_steps_start;
+	// t_list	*exec_steps_start;
 
 	(void) argc;
 	(void) argv;
@@ -119,14 +119,7 @@ int	main(int argc, char **argv, char **env)
 			continue ;
 		signal(SIGINT, hd_sig_handler);
 		signal(SIGQUIT, hd_sig_handler);
-		exec_steps_start = shell.steps;
-		// ! THIS NEEDS TO BE FIXED
-		while (shell.steps != NULL)
-		{
-			run_here_docs(&shell, shell.steps->content);
-			shell.steps = shell.steps->next;
-		}
-		shell.steps = exec_steps_start;
+		shell.heredoc_contents = run_here_docs(&shell, shell.steps);
 		signal(SIGINT, sigint_command);
 		signal(SIGQUIT, sigquit_command);
 		if (handle_heredoc_ctrl_c(&shell, line) == false)
@@ -134,6 +127,7 @@ int	main(int argc, char **argv, char **env)
 		if (shell.steps != NULL)
 			exec_cmds(&shell, shell.steps, 0, shell.line);
 		ft_lstclear(&shell.tokens, free_token);
+		ft_lstclear(&shell.heredoc_contents, free);
 		free_steps(&shell.steps_to_free);
 		rl_on_new_line();
 		ft_free(&line);

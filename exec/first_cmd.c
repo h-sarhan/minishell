@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 00:12:36 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/27 08:35:58 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/29 11:31:30 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,7 @@ int	*first_cmd(t_exec_step *step, int *fds, t_shell *shell, int out_fd)
 	int			exit_code;
 	t_redir		*inredir;
 
-	in_fd = cmd_init(&inredir, step, heredoc_fds, fds);
+	in_fd = cmd_init(shell, &inredir, step, heredoc_fds, fds);
 	if (parent_builtin(step) && !step->pipe_next)
 		return (run_parent_builtin(step, shell, fds));
 	if (step->cmd->arg_arr[0] != NULL)

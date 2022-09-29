@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/21 11:55:31 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/29 09:56:34 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/29 11:25:01 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,7 +30,7 @@ struct	s_cmd
 	char	**arg_arr;
 	int		pid;
 	t_list	*redirs;
-	char	*heredoc_contents;
+	// char	*heredoc_contents;
 };
 
 struct	s_exec_step

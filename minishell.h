@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/21 09:39:31 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/27 16:52:36 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/29 11:15:02 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,6 +43,7 @@ struct s_shell
 	int		last_exit_code;
 	char	*line;
 	int		*fd;
+	t_list	*heredoc_contents;
 };
 
 bool	check_subexprs(t_shell *shell, t_list *shell_steps);

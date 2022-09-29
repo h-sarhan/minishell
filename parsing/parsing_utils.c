@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/21 21:38:27 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/26 22:16:58 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/29 11:25:08 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ void	free_exec_step(void *exec_step_ptr)
 			i++;
 		}
 		ft_free(&exec_step->cmd->arg_arr);
-		ft_free(&exec_step->cmd->heredoc_contents);
+		// ft_free(&exec_step->cmd->heredoc_contents);
 		ft_free(&exec_step->cmd);
 	}
 	ft_free(&exec_step->subexpr_line);

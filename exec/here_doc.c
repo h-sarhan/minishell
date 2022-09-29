@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/11 14:52:15 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/29 09:53:22 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/29 11:44:31 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,23 +56,50 @@ static char	*read_from_stdin(t_shell *shell, char *limiter)
  * @param shell 
  * @param step 
  */
-void	run_here_docs(t_shell *shell, t_exec_step *step)
+t_list	*run_here_docs(t_shell *shell, t_list *steps)
 {
+	t_list	*heredocs;
+	t_exec_step	*step;
+	t_list	*redirs;
 	t_redir	*redir;
-	t_list	*redir_lst;
+	t_list	*tokens;
+	t_list	*substeps;
+	bool	success;
+	char	*contents;
 
-	if (step->cmd == NULL)
-		return ;
-	redir_lst = step->cmd->redirs;
-	while (redir_lst)
+	heredocs = NULL;
+	contents = NULL;
+	while (steps != NULL)
 	{
-		redir = redir_lst->content;
-		if (redir->type == HEREDOC)
+		step = steps->content;
+		if (step->subexpr_line != NULL)
 		{
-			ft_free(&step->cmd->heredoc_contents);
-			step->cmd->heredoc_contents = read_from_stdin(shell,
-					redir->limiter);
+			tokens = tokenize_line(shell, step->subexpr_line, &success);
+			substeps = parse_tokens(tokens, &success);
+			ft_lstclear(&tokens, free_token);
+			run_here_docs(shell, substeps);
+			// ft_lstclear(substeps, free_steps);
+			free_steps(&substeps);
+			steps = steps->next;
+			continue;
 		}
-		redir_lst = redir_lst->next;
+		if (step->cmd->redirs != NULL)
+		{
+			redirs = step->cmd->redirs;
+			while (redirs != NULL)
+			{
+				redir = redirs->content;
+				if (redir->type == HEREDOC)
+				{
+					ft_free(&contents);
+					contents = read_from_stdin(shell, redir->limiter);
+				}
+				redirs = redirs->next;
+			}
+			ft_lstadd_back(&heredocs, ft_lstnew(ft_strdup(contents)));
+			ft_free(&contents);
+		}
+		steps = steps->next;
 	}
+	return (heredocs);
 }
