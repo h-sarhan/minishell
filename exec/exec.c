@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 08:49:50 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/28 20:55:20 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/29 09:34:08 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,18 +37,7 @@ bool	exec_subexpr(t_shell *shell, t_exec_step *step, t_exec_flags *flags,
 		exit(shell->last_exit_code);
 	}
 	waitpid(pid, &flags->w_status, 0);
-	if (!WIFEXITED(flags->w_status) && WIFSIGNALED(flags->w_status))
-	{
-		if (WTERMSIG(flags->w_status) == SIGINT)
-			step->exit_code = 130;
-		if (WTERMSIG(flags->w_status) == SIGQUIT)
-		{
-			printf("Quit\n");
-			step->exit_code = 131;
-		}
-	}
-	else
-		step->exit_code = WEXITSTATUS(flags->w_status);
+	step->exit_code = WEXITSTATUS(flags->w_status);
 	shell->last_exit_code = step->exit_code;
 	if (!(flags->first_flag))
 		flags->first_flag = true;
