@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:44:00 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/28 20:26:31 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/29 10:02:09 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,6 @@ void	ft_free(void *memory);
 t_list	*tokenize_operator(const char *line, size_t *idx,
 			const t_token_type type);
 t_list	*tokenize_subexpr(const t_shell *shell, const char *line, size_t *idx);
-char	*get_dir_contents(void);
 char	*expand_wildcard(char *token);
 char	**split_wildcard(const char *wildcard_token);
 void	free_token(void *mem);
@@ -90,8 +89,6 @@ bool	is_operator(const char *line, const size_t i);
 t_list	*tokenize_operator_token(const char *line, size_t *i);
 void	*token_error(const char *msg, t_list **tokens, bool *success);
 bool	last_token_was_heredoc(t_list *tokens);
-void	tokenize_env_cleanup(const t_shell *shell, t_list **el,
-			t_list **tokens, bool *success);
 bool	tokenize_wildcard(const t_shell *shell, t_list **el,
 			t_list **tokens, bool *success);
 void	set_quotes(const char ch, char *quote, bool *in_quote);

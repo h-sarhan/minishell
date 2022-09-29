@@ -6,13 +6,13 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/18 07:59:27 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/26 09:25:58 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/29 10:02:05 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-char	*get_dir_contents(void)
+static char	*get_dir_contents(void)
 {
 	char			*contents;
 	DIR				*dp;

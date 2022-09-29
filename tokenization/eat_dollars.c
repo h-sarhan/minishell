@@ -6,28 +6,11 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/26 12:47:56 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/26 17:43:17 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/29 09:58:05 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
-
-// static void	set_quotes(const char ch, char *quote, bool *in_quote)
-// {
-// 	if (ch == '\'' || ch == '\"')
-// 	{
-// 		if (*quote == '\0')
-// 		{
-// 			*quote = ch;
-// 			*in_quote = !(*in_quote);
-// 		}
-// 		else if (*quote == ch)
-// 		{
-// 			*in_quote = !(*in_quote);
-// 			*quote = '\0';
-// 		}
-// 	}
-// }
 
 static void	skip_dollar(const char *str, char *trimmed, char *quote, size_t *i)
 {

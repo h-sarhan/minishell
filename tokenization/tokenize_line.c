@@ -6,11 +6,41 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/26 16:39:57 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/26 17:46:10 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/29 10:00:57 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
+
+static void	tokenize_env_cleanup(const t_shell *shell, t_list **el,
+	t_list **tokens, bool *success)
+{
+	t_token	*token;
+	char	*substr_copy;
+
+	token = (*el)->content;
+	if (token->substr == NULL)
+		ft_lstclear(el, free_token);
+	else if (ft_strncmp(token->substr, "$\"\"", 3) == 0)
+	{
+		ft_free(&token->substr);
+		token->substr = ft_strdup("");
+		ft_lstadd_back(tokens, *el);
+	}
+	else if (ft_strlen(token->substr) != 0
+		&& ft_strchr(token->substr, '$') != NULL)
+		ft_lstadd_back(tokens, *el);
+	else if (ft_strlen(token->substr) != 0)
+	{
+		substr_copy = ft_strdup(token->substr);
+		ft_lstclear(el, free_token);
+		*el = tokenize_line(shell, substr_copy, success);
+		ft_free(&substr_copy);
+		ft_lstadd_back(tokens, *el);
+	}
+	else
+		ft_lstclear(el, free_token);
+}
 
 static bool	first_token_group(const t_shell *shell, const char *line,
 	size_t *i, t_list **tokens)
@@ -89,36 +119,6 @@ static bool	tokenize_normal_and_wildcard(const t_shell *shell, const char *line,
 	else
 		ft_lstadd_back(tokens, el);
 	return (true);
-}
-
-void	tokenize_env_cleanup(const t_shell *shell, t_list **el,
-	t_list **tokens, bool *success)
-{
-	t_token	*token;
-	char	*substr_copy;
-
-	token = (*el)->content;
-	if (token->substr == NULL)
-		ft_lstclear(el, free_token);
-	else if (ft_strncmp(token->substr, "$\"\"", 3) == 0)
-	{
-		ft_free(&token->substr);
-		token->substr = ft_strdup("");
-		ft_lstadd_back(tokens, *el);
-	}
-	else if (ft_strlen(token->substr) != 0
-		&& ft_strchr(token->substr, '$') != NULL)
-		ft_lstadd_back(tokens, *el);
-	else if (ft_strlen(token->substr) != 0)
-	{
-		substr_copy = ft_strdup(token->substr);
-		ft_lstclear(el, free_token);
-		*el = tokenize_line(shell, substr_copy, success);
-		ft_free(&substr_copy);
-		ft_lstadd_back(tokens, *el);
-	}
-	else
-		ft_lstclear(el, free_token);
 }
 
 t_list	*tokenize_line(const t_shell *shell, const char *line, bool *success)
