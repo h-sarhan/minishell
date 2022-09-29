@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:44:00 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/29 10:02:09 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/29 23:10:12 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,7 @@ void	free_split_array(char **split);
 t_list	*tokenize_single_quote(const t_shell *shell, const char *line,
 			size_t *idx);
 t_list	*tokenize_double_quote(const t_shell *shell, const char *line,
-			size_t *idx);
+			size_t *idx, const bool expand_var);
 void	print_tokens_detailed(t_list *tokens);
 void	print_tokens(t_list *tokens);
 char	*eat_quotes(const char *str);

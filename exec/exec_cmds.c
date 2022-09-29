@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/28 17:10:10 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/29 22:11:08 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/29 23:04:00 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,7 +84,6 @@ void	exec_cmds(t_shell *shell, t_list *exec_steps, int step_number,
 	}
 	ft_close(&shell->fd[0]);
 	ft_close(&out_fd);
-	// printf("");
 	steps = wait_and_get_exit(shell, step, exec_steps, &flags);
 	shell->current_line = current_line;
 	handle_and_or(shell, step, flags.step_num, &steps);

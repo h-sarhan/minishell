@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/26 16:39:57 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/29 10:00:57 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/29 23:10:56 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ static bool	first_token_group(const t_shell *shell, const char *line,
 	if (line[*i] == '\'')
 		el = tokenize_single_quote(shell, line, i);
 	else if (line[*i] == '\"')
-		el = tokenize_double_quote(shell, line, i);
+		el = tokenize_double_quote(shell, line, i, !last_token_was_heredoc(*tokens));
 	else if (is_operator(line, *i) == true)
 		el = tokenize_operator_token(line, i);
 	else

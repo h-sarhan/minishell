@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/19 16:25:19 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/28 20:27:34 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/29 23:11:13 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ static t_token	*skip_to_end_token(const char *line, size_t *i, t_token *tkn)
 }
 
 static t_list	*create_token_el(const t_shell *shell, t_token *tkn,
-	const size_t i, const char *line)
+	const size_t i, const char *line, const bool expand_var)
 {
 	t_list	*el;
 
@@ -56,7 +56,7 @@ static t_list	*create_token_el(const t_shell *shell, t_token *tkn,
 		tkn->substr = ft_substr(line, tkn->start, tkn->end - tkn->start + 1);
 	if (tkn->substr == NULL)
 		return (parse_error(NULL, tkn));
-	while (contains_env_var(tkn->substr))
+	while (expand_var == true && contains_env_var(tkn->substr))
 		tkn->substr = expand_env_var(shell, tkn->substr);
 	tkn->substr = eat_quotes(tkn->substr);
 	if (tkn->substr == NULL)
@@ -88,7 +88,7 @@ t_list	*tokenize_single_quote(const t_shell *shell, const char *line,
 	i++;
 	if (skip_to_end_token(line, &i, tkn) == NULL)
 		return (NULL);
-	el = create_token_el(shell, tkn, i, line);
+	el = create_token_el(shell, tkn, i, line, false);
 	if (el == NULL)
 		return (NULL);
 	*idx = tkn->end;
@@ -96,7 +96,7 @@ t_list	*tokenize_single_quote(const t_shell *shell, const char *line,
 }
 
 t_list	*tokenize_double_quote(const t_shell *shell, const char *line,
-	size_t *idx)
+	size_t *idx, const bool expand_var)
 {
 	size_t	i;
 	t_token	*tkn;
@@ -115,7 +115,7 @@ t_list	*tokenize_double_quote(const t_shell *shell, const char *line,
 	i++;
 	if (skip_to_end_token(line, &i, tkn) == NULL)
 		return (NULL);
-	el = create_token_el(shell, tkn, i, line);
+	el = create_token_el(shell, tkn, i, line, expand_var);
 	if (el == NULL)
 		return (NULL);
 	*idx = tkn->end;
