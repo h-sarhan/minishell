@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/11 14:52:15 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/29 15:00:58 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/29 23:35:05 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ extern int	g_dupstdin;
  * @param limiter 
  * @return char* 
  */
-static char	*read_from_stdin(t_shell *shell, char *limiter)
+static char	*read_from_stdin(const t_shell *shell, char *limiter)
 {
 	char	*buff;
 	char	*line;
@@ -49,6 +49,35 @@ static char	*read_from_stdin(t_shell *shell, char *limiter)
 	return (buff);
 }
 
+static void	run_heredoc(const t_shell *shell, t_exec_step *step,
+	t_list **heredocs)
+{
+	t_list	*redirs;
+	t_redir	*redir;
+	char	*contents;
+
+	contents = NULL;
+	if (step->cmd->redirs != NULL)
+	{
+		redirs = step->cmd->redirs;
+		while (redirs != NULL)
+		{
+			redir = redirs->content;
+			if (redir->type == HEREDOC)
+			{
+				ft_free(&contents);
+				contents = read_from_stdin(shell, redir->limiter);
+			}
+			redirs = redirs->next;
+		}
+		if (redir->type == HEREDOC)
+		{
+			ft_lstadd_back(heredocs, ft_lstnew(ft_strdup(contents)));
+			ft_free(&contents);
+		}
+	}
+}
+
 /**
  * @brief Runs the herdoc, reads the herdoc content 
  * from standard input and displays it.
@@ -60,15 +89,11 @@ t_list	*run_here_docs(t_shell *shell, t_list *steps)
 {
 	t_list		*heredocs;
 	t_exec_step	*step;
-	t_list		*redirs;
-	t_redir		*redir;
 	t_list		*tokens;
 	t_list		*substeps;
 	bool		success;
-	char		*contents;
 
 	heredocs = NULL;
-	contents = NULL;
 	while (steps != NULL)
 	{
 		step = steps->content;
@@ -82,25 +107,7 @@ t_list	*run_here_docs(t_shell *shell, t_list *steps)
 			steps = steps->next;
 			continue ;
 		}
-		if (step->cmd->redirs != NULL)
-		{
-			redirs = step->cmd->redirs;
-			while (redirs != NULL)
-			{
-				redir = redirs->content;
-				if (redir->type == HEREDOC)
-				{
-					ft_free(&contents);
-					contents = read_from_stdin(shell, redir->limiter);
-				}
-				redirs = redirs->next;
-			}
-			if (redir->type == HEREDOC)
-			{
-				ft_lstadd_back(&heredocs, ft_lstnew(ft_strdup(contents)));
-				ft_free(&contents);
-			}
-		}
+		run_heredoc(shell, step, &heredocs);
 		steps = steps->next;
 	}
 	return (heredocs);

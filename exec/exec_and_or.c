@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/28 15:03:47 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/29 22:10:22 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/29 23:27:00 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,26 +44,9 @@ static int	handle_or_next(t_shell *shell, t_list **steps, t_exec_step *step,
 	{
 		while (*steps != NULL && step->or_next)
 		{
-			// printf("INCREMENTING STEP NUMBER\n");
 			step = (*steps)->content;
-			if (step->subexpr_line)
-			{
-				// printf("SKIPPING %s\n", step->subexpr_line);
-			}
-			if (step->cmd != NULL)
-			{
-				// printf("SKIPPING %s %s\n", step->cmd->arg_arr[0], step->cmd->arg_arr[1]);
-			}
 			*steps = (*steps)->next;
 			step_number++;
-		}
-		if (*steps == NULL)
-		{
-			// printf("STEPS IS NULL\n");
-		}
-		if (!step->or_next)
-		{
-			// printf("step->or_next is false\n");
 		}
 		if (step->and_next)
 		{
@@ -99,21 +82,10 @@ static void	reparse(t_shell *shell, char *current_line, int step_number)
 void	handle_and_or(t_shell *shell, t_exec_step *step, int step_number,
 	t_list **steps)
 {
-	// printf("STEP NUMBER IS %d\n", step_number);
 	if (step && step->and_next)
-	{
-		// printf("STEP NUMBER IS %d\n", step_number);
-		// printf("AND NEXT\n");
 		step_number = handle_and_next(shell, steps, step, step_number);
-	}
 	else if (step && step->or_next)
-	{
-		// printf("OR NEXT\n");
-		// printf("STEP NUMBER IS %d\n", step_number);
 		step_number = handle_or_next(shell, steps, step, step_number);
-	}
 	if (step && *steps != NULL && (step->and_next || step->or_next))
-	{
 		reparse(shell, shell->current_line, step_number);
-	}
 }

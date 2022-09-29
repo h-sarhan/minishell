@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/19 16:25:19 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/29 23:11:13 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/29 23:28:19 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,11 +45,10 @@ static t_token	*skip_to_end_token(const char *line, size_t *i, t_token *tkn)
 }
 
 static t_list	*create_token_el(const t_shell *shell, t_token *tkn,
-	const size_t i, const char *line, const bool expand_var)
+	const char *line, const bool expand_var)
 {
 	t_list	*el;
 
-	tkn->end = i - 1;
 	if (tkn->end <= tkn->start)
 		tkn->substr = ft_strdup("");
 	else
@@ -88,7 +87,8 @@ t_list	*tokenize_single_quote(const t_shell *shell, const char *line,
 	i++;
 	if (skip_to_end_token(line, &i, tkn) == NULL)
 		return (NULL);
-	el = create_token_el(shell, tkn, i, line, false);
+	tkn->end = i - 1;
+	el = create_token_el(shell, tkn, line, false);
 	if (el == NULL)
 		return (NULL);
 	*idx = tkn->end;
@@ -115,7 +115,8 @@ t_list	*tokenize_double_quote(const t_shell *shell, const char *line,
 	i++;
 	if (skip_to_end_token(line, &i, tkn) == NULL)
 		return (NULL);
-	el = create_token_el(shell, tkn, i, line, expand_var);
+	tkn->end = i - 1;
+	el = create_token_el(shell, tkn, line, expand_var);
 	if (el == NULL)
 		return (NULL);
 	*idx = tkn->end;

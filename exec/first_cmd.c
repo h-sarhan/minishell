@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 00:12:36 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/29 21:02:52 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/29 23:25:09 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,12 +14,9 @@
 
 static int	*run_parent_builtin(t_exec_step *step, t_shell *shell, int *fd)
 {
-	// int	exit_code;
-
 	run_builtin(step, shell, false);
 	if (ft_strcmp(step->cmd->arg_arr[0], "exit") == 0)
 	{
-		// exit_code = step->exit_code;
 		if (step->cmd->arg_arr)
 		{
 			ft_lstclear(&shell->tokens, free_token);
@@ -30,7 +27,6 @@ static int	*run_parent_builtin(t_exec_step *step, t_shell *shell, int *fd)
 			ft_close(&g_dupstdin);
 			ft_free(&fd);
 		}
-		// exit(exit_code);
 		exit(shell->last_exit_code);
 	}
 	return (fd);
