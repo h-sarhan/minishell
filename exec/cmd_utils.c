@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 08:12:47 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/29 14:22:09 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/29 15:16:49 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,6 +83,7 @@ int	run_child_builtin(t_shell *shell, t_exec_step *step, int *fds,
 	free_steps(&shell->steps_to_free);
 	free_split_array(shell->env);
 	free_split_array(shell->declared_env);
+	ft_lstclear(&shell->heredoc_contents, free);
 	ft_free(&fds);
 	return (exit_code);
 }
