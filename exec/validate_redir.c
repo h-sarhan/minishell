@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   validate_redir.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 21:07:52 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/28 14:44:03 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/29 09:54:02 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@
  * @return true 
  * @return false 
  */
-bool	check_input_redir(t_redir	*redir_file)
+static bool	check_input_redir(t_redir	*redir_file)
 {
 	if (redir_file->type == INPUT_REDIR)
 	{
@@ -48,7 +48,7 @@ bool	check_input_redir(t_redir	*redir_file)
  * @return true 
  * @return false 
  */
-bool	check_output_redir(t_redir	*redir_file)
+static bool	check_output_redir(t_redir	*redir_file)
 {
 	if (redir_file->type == OUTPUT_REDIR || redir_file->type == APPEND)
 	{

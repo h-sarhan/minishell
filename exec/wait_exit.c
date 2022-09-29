@@ -6,13 +6,13 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/28 14:59:47 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/28 20:37:24 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/29 09:55:02 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-t_list	*wait_cmds(t_list *steps, t_exec_flags *flags)
+static t_list	*wait_cmds(t_list *steps, t_exec_flags *flags)
 {
 	t_exec_step	*step;
 

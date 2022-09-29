@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   handle_validation.c                                :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/28 15:41:51 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/28 16:59:59 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/29 09:52:44 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-bool	handle_invalid_path(t_shell *shell, t_exec_step *step,
+static bool	handle_invalid_path(t_shell *shell, t_exec_step *step,
 	t_exec_flags *flags)
 {
 	ft_stderr("minishell: %s: command not found\n",
@@ -29,7 +29,7 @@ bool	handle_invalid_path(t_shell *shell, t_exec_step *step,
 	return (true);
 }
 
-bool	handle_invalid_cmd(t_shell *shell, t_exec_step *step,
+static bool	handle_invalid_cmd(t_shell *shell, t_exec_step *step,
 	t_exec_flags *flags)
 {
 	if (cmd_not_found_check(step, flags->valid_redirs))

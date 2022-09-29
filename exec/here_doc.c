@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   here_doc.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/11 14:52:15 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/26 16:10:24 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/29 09:53:22 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ extern int	g_dupstdin;
  * @param limiter 
  * @return char* 
  */
-char	*read_from_stdin(t_shell *shell, char *limiter)
+static char	*read_from_stdin(t_shell *shell, char *limiter)
 {
 	char	*buff;
 	char	*line;

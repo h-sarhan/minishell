@@ -6,13 +6,13 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/21 12:03:03 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/26 23:50:26 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/29 09:57:03 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-bool	parse_subexpr(t_token *token, t_list **steps,
+static bool	parse_subexpr(t_token *token, t_list **steps,
 	t_list *tokens, bool *success)
 {
 	t_exec_step	*step;

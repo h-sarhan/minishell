@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_utils.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/28 14:20:28 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/28 14:29:26 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/29 09:45:00 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ void	ft_close(int *fd)
  * @param paths 
  * @param path 
  */
-void	join_path(char *bin, char **paths, char **path)
+static void	join_path(char *bin, char **paths, char **path)
 {
 	int	i;
 

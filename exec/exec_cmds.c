@@ -6,13 +6,13 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/28 17:10:10 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/28 20:44:49 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/29 09:43:24 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-bool	run_cmds(t_shell *shell, t_exec_step *step, t_exec_flags *flags,
+static bool	run_cmds(t_shell *shell, t_exec_step *step, t_exec_flags *flags,
 	int out_fd)
 {
 	if (!flags->first_flag && flags->valid_redirs)
@@ -27,7 +27,7 @@ bool	run_cmds(t_shell *shell, t_exec_step *step, t_exec_flags *flags,
 	return (true);
 }
 
-t_exec_step	*run_exec_cmds(t_shell *shell, t_list **steps, int *out_fd,
+static t_exec_step	*run_exec_cmds(t_shell *shell, t_list **steps, int *out_fd,
 	t_exec_flags *flags)
 {
 	t_exec_step	*step;

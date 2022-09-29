@@ -6,13 +6,13 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 08:12:47 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/27 08:17:14 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/29 09:40:52 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-int	open_last_redir(t_exec_step *step, int *heredoc_fds, t_redir **inredir)
+static int	open_last_redir(t_exec_step *step, int *heredoc_fds, t_redir **inredir)
 {
 	int			in_fd;
 

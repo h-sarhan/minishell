@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/26 22:20:48 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/26 23:47:43 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/29 09:56:29 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,7 +41,7 @@ t_redir	*create_redir(t_token **token, t_list **start, t_exec_step *step)
 	return (redir);
 }
 
-bool	fill_exec_step(t_exec_step *step, t_list *start, const t_list *end)
+static bool	fill_exec_step(t_exec_step *step, t_list *start, const t_list *end)
 {
 	t_token	*tkn;
 	t_redir	*redir;
@@ -67,7 +67,7 @@ bool	fill_exec_step(t_exec_step *step, t_list *start, const t_list *end)
 	return (true);
 }
 
-t_exec_step	*create_step(t_list *cmd_start, t_list *cmd_end,
+static t_exec_step	*create_step(t_list *cmd_start, t_list *cmd_end,
 	t_token **token, t_list *tokens)
 {
 	t_exec_step	*step;

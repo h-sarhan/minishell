@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   exec_and_or.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/28 15:03:47 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/28 16:59:15 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/29 09:42:38 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../minishell.h"
 
-int	handle_and_next(t_shell *shell, t_list **steps, t_exec_step *step,
+static int	handle_and_next(t_shell *shell, t_list **steps, t_exec_step *step,
 	int step_number)
 {
 	if (shell->last_exit_code != 0)
@@ -37,7 +37,7 @@ int	handle_and_next(t_shell *shell, t_list **steps, t_exec_step *step,
 	return (step_number);
 }
 
-int	handle_or_next(t_shell *shell, t_list **steps, t_exec_step *step,
+static int	handle_or_next(t_shell *shell, t_list **steps, t_exec_step *step,
 	int step_number)
 {
 	if (shell->last_exit_code == 0)
@@ -64,7 +64,7 @@ int	handle_or_next(t_shell *shell, t_list **steps, t_exec_step *step,
 	return (step_number);
 }
 
-void	reparse(t_shell *shell, char *current_line, int step_number)
+static void	reparse(t_shell *shell, char *current_line, int step_number)
 {
 	t_list		*tokens;
 	t_list		*new_steps;

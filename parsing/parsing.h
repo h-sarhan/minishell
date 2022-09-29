@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/21 11:55:31 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/26 22:22:54 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/29 09:56:34 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,8 +56,6 @@ bool		check_next_subexpr_token(t_list *tokens, t_token **token,
 				t_exec_step *step, bool *success);
 bool		check_next_token(t_list *cmd_end, t_token **token,
 				t_exec_step *step, t_list *tokens);
-t_exec_step	*create_step(t_list *cmd_start, t_list *cmd_end,
-				t_token **token, t_list *tokens);
 t_list		*parse_step(t_list **tokens, t_token **token, t_list **steps,
 				bool *success);
 

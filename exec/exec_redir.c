@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec_redir.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/01 18:16:54 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/28 16:59:35 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/29 09:44:24 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ t_redir	*last_inredir(t_list *in_redir)
  * @return true 
  * @return false 
  */
-bool	create_redir_file(t_redir *redir_file, int *out_fd)
+static bool	create_redir_file(t_redir *redir_file, int *out_fd)
 {
 	ft_close(out_fd);
 	if (redir_file->type == APPEND)
@@ -71,7 +71,7 @@ bool	create_redir_file(t_redir *redir_file, int *out_fd)
  * @param step 
  * @return int 
  */
-int	exec_outredir(t_exec_step *step)
+static int	exec_outredir(t_exec_step *step)
 {
 	t_list	*redir;
 	t_redir	*redir_file;
