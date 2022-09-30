@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/26 12:36:39 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/26 17:42:41 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/30 00:32:23 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,6 @@ t_list	*tokenize_env_variable(const t_shell *shell, const char *line,
 	size_t *idx)
 {
 	t_token	*tkn;
-	t_list	*el;
 
 	tkn = ft_calloc(1, sizeof(t_token));
 	if (tkn == NULL)
@@ -68,19 +67,20 @@ t_list	*tokenize_env_variable(const t_shell *shell, const char *line,
 	tkn->type = ENV_VAR;
 	tkn->substr = get_env_string(line, idx);
 	if (tkn->substr == NULL)
+	{
+		ft_free(&tkn);
 		return (NULL);
+	}
 	if (ft_strncmp(tkn->substr, "$\"\"", ft_strlen(tkn->substr)) == 0
 		&& ft_strlen(tkn->substr) == 3)
 	{
 		tkn->type = NORMAL;
-		el = ft_lstnew(tkn);
-		return (el);
+		return (ft_lstnew(tkn));
 	}
 	while (contains_env_var(tkn->substr))
 		tkn->substr = expand_env_var(shell, tkn->substr);
 	tkn->type = NORMAL;
 	tkn->substr = eat_dollars(tkn->substr);
 	tkn->substr = eat_quotes(tkn->substr);
-	el = ft_lstnew(tkn);
-	return (el);
+	return (ft_lstnew(tkn));
 }

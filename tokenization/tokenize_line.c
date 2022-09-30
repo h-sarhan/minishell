@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/26 16:39:57 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/29 23:24:20 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/30 07:10:33 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,10 @@ static void	tokenize_env_cleanup(const t_shell *shell, t_list **el,
 		ft_lstadd_back(tokens, *el);
 	}
 	else
-		ft_lstclear(el, free_token);
+	{
+		token->type = DUMMY;
+		ft_lstadd_back(tokens, *el);
+	}
 }
 
 static bool	first_token_group(const t_shell *shell, const char *line,
