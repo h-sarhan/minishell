@@ -6,7 +6,7 @@
 #    By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/04/29 21:51:32 by hsarhan           #+#    #+#              #
-#    Updated: 2022/09/30 08:39:06 by hsarhan          ###   ########.fr        #
+#    Updated: 2022/09/30 13:19:16 by hsarhan          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -57,7 +57,7 @@ GIGASHELL = \
 
 TOKENIZATION_SRCS = tokenize_line.c expansion.c \
 					tokenize_subexpr.c wildcard.c split_wildcard.c \
-					print_tokens.c free_funcs.c tokenize_quotes.c \
+					free_funcs.c tokenize_quotes.c \
 					contains_env_var.c wildcard_algorithm.c eat_quotes.c \
 					tokenize_normal.c tokenize_env_var.c eat_dollars.c \
 					tokenize_operator.c tokenize_line_utils.c
@@ -74,7 +74,7 @@ BUILTINS_SRCS := $(addprefix builtins/, $(BUILTINS_SRCS))
 EXEC_SRCS = exec_and_or.c exec_utils.c here_doc.c first_cmd.c mid_cmd.c cmd_utils.c exec_cmds.c wait_exit.c \
 			exec_redir.c validate_redir.c validation_message.c handle_validation.c check_validation.c exec.c\
 			exec_subexpr.c
-			
+
 EXEC_SRCS := $(addprefix exec/, $(EXEC_SRCS))
 
 SIGNAL_SRCS = signal_handlers.c signals.c
