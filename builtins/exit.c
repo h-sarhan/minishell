@@ -6,11 +6,11 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/01 13:43:52 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/29 23:38:10 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/30 08:36:56 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../minishell.h"
+#include "minishell.h"
 
 static void	set_exitcode(t_shell *shell, t_exec_step *step, const int exitcode)
 {

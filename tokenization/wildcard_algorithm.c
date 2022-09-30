@@ -6,11 +6,11 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/26 09:24:29 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/26 09:25:01 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/30 08:36:56 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../minishell.h"
+#include "minishell.h"
 
 static int	non_terminating_charseq(const char *str, size_t *wc_i, size_t *i,
 								char **wc_segs)

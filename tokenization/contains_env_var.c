@@ -6,11 +6,11 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/26 08:58:03 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/26 08:59:37 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/30 08:35:56 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../minishell.h"
+#include "minishell.h"
 
 static int	is_env_var(const char *str, size_t *i)
 {

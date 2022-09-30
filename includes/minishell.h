@@ -6,19 +6,19 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/21 09:39:31 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/30 07:55:24 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/30 08:34:40 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
-# include "tokenization/tokenization.h"
-# include "parsing/parsing.h"
-# include "builtins/builtins.h"
-# include "exec/exec.h"
-# include "ft_printf/ft_printf.h"
-# include "signals/signals.h"
+# include "tokenization.h"
+# include "parsing.h"
+# include "builtins.h"
+# include "exec.h"
+# include "ft_printf.h"
+# include "signals.h"
 
 # include <readline/readline.h>
 # include <readline/history.h>

@@ -6,14 +6,14 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/01 18:17:33 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/29 23:46:40 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/30 08:35:00 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef EXEC_H
 # define EXEC_H
 
-# include "../parsing/parsing.h"
+# include "parsing.h"
 
 # define CONT 1
 # define BREAK -1

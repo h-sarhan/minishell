@@ -6,11 +6,11 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 08:12:47 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/29 23:45:50 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/30 08:36:56 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../minishell.h"
+#include "minishell.h"
 
 static int	open_last_redir(t_list *hd_contents, t_exec_step *step,
 	int *heredoc_fds, t_redir **inredir)

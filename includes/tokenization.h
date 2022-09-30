@@ -6,14 +6,14 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:44:00 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/30 00:04:43 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/30 08:38:48 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef TOKENIZATION_H
 # define TOKENIZATION_H
 
-# include "../libft/libft.h"
+# include "libft.h"
 # include <stdio.h>
 # include <readline/readline.h>
 # include <readline/history.h>

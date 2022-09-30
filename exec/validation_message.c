@@ -3,14 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   validation_message.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/28 14:56:55 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/28 14:57:59 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/09/30 08:36:56 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../minishell.h"
+#include "minishell.h"
 
 void	cmd_not_found(t_shell *shell, t_exec_step *step, bool *exit_flag)
 {

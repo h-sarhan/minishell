@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+         #
+#    By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/05/08 13:50:29 by mkhan             #+#    #+#              #
-#    Updated: 2022/05/19 14:42:45 by mkhan            ###   ########.fr        #
+#    Updated: 2022/09/30 08:38:27 by hsarhan          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -15,7 +15,7 @@ SRCS			=	ft_printf.c ft_putchar.c ft_putstr.c ft_hexaddr.c \
 
 OBJS			= $(SRCS:.c=.o)
 
-CC				= gcc
+CC				= cc
 RM				= rm -f
 CFLAGS			= -Wall -Wextra -Werror -I.
 
