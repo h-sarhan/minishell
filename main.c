@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:43:26 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/29 19:51:22 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/30 07:54:22 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,15 +97,7 @@ int	main(int argc, char **argv, char **env)
 	init_shell(&shell, env);
 	while (1)
 	{
-		g_dupstdin = dup(0);
-		signal(SIGINT, sigint_interactive);
-		signal(SIGQUIT, SIG_IGN);
-		line = readline("\001\033[1;34m\002GIGASHELL$ \001\033[0m\002");
-		handle_ctrl_c(&shell);
-		shell.line = line;
-		signal(SIGQUIT, sigquit_command);
-		signal(SIGINT, sigint_command);
-		handle_eof(line, &shell);
+		line = minishell_readline(&shell);
 		if (add_to_history(line) == false)
 			continue ;
 		success = true;
@@ -116,20 +108,9 @@ int	main(int argc, char **argv, char **env)
 		ft_lstadd_back(&shell.steps_to_free, ft_lstnew(shell.steps));
 		if (handle_parsing_error(&shell, success, line) == false)
 			continue ;
-		signal(SIGINT, hd_sig_handler);
-		signal(SIGQUIT, hd_sig_handler);
-		shell.heredoc_contents = run_here_docs(&shell, shell.steps);
-		signal(SIGINT, sigint_command);
-		signal(SIGQUIT, sigquit_command);
+		minishell_run_heredocs(&shell);
 		if (handle_heredoc_ctrl_c(&shell, line) == false)
 			continue ;
-		if (shell.steps != NULL)
-			exec_cmds(&shell, shell.steps, 0, shell.line);
-		ft_lstclear(&shell.tokens, free_token);
-		ft_lstclear(&shell.heredoc_contents, free);
-		free_steps(&shell.steps_to_free);
-		rl_on_new_line();
-		ft_free(&line);
-		ft_close(&g_dupstdin);
+		minishell_exec_and_cleanup(&shell, line);
 	}
 }

@@ -3,10 +3,10 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+         #
+#    By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/04/29 21:51:32 by hsarhan           #+#    #+#              #
-#    Updated: 2022/09/28 17:13:00 by mkhan            ###   ########.fr        #
+#    Updated: 2022/09/30 07:58:04 by hsarhan          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -73,6 +73,7 @@ BUILTINS_SRCS := $(addprefix builtins/, $(BUILTINS_SRCS))
 
 EXEC_SRCS = exec_and_or.c exec_utils.c here_doc.c first_cmd.c mid_cmd.c cmd_utils.c exec_cmds.c wait_exit.c \
 			exec_redir.c validate_redir.c validation_message.c handle_validation.c check_validation.c exec.c\
+			exec_subexpr.c
 			
 EXEC_SRCS := $(addprefix exec/, $(EXEC_SRCS))
 
@@ -81,7 +82,7 @@ SIGNAL_SRCS := $(addprefix signals/, $(SIGNAL_SRCS))
 
 SRCS = $(TOKENIZATION_SRCS) $(PARSING_SRCS) $(BUILTINS_SRCS) $(EXEC_SRCS) $(SIGNAL_SRCS)
 
-SRCS += utils.c main.c
+SRCS += utils.c main.c minishell.c
 
 OBJS := $(SRCS:%.c=%.o)
 

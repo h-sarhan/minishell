@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/21 09:39:31 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/29 11:15:02 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/30 07:55:24 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,5 +55,10 @@ void	sigint_command(int sig);
 void	sigquit_command(int sig);
 void	hd_sig_handler(int sig);
 char	*get_env(const t_shell *shell, const char *name);
+bool	retokenize_env_var(const t_shell *shell,
+			t_token *token, t_list **el, t_list **tokens);
+char	*minishell_readline(t_shell *shell);
+void	minishell_run_heredocs(t_shell *shell);
+void	minishell_exec_and_cleanup(t_shell *shell, char *line);
 
 #endif

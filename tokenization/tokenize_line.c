@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/26 16:39:57 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/30 07:10:33 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/09/30 07:53:22 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,6 @@ static void	tokenize_env_cleanup(const t_shell *shell, t_list **el,
 	t_list **tokens, bool *success)
 {
 	t_token	*token;
-	char	*substr_copy;
 
 	token = (*el)->content;
 	if (token->substr == NULL)
@@ -31,13 +30,7 @@ static void	tokenize_env_cleanup(const t_shell *shell, t_list **el,
 		&& ft_strchr(token->substr, '$') != NULL)
 		ft_lstadd_back(tokens, *el);
 	else if (ft_strlen(token->substr) != 0)
-	{
-		substr_copy = ft_strdup(token->substr);
-		ft_lstclear(el, free_token);
-		*el = tokenize_line(shell, substr_copy, success);
-		ft_free(&substr_copy);
-		ft_lstadd_back(tokens, *el);
-	}
+		*success = retokenize_env_var(shell, token, el, tokens);
 	else
 	{
 		token->type = DUMMY;
