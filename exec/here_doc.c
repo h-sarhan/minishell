@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/11 14:52:15 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/30 08:36:56 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/10/03 12:55:16 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,7 +70,7 @@ static void	run_heredoc(const t_shell *shell, t_exec_step *step,
 			}
 			redirs = redirs->next;
 		}
-		if (redir->type == HEREDOC)
+		if (contents != NULL)
 		{
 			ft_lstadd_back(heredocs, ft_lstnew(ft_strdup(contents)));
 			ft_free(&contents);

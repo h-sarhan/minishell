@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/28 14:20:28 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/30 08:36:56 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/10/03 13:05:31 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,7 @@ static void	join_path(char *bin, char **paths, char **path)
 	while (bin != NULL && paths != NULL && paths[i] != NULL)
 	{
 		*path = ft_strjoin(paths[i], bin);
-		if (*path == NULL || access(*path, X_OK) != -1)
+		if (*path == NULL || access(*path, F_OK) != -1)
 			break ;
 		ft_free(path);
 		i++;

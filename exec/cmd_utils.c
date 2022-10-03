@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 08:12:47 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/30 08:36:56 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/10/03 12:55:32 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ static int	open_last_redir(t_list *hd_contents, t_exec_step *step,
 	{
 		if ((*inredir)->type == INPUT_REDIR)
 			in_fd = open((*inredir)->file, O_RDONLY);
-		else
+		else if ((*inredir)->type == HEREDOC)
 		{
 			pipe(heredoc_fds);
 			while (hd_contents != NULL)
