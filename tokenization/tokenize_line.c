@@ -6,13 +6,13 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/26 16:39:57 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/10/03 19:04:01 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/10/03 21:30:22 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static void	tokenize_env_cleanup(const t_shell *shell, t_list **el,
+void	tokenize_env_cleanup(const t_shell *shell, t_list **el,
 	t_list **tokens, bool *success)
 {
 	t_token	*token;
@@ -38,7 +38,7 @@ static void	tokenize_env_cleanup(const t_shell *shell, t_list **el,
 	}
 }
 
-static bool	first_token_group(const t_shell *shell, const char *line,
+bool	first_token_group(const t_shell *shell, const char *line,
 	size_t *i, t_list **tokens)
 {
 	t_list	*el;
@@ -63,7 +63,7 @@ static bool	first_token_group(const t_shell *shell, const char *line,
 	return (true);
 }
 
-static bool	second_token_group(const t_shell *shell, const char *line,
+bool	second_token_group(const t_shell *shell, const char *line,
 	size_t *i, t_list **tokens)
 {
 	t_list	*el;
@@ -93,7 +93,7 @@ static bool	second_token_group(const t_shell *shell, const char *line,
 	return (true);
 }
 
-static bool	tokenize_normal_and_wildcard(const t_shell *shell, const char *line,
+bool	tokenize_normal_and_wildcard(const t_shell *shell, const char *line,
 	size_t *i, t_list **tokens)
 {
 	t_list	*el;
@@ -110,7 +110,6 @@ static bool	tokenize_normal_and_wildcard(const t_shell *shell, const char *line,
 	token = el->content;
 	if (ft_strchr(token->substr, '*') != NULL)
 	{
-		// ! CHECK THIS BEFORE SUBMITTING
 		if (tokenize_wildcard(shell, &el, tokens, &success) == false)
 			return (false);
 	}

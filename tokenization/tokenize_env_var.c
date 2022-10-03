@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/26 12:36:39 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/30 08:36:56 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/10/03 20:52:05 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ bool	retokenize_env_var(const t_shell *shell,
 
 	substr_copy = ft_strdup(token->substr);
 	ft_lstclear(el, free_token);
-	*el = tokenize_line(shell, substr_copy, &success);
+	*el = tokenize_env_var_str(shell, substr_copy, &success);
 	ft_free(&substr_copy);
 	ft_lstadd_back(tokens, *el);
 	return (success);
