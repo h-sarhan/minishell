@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/18 07:59:27 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/10/03 19:55:10 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/10/03 20:36:17 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,14 +56,22 @@ static char	*single_wildcard(char *token)
 static char	*expand_wildcard_cleanup(char *res, char *token, t_wildcard **split_wc,
 		char **contents)
 {
+	size_t	i;
+
 	if (ft_strlen(res) == 0)
 	{
 		ft_free(&res);
 		res = ft_strdup(token);
 	}
 	ft_free(&token);
-	// ! FREE THIS SOME OTHER WAY
-	// free_split_array(split_wc);
+	i = 0;
+	while (split_wc[i] != NULL)
+	{
+		ft_free(&split_wc[i]->str);
+		ft_free(&split_wc[i]);
+		i++;
+	}
+	ft_free(&split_wc);
 	(void)split_wc;
 	free_split_array(contents);
 	return (eat_quotes(res));
