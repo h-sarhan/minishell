@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/18 10:03:29 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/10/03 20:36:39 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/10/03 21:36:50 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,13 +14,24 @@
 
 static int	count_segments(char const *str)
 {
-	int	i;
-	int	num_words;
-
+	int		i;
+	int		num_words;
+	char	quote;
+	
 	i = 0;
 	num_words = 0;
 	while (str[i] != '\0')
 	{
+		if (str[i] == '\'' || str[i] == '\"')
+		{
+			quote = str[i];
+			i++;
+			while (str[i] != quote && str[i] != '\0')
+				i++;
+			num_words++;
+			i++;
+			continue;
+		}
 		if (str[i] == '*')
 			num_words++;
 		while (str[i] == '*' && str[i] != '\0')
