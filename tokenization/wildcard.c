@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/18 07:59:27 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/10/03 19:01:04 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/10/03 19:55:10 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ static char	*single_wildcard(char *token)
 	return (res);
 }
 
-static char	*expand_wildcard_cleanup(char *res, char *token, char **split_wc,
+static char	*expand_wildcard_cleanup(char *res, char *token, t_wildcard **split_wc,
 		char **contents)
 {
 	if (ft_strlen(res) == 0)
@@ -62,18 +62,20 @@ static char	*expand_wildcard_cleanup(char *res, char *token, char **split_wc,
 		res = ft_strdup(token);
 	}
 	ft_free(&token);
-	free_split_array(split_wc);
+	// ! FREE THIS SOME OTHER WAY
+	// free_split_array(split_wc);
+	(void)split_wc;
 	free_split_array(contents);
-	return (res);
+	return (eat_quotes(res));
 }
 
 char	*expand_wildcard(char *token)
 {
-	char	**contents;
-	char	*contents_str;
-	char	**split_wc;
-	size_t	i;
-	char	*res;
+	char		**contents;
+	char		*contents_str;
+	t_wildcard	**wildcards;
+	int			i;
+	char		*res;
 
 	if (ft_strncmp(token, "*", ft_strlen(token)) == 0)
 		return (single_wildcard(token));
@@ -81,15 +83,25 @@ char	*expand_wildcard(char *token)
 	contents_str = get_dir_contents();
 	contents = ft_split(contents_str, '\n');
 	ft_free(&contents_str);
+	wildcards = split_wildcard(token);
+	bool	all_charseqs = true;
+	i = 0;
+	while (wildcards[i] != NULL)
+	{
+		if (wildcards[i]->is_wildcard == true)
+			all_charseqs = false;
+		i++;
+	}
+	if (all_charseqs == true)
+		return (expand_wildcard_cleanup(res, token, wildcards, contents));
 	i = -1;
-	split_wc = split_wildcard(token);
 	while (contents[++i] != NULL)
 	{
-		if (match_str_on_wildcard(contents[i], split_wc) == true
+		if (match_str_on_wildcard(contents[i], wildcards) == true
 			&& res[0] != '\0')
 			res = strjoin_free(res, " ", 1);
-		if (match_str_on_wildcard(contents[i], split_wc) == true)
+		if (match_str_on_wildcard(contents[i], wildcards) == true)
 			res = strjoin_free(res, contents[i], 1);
 	}
-	return (expand_wildcard_cleanup(res, token, split_wc, contents));
+	return (expand_wildcard_cleanup(res, token, wildcards, contents));
 }

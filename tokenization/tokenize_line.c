@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/26 16:39:57 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/30 08:36:56 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/10/03 19:04:01 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,6 +110,7 @@ static bool	tokenize_normal_and_wildcard(const t_shell *shell, const char *line,
 	token = el->content;
 	if (ft_strchr(token->substr, '*') != NULL)
 	{
+		// ! CHECK THIS BEFORE SUBMITTING
 		if (tokenize_wildcard(shell, &el, tokens, &success) == false)
 			return (false);
 	}

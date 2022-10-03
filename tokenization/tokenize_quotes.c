@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/19 16:25:19 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/30 08:36:56 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/10/03 19:06:00 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,7 +57,8 @@ static t_list	*create_token_el(const t_shell *shell, t_token *tkn,
 		return (parse_error(NULL, tkn));
 	while (expand_var == true && contains_env_var(tkn->substr))
 		tkn->substr = expand_env_var(shell, tkn->substr);
-	tkn->substr = eat_quotes(tkn->substr);
+	if (ft_strchr(tkn->substr, '*') == NULL)
+		tkn->substr = eat_quotes(tkn->substr);
 	if (tkn->substr == NULL)
 		return (parse_error("Parse error: Invalid Input\n", tkn));
 	if (ft_strchr(tkn->substr, '*') != NULL)

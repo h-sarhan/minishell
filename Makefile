@@ -6,7 +6,7 @@
 #    By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/04/29 21:51:32 by hsarhan           #+#    #+#              #
-#    Updated: 2022/09/30 13:19:16 by hsarhan          ###   ########.fr        #
+#    Updated: 2022/10/03 19:56:29 by hsarhan          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -109,6 +109,7 @@ $(LIBFT):
 $(FT_PRINTF):
 	make -C ft_printf
 
+bonus: $(NAME)
 
 norm:
 	norminette | grep Error
@@ -122,4 +123,4 @@ fclean: clean
 	rm -f $(NAME)
 
 re: fclean $(NAME)
-	
+

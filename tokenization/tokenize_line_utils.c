@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/26 16:41:23 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/30 08:36:56 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/10/03 19:04:35 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,6 +57,7 @@ bool	last_token_was_heredoc(t_list *tokens)
 bool	tokenize_wildcard(const t_shell *shell, t_list **el,
 	t_list **tokens, bool *success)
 {
+	// ! CHECK THIS BEFORE SUBMITTING
 	t_token	*token;
 	t_list	*wildcard_tokens;
 

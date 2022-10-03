@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/26 22:18:08 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/30 08:36:56 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/10/03 20:00:25 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,8 @@ bool	check_for_errors(t_list *tokens)
 		if (((is_terminator(token) && is_terminator(next_token)))
 			|| (is_redirection(token) && is_redirection(next_token))
 			|| (is_redirection(token) && is_terminator(next_token))
-			|| (is_redirection(token) && next_token->expanded == true)
+			|| (is_redirection(token) && next_token->expanded == true
+				&& (token->type == OUTPUT_REDIR || token->type == APPEND))
 			|| (is_redirection(token) && next_token->type == SUB_EXPR)
 			|| (token->type == SUB_EXPR && is_redirection(next_token))
 			|| (token->type == PIPE && next_token->type == SUB_EXPR))
