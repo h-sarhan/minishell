@@ -6,21 +6,20 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/26 12:36:39 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/10/03 20:52:05 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/10/03 22:39:12 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-bool	retokenize_env_var(const t_shell *shell,
-	t_token *token, t_list **el, t_list **tokens)
+bool	retokenize_env_var(t_token *token, t_list **el, t_list **tokens)
 {
 	char	*substr_copy;
 	bool	success;
 
 	substr_copy = ft_strdup(token->substr);
 	ft_lstclear(el, free_token);
-	*el = tokenize_env_var_str(shell, substr_copy, &success);
+	*el = tokenize_env_var_str(substr_copy, &success);
 	ft_free(&substr_copy);
 	ft_lstadd_back(tokens, *el);
 	return (success);
@@ -91,10 +90,7 @@ t_list	*tokenize_env_variable(const t_shell *shell, const char *line,
 		tkn->type = NORMAL;
 		return (ft_lstnew(tkn));
 	}
-	while (contains_env_var(tkn->substr))
-		tkn->substr = expand_env_var(shell, tkn->substr);
+	tkn->substr = expand_env_var(shell, tkn->substr);
 	tkn->type = NORMAL;
-	tkn->substr = eat_dollars(tkn->substr);
-	tkn->substr = eat_quotes(tkn->substr);
 	return (ft_lstnew(tkn));
 }

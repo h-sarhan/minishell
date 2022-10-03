@@ -6,18 +6,14 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/03 20:53:36 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/10/03 21:24:12 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/10/03 22:18:02 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static bool	is_other(const char *line, const size_t i)
-{
-	return (ft_strchr("\\;`&(<>)", line[i]) != NULL);
-}
 
-static	t_list	*tokenize_other(const char *line,
+static	t_list	*tokenize_inside_envvar(const char *line,
 	size_t *idx)
 {
 	size_t	i;
@@ -30,7 +26,7 @@ static	t_list	*tokenize_other(const char *line,
 		return (NULL);
 	tkn->start = i;
 	tkn->type = NORMAL;
-	while (is_other(line, i) && line[i] != '\0')
+	while (line[i] != ' ' && line[i] != '\0')
 		i++;
 	tkn->end = i - 1;
 	tkn->substr = ft_substr(line, tkn->start, tkn->end - tkn->start + 1);
@@ -39,7 +35,13 @@ static	t_list	*tokenize_other(const char *line,
 	return (el);
 }
 
-t_list		*tokenize_env_var_str(const t_shell *shell, const char *line,
+// static	t_list	*tokenize_other(const char *line,
+// 	size_t *idx)
+// {
+// 	char	quote;
+// }
+
+t_list		*tokenize_env_var_str(const char *line,
 	bool *success)
 {
 	size_t	i;
@@ -50,17 +52,8 @@ t_list		*tokenize_env_var_str(const t_shell *shell, const char *line,
 	i = 0;
 	while (line[i] != '\0')
 	{
-		if (is_other(line, i) == true)
-			ft_lstadd_back(&tokens, tokenize_other(line, &i));
-		else if (line[i] == '\'' || line[i] == '\"' || line[i] == '(')
-			*success = first_token_group(shell, line, &i, &tokens);
-		else if ((line[i] == '$' && last_token_was_heredoc(tokens) == false)
-			|| line[i] == ')')
-			*success = second_token_group(shell, line, &i, &tokens);
-		else if (line[i] != ' ')
-			*success = tokenize_normal_and_wildcard(shell, line, &i, &tokens);
-		if (*success == false)
-			return (NULL);
+		if (line[i] != ' ')
+			ft_lstadd_back(&tokens, tokenize_inside_envvar(line, &i));
 		if (line[i] != '\0')
 			i++;
 	}

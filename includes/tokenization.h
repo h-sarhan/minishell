@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:44:00 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/10/03 21:18:54 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/10/03 22:20:41 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ struct s_wildcard
 
 char		*eat_dollars(const char *str);
 t_list		*tokenize_line(const t_shell *shell, const char *line, bool *success);
-t_list		*tokenize_env_var_str(const t_shell *shell, const char *line, bool *success);
+t_list		*tokenize_env_var_str(const char *line, bool *success);
 t_list		*tokenize_env_variable(const t_shell *shell, const char *line,
 				size_t *idx);
 void		print_tokens_detailed(t_list *tokens);
@@ -102,7 +102,7 @@ bool		tokenize_wildcard(const t_shell *shell, t_list **el,
 				t_list **tokens, bool *success);
 void		set_quotes(const char ch, char *quote, bool *in_quote);
 bool		check_for_token_errors(const char *line, bool *success);
-void		tokenize_env_cleanup(const t_shell *shell, t_list **el,
+void		tokenize_env_cleanup(t_list **el,
 				t_list **tokens, bool *success);
 bool		first_token_group(const t_shell *shell, const char *line,
 				size_t *i, t_list **tokens);

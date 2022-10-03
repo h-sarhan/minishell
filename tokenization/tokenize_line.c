@@ -6,13 +6,13 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/26 16:39:57 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/10/03 21:30:22 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/10/03 22:34:34 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	tokenize_env_cleanup(const t_shell *shell, t_list **el,
+void	tokenize_env_cleanup(t_list **el,
 	t_list **tokens, bool *success)
 {
 	t_token	*token;
@@ -30,7 +30,9 @@ void	tokenize_env_cleanup(const t_shell *shell, t_list **el,
 		&& ft_strchr(token->substr, '$') != NULL)
 		ft_lstadd_back(tokens, *el);
 	else if (ft_strlen(token->substr) != 0)
-		*success = retokenize_env_var(shell, token, el, tokens);
+	{
+		*success = retokenize_env_var(token, el, tokens);
+	}
 	else
 	{
 		token->type = DUMMY;
@@ -78,7 +80,7 @@ bool	second_token_group(const t_shell *shell, const char *line,
 			token_error("Parse Error\n", tokens, &success);
 			return (false);
 		}
-		tokenize_env_cleanup(shell, &el, tokens, &success);
+		tokenize_env_cleanup(&el, tokens, &success);
 		if (success == false)
 		{
 			token_error(NULL, tokens, &success);
