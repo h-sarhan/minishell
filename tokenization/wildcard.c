@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/18 07:59:27 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/30 08:36:56 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/10/03 19:01:04 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,7 @@ static char	*get_dir_contents(void)
 	while (dirp != NULL)
 	{
 		if (dirp->d_name[0] != '.' && contents[0] != '\0')
-			contents = strjoin_free(contents, " ", 1);
+			contents = strjoin_free(contents, "\n", 1);
 		if (dirp->d_name[0] != '.')
 			contents = strjoin_free(contents, dirp->d_name, 1);
 		dirp = readdir(dp);
@@ -47,6 +47,8 @@ static char	*single_wildcard(char *token)
 	res = get_dir_contents();
 	if (*res == '\0')
 		res = ft_strdup(token);
+	while (ft_strchr(res, '\n') != NULL)
+		ft_strchr(res, '\n')[0] = ' ';
 	ft_free(&token);
 	return (res);
 }
@@ -77,7 +79,7 @@ char	*expand_wildcard(char *token)
 		return (single_wildcard(token));
 	res = ft_strdup("");
 	contents_str = get_dir_contents();
-	contents = ft_split(contents_str, ' ');
+	contents = ft_split(contents_str, '\n');
 	ft_free(&contents_str);
 	i = -1;
 	split_wc = split_wildcard(token);

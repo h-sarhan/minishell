@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:44:00 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/30 08:38:48 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/10/03 18:58:04 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@
 typedef enum e_token_type	t_token_type;
 typedef struct s_token		t_token;
 typedef struct s_shell		t_shell;
+typedef struct s_wildcard	t_wildcard;
 
 enum	e_token_type
 {
@@ -55,6 +56,12 @@ struct s_token
 	char			*substr;
 	t_list			*sub_tokens;
 	bool			expanded;
+};
+
+struct s_wildcard
+{
+	char	*wildcard;
+	bool	is_wildcard;
 };
 
 char	*eat_dollars(const char *str);
