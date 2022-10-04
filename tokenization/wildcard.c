@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/18 07:59:27 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/10/04 08:22:37 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/10/04 08:36:32 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,6 +77,22 @@ static char	*expand_wildcard_cleanup(char *res, char *token,
 	return (eat_quotes(res));
 }
 
+static bool	check_for_wildcards(t_wildcard **wildcards)
+{
+	size_t	i;
+	bool	all_charseqs;
+
+	i = 0;
+	all_charseqs = true;
+	while (wildcards[i] != NULL)
+	{
+		if (wildcards[i]->is_wildcard == true)
+			all_charseqs = false;
+		i++;
+	}
+	return (all_charseqs);
+}
+
 char	*expand_wildcard(char *token)
 {
 	char		**contents;
@@ -84,7 +100,6 @@ char	*expand_wildcard(char *token)
 	t_wildcard	**wildcards;
 	int			i;
 	char		*res;
-	bool		all_charseqs;
 
 	if (ft_strncmp(token, "*", ft_strlen(token)) == 0)
 		return (single_wildcard(token));
@@ -93,15 +108,7 @@ char	*expand_wildcard(char *token)
 	contents = ft_split(contents_str, '\n');
 	ft_free(&contents_str);
 	wildcards = split_wildcard(token);
-	all_charseqs = true;
-	i = 0;
-	while (wildcards[i] != NULL)
-	{
-		if (wildcards[i]->is_wildcard == true)
-			all_charseqs = false;
-		i++;
-	}
-	if (all_charseqs == true)
+	if (check_for_wildcards(wildcards) == true)
 		return (expand_wildcard_cleanup(res, token, wildcards, contents));
 	i = -1;
 	while (contents[++i] != NULL)

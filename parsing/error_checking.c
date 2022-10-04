@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/26 22:18:08 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/10/03 20:00:25 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/10/04 08:31:30 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,28 +14,27 @@
 
 bool	check_for_errors(t_list *tokens)
 {
-	t_token	*token;
+	t_token	*tkn;
 	t_token	*next_token;
 
 	if (tokens == NULL)
 		return (true);
-	token = tokens->content;
-	if (is_terminator(token) == true
-		|| (ft_lstsize(tokens) == 1 && is_redirection(token))
+	tkn = tokens->content;
+	if (is_terminator(tkn) || (ft_lstsize(tokens) == 1 && is_redirection(tkn))
 		|| (is_terminator(ft_lstlast(tokens)->content) == true))
 		return (false);
 	while (tokens->next != NULL)
 	{
-		token = tokens->content;
+		tkn = tokens->content;
 		next_token = tokens->next->content;
-		if (((is_terminator(token) && is_terminator(next_token)))
-			|| (is_redirection(token) && is_redirection(next_token))
-			|| (is_redirection(token) && is_terminator(next_token))
-			|| (is_redirection(token) && next_token->expanded == true
-				&& (token->type == OUTPUT_REDIR || token->type == APPEND))
-			|| (is_redirection(token) && next_token->type == SUB_EXPR)
-			|| (token->type == SUB_EXPR && is_redirection(next_token))
-			|| (token->type == PIPE && next_token->type == SUB_EXPR))
+		if (((is_terminator(tkn) && is_terminator(next_token)))
+			|| (is_redirection(tkn) && is_redirection(next_token))
+			|| (is_redirection(tkn) && is_terminator(next_token))
+			|| (is_redirection(tkn) && next_token->expanded == true
+				&& (tkn->type == OUTPUT_REDIR || tkn->type == APPEND))
+			|| (is_redirection(tkn) && next_token->type == SUB_EXPR)
+			|| (tkn->type == SUB_EXPR && is_redirection(next_token))
+			|| (tkn->type == PIPE && next_token->type == SUB_EXPR))
 			return (false);
 		tokens = tokens->next;
 	}
