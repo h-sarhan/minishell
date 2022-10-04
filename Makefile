@@ -6,7 +6,7 @@
 #    By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/04/29 21:51:32 by hsarhan           #+#    #+#              #
-#    Updated: 2022/10/03 20:54:33 by hsarhan          ###   ########.fr        #
+#    Updated: 2022/10/04 09:22:01 by hsarhan          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -57,7 +57,7 @@ GIGASHELL = \
 
 TOKENIZATION_SRCS = tokenize_line.c expansion.c \
 					tokenize_subexpr.c wildcard.c split_wildcard.c \
-					free_funcs.c tokenize_quotes.c \
+					split_wildcard2.c free_funcs.c tokenize_quotes.c \
 					contains_env_var.c wildcard_algorithm.c eat_quotes.c \
 					tokenize_normal.c tokenize_env_var.c eat_dollars.c \
 					tokenize_operator.c tokenize_line_utils.c tokenize_env_var_str.c

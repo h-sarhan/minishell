@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:44:00 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/10/04 08:20:49 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/10/04 09:24:11 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -112,4 +112,11 @@ bool		second_token_group(const t_shell *shell, const char *line,
 				size_t *i, t_list **tokens);
 bool		tokenize_normal_and_wildcard(const t_shell *shell, const char *line,
 				size_t *i, t_list **tokens);
+bool		handle_quotes_count(const char *str, size_t *num_words, size_t *i);
+bool		handle_quotes_split(const char *wc, size_t *i, size_t *word_count,
+				t_wildcard **wc_split);
+char		*create_word(char const *str, const size_t word_start,
+				const size_t word_end);
+t_wildcard	*create_wc(char *str, bool is_wildcard);
+
 #endif

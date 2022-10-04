@@ -6,33 +6,17 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/18 10:03:29 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/10/04 08:59:24 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/10/04 09:24:23 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static bool	handle_quotes_count(const char *str, size_t *num_words, size_t *i)
+static t_wildcard	**create_wc_split(char const *str)
 {
-	char	quote;
-
-	if (str[*i] == '\'' || str[*i] == '\"')
-	{
-		quote = str[*i];
-		*i += 1;
-		while (str[*i] != quote && str[*i] != '\0')
-			*i += 1;
-		*num_words += 1;
-		*i += 1;
-		return (true);
-	}
-	return (false);
-}
-
-static int	count_segments(char const *str)
-{
-	size_t	i;
-	size_t	num_words;
+	size_t		i;
+	size_t		num_words;
+	t_wildcard	**wc_split;
 
 	i = 0;
 	num_words = 0;
@@ -50,10 +34,13 @@ static int	count_segments(char const *str)
 		while (str[i] != '*' && str[i] != '\0')
 			i++;
 	}
-	return (num_words);
+	wc_split = ft_calloc((num_words + 1), sizeof(t_wildcard *));
+	if (wc_split == NULL)
+		return (NULL);
+	return (wc_split);
 }
 
-static char	*create_word(char const *str, const size_t word_start,
+char	*create_word(char const *str, const size_t word_start,
 							const size_t word_end)
 {
 	char	*word;
@@ -65,7 +52,7 @@ static char	*create_word(char const *str, const size_t word_start,
 	return (word);
 }
 
-static t_wildcard	*create_wc(char *str, bool is_wildcard)
+t_wildcard	*create_wc(char *str, bool is_wildcard)
 {
 	t_wildcard	*wildcard;
 
@@ -77,44 +64,25 @@ static t_wildcard	*create_wc(char *str, bool is_wildcard)
 	return (wildcard);
 }
 
-static bool	handle_quotes_split(const char *wc, size_t *i, size_t *word_count,
+static void	add_non_wc_segment(const char *wc, size_t *i, size_t *num_words,
 	t_wildcard **wc_split)
 {
-	char		quote;
-	char		*wc_seg;
-	size_t		start;
+	size_t	start;
 
-	if (wc[*i] == '\'' || wc[*i] == '\"')
-	{
-		quote = wc[*i];
-		start = *i;
+	start = *i;
+	while (wc[*i] != '*' && wc[*i] != '\0')
 		*i += 1;
-		while (wc[*i] != quote && wc[*i] != '\0')
-			*i += 1;
-		wc_seg = eat_quotes(create_word(wc, start, *i));
-		if (wc_seg != NULL && wc_seg[0] != '\0')
-		{
-			wc_split[*word_count] = create_wc(wc_seg, false);
-			*word_count += 1;
-		}
-		else
-			ft_free(&wc_seg);
-		*i += 1;
-		return (true);
-	}
-	return (false);
+	wc_split[*num_words] = create_wc(create_word(wc, start, *i - 1), false);
+	*num_words += 1;
 }
 
 t_wildcard	**split_wildcard(const char *wc)
 {
 	t_wildcard	**wc_split;
 	size_t		i;
-	size_t		start;
 	size_t		num_words;
 
-	wc_split = ft_calloc((count_segments(wc) + 1), sizeof(t_wildcard *));
-	if (wc_split == NULL)
-		return (NULL);
+	wc_split = create_wc_split(wc);
 	i = 0;
 	num_words = 0;
 	while (wc[i] != '\0')
@@ -129,10 +97,7 @@ t_wildcard	**split_wildcard(const char *wc)
 			break ;
 		if (wc[i] == '\'' || wc[i] == '\"')
 			continue ;
-		start = i;
-		while (wc[i] != '*' && wc[i] != '\0')
-			i++;
-		wc_split[num_words++] = create_wc(create_word(wc, start, i - 1), false);
+		add_non_wc_segment(wc, &i, &num_words, wc_split);
 	}
 	wc_split[num_words] = NULL;
 	return (wc_split);
