@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/18 07:59:27 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/10/03 20:36:17 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/10/04 08:22:37 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,8 +53,8 @@ static char	*single_wildcard(char *token)
 	return (res);
 }
 
-static char	*expand_wildcard_cleanup(char *res, char *token, t_wildcard **split_wc,
-		char **contents)
+static char	*expand_wildcard_cleanup(char *res, char *token,
+		t_wildcard **split_wc, char **contents)
 {
 	size_t	i;
 
@@ -84,6 +84,7 @@ char	*expand_wildcard(char *token)
 	t_wildcard	**wildcards;
 	int			i;
 	char		*res;
+	bool		all_charseqs;
 
 	if (ft_strncmp(token, "*", ft_strlen(token)) == 0)
 		return (single_wildcard(token));
@@ -92,7 +93,7 @@ char	*expand_wildcard(char *token)
 	contents = ft_split(contents_str, '\n');
 	ft_free(&contents_str);
 	wildcards = split_wildcard(token);
-	bool	all_charseqs = true;
+	all_charseqs = true;
 	i = 0;
 	while (wildcards[i] != NULL)
 	{

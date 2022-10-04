@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/26 09:24:29 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/10/03 19:55:40 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/10/04 08:23:17 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,20 +85,20 @@ bool	match_str_on_wildcard(const char *str, t_wildcard **wc_segs)
 		{
 			res = non_terminating_charseq(str, &wc_i, &i, wc_segs);
 		}
-		else if (wc_segs[wc_i]->is_wildcard == true && wc_segs[wc_i + 1] != NULL)
+		else if (wc_segs[wc_i]->is_wildcard && wc_segs[wc_i + 1] != NULL)
 		{
 			res = non_terminating_wildcard(str, &wc_i, &i, wc_segs);
 		}
-		else if (wc_segs[wc_i]->is_wildcard == true && wc_segs[wc_i + 1] == NULL)
+		else if (wc_segs[wc_i]->is_wildcard && wc_segs[wc_i + 1] == NULL)
 			return (true);
-		else if (wc_segs[wc_i]->is_wildcard == false && wc_segs[wc_i + 1] == NULL)
+		else if (!wc_segs[wc_i]->is_wildcard && wc_segs[wc_i + 1] == NULL)
 		{
 			res = terminating_charseq(str, &wc_i, &i, wc_segs);
 		}
 		if (res != CONTINUE)
 			return (res);
 	}
-	if (str[i] == '\0' && wc_segs[wc_i]->is_wildcard == true && wc_segs[wc_i + 1] == NULL)
+	if (str[i] == '\0' && wc_segs[wc_i]->is_wildcard && !wc_segs[wc_i + 1])
 		return (true);
 	return (false);
 }

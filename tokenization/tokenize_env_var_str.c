@@ -6,12 +6,11 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/10/03 20:53:36 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/10/03 22:18:02 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/10/04 08:21:29 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
 
 static	t_list	*tokenize_inside_envvar(const char *line,
 	size_t *idx)
@@ -35,13 +34,7 @@ static	t_list	*tokenize_inside_envvar(const char *line,
 	return (el);
 }
 
-// static	t_list	*tokenize_other(const char *line,
-// 	size_t *idx)
-// {
-// 	char	quote;
-// }
-
-t_list		*tokenize_env_var_str(const char *line,
+t_list	*tokenize_env_var_str(const char *line,
 	bool *success)
 {
 	size_t	i;

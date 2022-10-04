@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/26 12:36:39 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/10/03 22:39:12 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/10/04 08:26:26 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -90,7 +90,8 @@ t_list	*tokenize_env_variable(const t_shell *shell, const char *line,
 		tkn->type = NORMAL;
 		return (ft_lstnew(tkn));
 	}
-	tkn->substr = expand_env_var(shell, tkn->substr);
+	if (contains_env_var(tkn->substr))
+		tkn->substr = expand_env_var(shell, tkn->substr);
 	tkn->type = NORMAL;
 	return (ft_lstnew(tkn));
 }

@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/18 10:03:29 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/10/03 21:36:50 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/10/04 08:20:19 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ static int	count_segments(char const *str)
 	int		i;
 	int		num_words;
 	char	quote;
-	
+
 	i = 0;
 	num_words = 0;
 	while (str[i] != '\0')
@@ -30,7 +30,7 @@ static int	count_segments(char const *str)
 				i++;
 			num_words++;
 			i++;
-			continue;
+			continue ;
 		}
 		if (str[i] == '*')
 			num_words++;
@@ -57,7 +57,7 @@ static char	*create_word(char const *str, const size_t word_start,
 	return (word);
 }
 
-static t_wildcard	*create_wildcard(char *str, bool is_wildcard)
+static t_wildcard	*create_wc(char *str, bool is_wildcard)
 {
 	t_wildcard	*wildcard;
 
@@ -73,9 +73,10 @@ t_wildcard	**split_wildcard(const char *wc)
 {
 	t_wildcard	**split_wildcard;
 	size_t		i;
-	size_t		word_start;
+	size_t		start;
 	size_t		word_count;
 	char		quote;
+	char		*wc_seg;
 
 	split_wildcard = ft_calloc((count_segments(wc) + 1), sizeof(t_wildcard *));
 	if (split_wildcard == NULL)
@@ -87,30 +88,31 @@ t_wildcard	**split_wildcard(const char *wc)
 		if (wc[i] == '\'' || wc[i] == '\"')
 		{
 			quote = wc[i];
-			word_start = i;
+			start = i;
 			i++;
 			while (wc[i] != quote && wc[i] != '\0')
 				i++;
-			char	*wc_seg = eat_quotes(create_word(wc, word_start, i));
+			wc_seg = eat_quotes(create_word(wc, start, i));
 			if (wc_seg != NULL && wc_seg[0] != '\0')
-				split_wildcard[word_count++] = create_wildcard(wc_seg, false);
+				split_wildcard[word_count++] = create_wc(wc_seg, false);
 			else
 				ft_free(&wc_seg);
 			i++;
-			continue;
+			continue ;
 		}
 		if (wc[i] == '*')
-			split_wildcard[word_count++] = create_wildcard(ft_strdup("*"), true);
+			split_wildcard[word_count++] = create_wc(ft_strdup("*"), true);
 		while (wc[i] == '*' && wc[i] != '\0')
 			i++;
 		if (wc[i] == '\0')
 			break ;
 		if (wc[i] == '\'' || wc[i] == '\"')
-			continue;
-		word_start = i;
+			continue ;
+		start = i;
 		while (wc[i] != '*' && wc[i] != '\0')
 			i++;
-		split_wildcard[word_count++] = create_wildcard(create_word(wc, word_start, i - 1), false);
+		split_wildcard[word_count++] = create_wc(
+				create_word(wc, start, i - 1), false);
 	}
 	split_wildcard[word_count] = NULL;
 	return (split_wildcard);
