@@ -6,32 +6,40 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/18 10:03:29 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/10/04 08:20:19 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/10/04 08:59:24 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
+static bool	handle_quotes_count(const char *str, size_t *num_words, size_t *i)
+{
+	char	quote;
+
+	if (str[*i] == '\'' || str[*i] == '\"')
+	{
+		quote = str[*i];
+		*i += 1;
+		while (str[*i] != quote && str[*i] != '\0')
+			*i += 1;
+		*num_words += 1;
+		*i += 1;
+		return (true);
+	}
+	return (false);
+}
+
 static int	count_segments(char const *str)
 {
-	int		i;
-	int		num_words;
-	char	quote;
+	size_t	i;
+	size_t	num_words;
 
 	i = 0;
 	num_words = 0;
 	while (str[i] != '\0')
 	{
-		if (str[i] == '\'' || str[i] == '\"')
-		{
-			quote = str[i];
-			i++;
-			while (str[i] != quote && str[i] != '\0')
-				i++;
-			num_words++;
-			i++;
+		if (handle_quotes_count(str, &num_words, &i) == true)
 			continue ;
-		}
 		if (str[i] == '*')
 			num_words++;
 		while (str[i] == '*' && str[i] != '\0')
@@ -69,39 +77,52 @@ static t_wildcard	*create_wc(char *str, bool is_wildcard)
 	return (wildcard);
 }
 
-t_wildcard	**split_wildcard(const char *wc)
+static bool	handle_quotes_split(const char *wc, size_t *i, size_t *word_count,
+	t_wildcard **wc_split)
 {
-	t_wildcard	**split_wildcard;
-	size_t		i;
-	size_t		start;
-	size_t		word_count;
 	char		quote;
 	char		*wc_seg;
+	size_t		start;
 
-	split_wildcard = ft_calloc((count_segments(wc) + 1), sizeof(t_wildcard *));
-	if (split_wildcard == NULL)
+	if (wc[*i] == '\'' || wc[*i] == '\"')
+	{
+		quote = wc[*i];
+		start = *i;
+		*i += 1;
+		while (wc[*i] != quote && wc[*i] != '\0')
+			*i += 1;
+		wc_seg = eat_quotes(create_word(wc, start, *i));
+		if (wc_seg != NULL && wc_seg[0] != '\0')
+		{
+			wc_split[*word_count] = create_wc(wc_seg, false);
+			*word_count += 1;
+		}
+		else
+			ft_free(&wc_seg);
+		*i += 1;
+		return (true);
+	}
+	return (false);
+}
+
+t_wildcard	**split_wildcard(const char *wc)
+{
+	t_wildcard	**wc_split;
+	size_t		i;
+	size_t		start;
+	size_t		num_words;
+
+	wc_split = ft_calloc((count_segments(wc) + 1), sizeof(t_wildcard *));
+	if (wc_split == NULL)
 		return (NULL);
 	i = 0;
-	word_count = 0;
+	num_words = 0;
 	while (wc[i] != '\0')
 	{
-		if (wc[i] == '\'' || wc[i] == '\"')
-		{
-			quote = wc[i];
-			start = i;
-			i++;
-			while (wc[i] != quote && wc[i] != '\0')
-				i++;
-			wc_seg = eat_quotes(create_word(wc, start, i));
-			if (wc_seg != NULL && wc_seg[0] != '\0')
-				split_wildcard[word_count++] = create_wc(wc_seg, false);
-			else
-				ft_free(&wc_seg);
-			i++;
+		if (handle_quotes_split(wc, &i, &num_words, wc_split) == true)
 			continue ;
-		}
 		if (wc[i] == '*')
-			split_wildcard[word_count++] = create_wc(ft_strdup("*"), true);
+			wc_split[num_words++] = create_wc(ft_strdup("*"), true);
 		while (wc[i] == '*' && wc[i] != '\0')
 			i++;
 		if (wc[i] == '\0')
@@ -111,9 +132,8 @@ t_wildcard	**split_wildcard(const char *wc)
 		start = i;
 		while (wc[i] != '*' && wc[i] != '\0')
 			i++;
-		split_wildcard[word_count++] = create_wc(
-				create_word(wc, start, i - 1), false);
+		wc_split[num_words++] = create_wc(create_word(wc, start, i - 1), false);
 	}
-	split_wildcard[word_count] = NULL;
-	return (split_wildcard);
+	wc_split[num_words] = NULL;
+	return (wc_split);
 }
