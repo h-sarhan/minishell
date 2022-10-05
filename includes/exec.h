@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.h                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/01 18:17:33 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/30 08:35:00 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/10/05 11:58:42 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,8 @@ void		pipe_fds(const t_exec_step *step, int *fds);
 /* ----- RUN HEREDOCS ----- */
 // void		run_here_docs(t_shell *shell, t_exec_step *step);
 t_list		*run_here_docs(t_shell *shell, t_list *steps);
+int			count_heredocs(t_list *substeps);
+void		skip_sub_heredocs(t_list *heredocs, int num_skipped);
 
 /* ----- IMPLEMENT && || AND REPARSE AGAIN DURING EXECUTION ----- */
 void		handle_and_or(t_shell *shell, t_exec_step *step, int step_number,

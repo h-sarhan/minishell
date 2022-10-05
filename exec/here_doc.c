@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   here_doc.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
+/*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/11 14:52:15 by mkhan             #+#    #+#             */
-/*   Updated: 2022/10/03 12:55:16 by hsarhan          ###   ########.fr       */
+/*   Updated: 2022/10/05 11:58:35 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,5 +110,4 @@ t_list	*run_here_docs(t_shell *shell, t_list *steps)
 		run_heredoc(shell, step, &heredocs);
 		steps = steps->next;
 	}
-	return (heredocs);
 }
