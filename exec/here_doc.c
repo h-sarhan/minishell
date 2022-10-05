@@ -6,7 +6,7 @@
 /*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/11 14:52:15 by mkhan             #+#    #+#             */
-/*   Updated: 2022/10/05 11:58:35 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/10/05 12:13:23 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -110,4 +110,5 @@ t_list	*run_here_docs(t_shell *shell, t_list *steps)
 		run_heredoc(shell, step, &heredocs);
 		steps = steps->next;
 	}
+	return (heredocs);
 }

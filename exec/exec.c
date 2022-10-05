@@ -6,51 +6,11 @@
 /*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/27 08:49:50 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/10/05 11:57:31 by mkhan            ###   ########.fr       */
+/*   Updated: 2022/10/05 12:15:10 by mkhan            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../minishell.h"
-
-bool	exec_subexpr(t_shell *shell, t_exec_step *step, t_exec_flags *flags,
-	t_list **steps)
-{
-	t_list		*sub_tokens;
-	t_list		*sub_steps;
-	bool		success;
-	int			pid;
-	int			heredocs_to_skip;
-
-	sub_tokens = tokenize_line(shell, step->subexpr_line, &success);
-	sub_steps = parse_tokens(sub_tokens, &success);
-	ft_lstclear(&sub_tokens, free_token);
-	ft_lstadd_back(&shell->steps_to_free, ft_lstnew(sub_steps));
-	pid = fork();
-	if (pid == 0)
-	{
-		exec_cmds(shell, sub_steps, 0, step->subexpr_line);
-		ft_lstclear(&shell->tokens, free_token);
-		free_steps(&shell->steps_to_free);
-		ft_close(&g_dupstdin);
-		free_split_array(shell->env);
-		free_split_array(shell->declared_env);
-		ft_lstclear(&shell->heredoc_contents, free);
-		ft_free(&shell->fd);
-		get_next_line(-1);
-		exit(shell->last_exit_code);
-	}
-	waitpid(pid, &flags->w_status, 0);
-	heredocs_to_skip = count_heredocs(sub_steps);
-	skip_sub_heredocs(shell->heredoc_contents, heredocs_to_skip);
-	step->exit_code = WEXITSTATUS(flags->w_status);
-	shell->last_exit_code = step->exit_code;
-	if (!(flags->first_flag))
-		flags->first_flag = true;
-	if (step->and_next || step->or_next)
-		return (false);
-	*steps = (*steps)->next;
-	return (true);
-}
+#include "minishell.h"
 
 void	set_cmd_path(t_shell *shell, t_exec_step *step)
 {
