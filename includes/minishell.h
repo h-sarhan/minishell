@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/21 09:39:31 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/10/03 22:20:11 by hsarhan          ###   ########.fr       */
+/*   Updated: 2023/03/21 19:14:34 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@
 # include <sys/stat.h>
 # include <signal.h>
 
-int						g_dupstdin;
+extern int				g_dupstdin;
 
 typedef struct s_shell	t_shell;
 struct s_shell

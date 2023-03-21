@@ -6,13 +6,14 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/23 17:46:50 by mkhan             #+#    #+#             */
-/*   Updated: 2022/09/30 08:34:48 by hsarhan          ###   ########.fr       */
+/*   Updated: 2023/03/21 19:08:47 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef BUILTINS_H
 # define BUILTINS_H
 
+# include <stddef.h>
 # include "parsing.h"
 
 typedef struct s_shell	t_shell;

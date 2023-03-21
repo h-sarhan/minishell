@@ -6,13 +6,13 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:43:26 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/30 07:54:22 by hsarhan          ###   ########.fr       */
+/*   Updated: 2023/03/21 19:02:33 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-extern int	g_dupstdin;
+int	g_dupstdin;
 
 void	init_shell(t_shell *shell, char **env)
 {

@@ -6,13 +6,11 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/30 07:54:33 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/30 07:55:11 by hsarhan          ###   ########.fr       */
+/*   Updated: 2023/03/21 19:14:05 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-extern int	g_dupstdin;
 
 char	*minishell_readline(t_shell *shell)
 {

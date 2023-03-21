@@ -6,7 +6,7 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/17 11:44:00 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/10/04 09:24:11 by hsarhan          ###   ########.fr       */
+/*   Updated: 2023/03/21 19:15:43 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,12 +24,11 @@
 # define FALSE 0
 # define CONTINUE 2 
 
-typedef enum e_token_type	t_token_type;
 typedef struct s_token		t_token;
 typedef struct s_shell		t_shell;
 typedef struct s_wildcard	t_wildcard;
 
-enum	e_token_type
+typedef enum e_token_type
 {
 	QUOTED_STRING,
 	DOUBLE_QUOTED_STRING,
@@ -46,7 +45,7 @@ enum	e_token_type
 	ENV_VAR,
 	WILDCARD,
 	DUMMY
-};
+}				t_token_type;
 
 struct s_token
 {

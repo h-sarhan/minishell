@@ -6,16 +6,20 @@
 /*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/21 11:55:31 by hsarhan           #+#    #+#             */
-/*   Updated: 2022/09/29 14:20:11 by hsarhan          ###   ########.fr       */
+/*   Updated: 2023/03/21 19:10:43 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef PARSING_H
 # define PARSING_H
 
+# include "tokenization.h"
+
 typedef struct s_exec_step	t_exec_step;
 typedef struct s_cmd		t_cmd;
 typedef struct s_redir		t_redir;
+typedef struct s_shell		t_shell;
+typedef struct s_list		t_list;
 
 struct	s_redir
 {

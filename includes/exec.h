@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   exec.h                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: mkhan <mkhan@student.42.fr>                +#+  +:+       +#+        */
+/*   By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/09/01 18:17:33 by mkhan             #+#    #+#             */
-/*   Updated: 2022/10/05 11:58:42 by mkhan            ###   ########.fr       */
+/*   Updated: 2023/03/21 19:15:23 by hsarhan          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,9 @@
 # define CONT 1
 # define BREAK -1
 # define PASS 0
+
+typedef struct s_shell		t_shell;
+typedef struct s_list		t_list;
 
 struct	s_exec_flags
 {

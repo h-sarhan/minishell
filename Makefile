@@ -6,7 +6,7 @@
 #    By: hsarhan <hsarhan@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/04/29 21:51:32 by hsarhan           #+#    #+#              #
-#    Updated: 2022/10/04 09:22:01 by hsarhan          ###   ########.fr        #
+#    Updated: 2023/03/21 18:54:15 by hsarhan          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -87,7 +87,7 @@ SRCS += utils.c main.c minishell.c
 OBJS := $(SRCS:%.c=%.o)
 
 NAME = minishell
-CC = cc
+CC = gcc
 CFLAGS = -Werror -Wall -Wextra -g -I/usr/local/opt/readline/include -Iincludes -Ift_printf -Ilibft
 LIBFT = libft/libft.a
 FT_PRINTF = ft_printf/libftprintf.a
